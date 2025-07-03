@@ -42,7 +42,7 @@ export const actions: Actions = {
 			return fail(400, { error: 'No token received from server.' });
 		}
 
-		cookies.set('token', token, {
+		cookies.set('Authorization', `Bearer ${token}`, {
 			path: '/',
 			httpOnly: true,
 			sameSite: 'lax',
