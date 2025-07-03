@@ -18,8 +18,19 @@
   import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
   import { Badge } from '$lib/components/ui/badge';
   import { ArrowLeft, Trash2, PlusCircle, Info } from 'lucide-svelte';
+  import OsHealth from './health-components/osHealth.svelte';
 
-  let { data, form } = $props<PageProps>();
+  let {
+    data,
+    form
+  }: {
+    data: {
+      host: unknown;
+      awxJobs: unknown;
+      healthTools: unknown;
+      osHealth: unknown;
+    };
+  } = $props();
   let selectedTab = $state('overview');
   let showForceDeleteModal = $state(false);
   let showComponentsModal = $state(false);
@@ -274,104 +285,11 @@
               </Select>
             </div>
           {/if}
-        </Card.Content>
-      </Card.Root>
-      <Card.Root>
-        <Card.Content>
+
           {#if selectedHealthTool}
             {#if selectedHealthTool.includes('osHealth') && data.osHealth}
-              <div class="space-y-4 rounded-lg border p-4">
-                <div class="grid grid-cols-2 gap-4">
-                  <!-- System Stats -->
-                  <div>
-                    <h3 class="text-muted-foreground mb-2 text-sm font-medium">
-                      System Statistics
-                    </h3>
-                    <dl class="space-y-2">
-                      <div class="flex justify-between">
-                        <dt class="text-sm font-medium">CPU Usage</dt>
-                        <dd class="text-sm">{data.osHealth.cpu_usage}%</dd>
-                      </div>
-                      <div class="flex justify-between">
-                        <dt class="text-sm font-medium">Memory Usage</dt>
-                        <dd class="text-sm">{data.osHealth.memory_usage}%</dd>
-                      </div>
-                      <div class="flex justify-between">
-                        <dt class="text-sm font-medium">Disk Usage</dt>
-                        <dd class="text-sm">{data.osHealth.disk_usage}%</dd>
-                      </div>
-                    </dl>
-                  </div>
-
-                  <!-- System Info -->
-                  <div>
-                    <h3 class="text-muted-foreground mb-2 text-sm font-medium">
-                      System Information
-                    </h3>
-                    <dl class="space-y-2">
-                      <div class="flex justify-between">
-                        <dt class="text-sm font-medium">OS Version</dt>
-                        <dd class="text-sm">{data.osHealth.os_version || 'N/A'}</dd>
-                      </div>
-                      <div class="flex justify-between">
-                        <dt class="text-sm font-medium">Kernel</dt>
-                        <dd class="text-sm">{data.osHealth.kernel_version || 'N/A'}</dd>
-                      </div>
-                      <div class="flex justify-between">
-                        <dt class="text-sm font-medium">Uptime</dt>
-                        <dd class="text-sm">{data.osHealth.uptime || 'N/A'}</dd>
-                      </div>
-                    </dl>
-                  </div>
-                </div>
-
-                <!-- Process List -->
-                {#if data.osHealth.processes}
-                  <div class="mt-4">
-                    <h3 class="text-muted-foreground mb-2 text-sm font-medium">Top Processes</h3>
-                    <div class="rounded-md border">
-                      <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                          <tr>
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500"
-                              >PROCESS</th
-                            >
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500"
-                              >PID</th
-                            >
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500"
-                              >CPU %</th
-                            >
-                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500"
-                              >MEM %</th
-                            >
-                          </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-200 bg-white">
-                          {#each data.osHealth.processes as process, i (i)}
-                            <tr>
-                              <td class="px-4 py-2 text-sm">{process.name}</td>
-                              <td class="px-4 py-2 text-sm">{process.pid}</td>
-                              <td class="px-4 py-2 text-sm">{process.cpu_percent}%</td>
-                              <td class="px-4 py-2 text-sm">{process.memory_percent}%</td>
-                            </tr>
-                          {/each}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                {/if}
-              </div>
-            {:else}
-              <div class="rounded-lg border p-4">
-                <p class="text-muted-foreground">Health data for {selectedHealthTool}</p>
-              </div>
+              <OsHealth osHealth={data.osHealth}></OsHealth>
             {/if}
-          {:else}
-            <div class="flex flex-col items-center justify-center space-y-2 py-8">
-              <Info class="text-muted-foreground h-8 w-8" />
-              <p class="text-muted-foreground">Select a health tool to view details</p>
-            </div>
           {/if}
         </Card.Content>
       </Card.Root>
