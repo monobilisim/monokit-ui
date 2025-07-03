@@ -5,6 +5,10 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 const config = {
 	preprocess: vitePreprocess(),
 
+	optimizeDeps: {
+		exclude: ['@tanstack/svelte-query']
+	},
+
 	kit: {
 		adapter: adapter(),
 		alias: {
