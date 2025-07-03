@@ -9,7 +9,7 @@
 >
 	<div class="w-80 rounded-xs border border-white/20 bg-white/10 p-8 shadow-xs backdrop-blur">
 		<h1 class="mb-8 text-center text-2xl text-white">Welcome to Monokit!</h1>
-		<form method="POST" use:enhance>
+		<form method="POST" action="?/login" use:enhance>
 			{#if form?.error}
 				<div class="mb-4 text-center text-sm text-red-400">{form.error}</div>
 			{/if}
@@ -42,19 +42,9 @@
 			<Button type="submit" class="w-full rounded-full">Log in</Button>
 		</form>
 		<div class="mt-6 text-center">
-			<Button
-				type="button"
-				class="w-full rounded-full"
-				onclick={() =>
-					(window.location.href =
-						'/api/auth/sso/login?redirect_uri=' +
-						encodeURIComponent(window.location.origin + '/api/v1/auth/sso/callback'))}
-			>
-				Login with Keycloak
-			</Button>
+			<form method="POST" action="?/keycloak" use:enhance>
+				<Button type="submit" class="w-full rounded-full">Login with Keycloak</Button>
+			</form>
 		</div>
-	</div>
-	<div class="absolute right-4 bottom-4 text-xs text-white drop-shadow">
-		<small> "Furggelen afterglow" by Lukas Schlagenhauf is licensed under CC BY-ND 2.0. </small>
 	</div>
 </div>

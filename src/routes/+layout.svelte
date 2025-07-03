@@ -40,6 +40,12 @@
 		}
 	}
 
+	async function logout(): Promise<void> {
+		await fetch(`/logout`, {
+			credentials: 'include'
+		});
+	}
+
 	let { children }: { children: Snippet<[]> } = $props();
 </script>
 
@@ -47,6 +53,13 @@
 	{#if page.url.pathname !== '/login'}
 		<div class="sidebar h-screen border border-slate-50">
 			<Button onclick={toggleDark} variant="secondary">Toggle Dark Mode</Button>
+
+			<Button
+				type="submit"
+				variant="destructive"
+				class="w-full cursor-pointer"
+				onclick={async () => logout()}>Logout</Button
+			>
 
 			<NavigationMenu.Root>
 				<NavigationMenu.List class="flex flex-col gap-1 *:*:w-48">

@@ -57,9 +57,7 @@
 		"vitest": "^3.2.4",
 		"vitest-browser-svelte": "^1.0.0",
 		"@tanstack/svelte-query": "^5.81.5",
-		"svelte-adapter-bun": "^0.5.2"
-	},
-	"dependencies": {
-		"@tanstack/svelte-query-devtools": "^5.81.5"
+		"svelte-adapter-bun": "^0.5.2",
+		"chart.js": "^4.5.0"
 	}
 }
