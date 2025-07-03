@@ -6,7 +6,7 @@ const config = {
 	preprocess: vitePreprocess(),
 
 	optimizeDeps: {
-		exclude: ['@tanstack/svelte-query']
+		exclude: ['@tanstack/svelte-query, chart.js']
 	},
 
 	kit: {

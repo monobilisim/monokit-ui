@@ -2,6 +2,9 @@
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Popover, PopoverContent, PopoverTrigger } from '$lib/components/ui/popover';
+	import { Chart, type ChartData, type ChartOptions } from 'chart.js/auto';
+
+	import { onMount } from 'svelte';
 
 	export let data;
 
@@ -11,97 +14,101 @@
 	$: logStats = data.logStats;
 	$: errorCount = data.errorCount;
 
-	function renderDonutChart() {
-		const radius = 85;
-		const total = hostStats.total || 1;
-		const circumference = 2 * Math.PI * radius;
+	let hostStatusChart: Chart | null = null;
+	let logSeverityChart: Chart | null = null;
+	let hostChartCanvas: HTMLCanvasElement;
+	let logChartCanvas: HTMLCanvasElement;
 
-		let currentOffset = 0;
-		const segments = [];
+	function createHostStatusChart() {
+		if (hostChartCanvas) {
+			const ctx = hostChartCanvas.getContext('2d');
+			if (ctx) {
+				const data: ChartData = {
+					labels: ['Online', 'Offline', 'Pending Deletion', 'Unknown'],
+					datasets: [
+						{
+							data: [
+								hostStats.online || 0,
+								hostStats.offline || 0,
+								hostStats.deletion || 0,
+								hostStats.unknown || 0
+							],
+							backgroundColor: ['#3E8635', '#C9190B', '#F0AB00', '#6A6E73'],
+							borderWidth: 0
+						}
+					]
+				};
 
-		if (hostStats.online > 0) {
-			const percentage = hostStats.online / total;
-			segments.push({
-				color: '#3E8635',
-				dashArray: `${circumference * percentage} ${circumference * (1 - percentage)}`,
-				dashOffset: -currentOffset * circumference,
-				count: hostStats.online,
-				label: 'Online'
-			});
-			currentOffset += percentage;
-		}
+				const options: ChartOptions = {
+					responsive: true,
+					maintainAspectRatio: true,
+					plugins: {
+						legend: { display: false }
+					}
+				};
 
-		if (hostStats.offline > 0) {
-			const percentage = hostStats.offline / total;
-			segments.push({
-				color: '#C9190B',
-				dashArray: `${circumference * percentage} ${circumference * (1 - percentage)}`,
-				dashOffset: -currentOffset * circumference,
-				count: hostStats.offline,
-				label: 'Offline'
-			});
-			currentOffset += percentage;
-		}
-
-		if (hostStats.deletion > 0) {
-			const percentage = hostStats.deletion / total;
-			segments.push({
-				color: '#F0AB00',
-				dashArray: `${circumference * percentage} ${circumference * (1 - percentage)}`,
-				dashOffset: -currentOffset * circumference,
-				count: hostStats.deletion,
-				label: 'Pending Deletion'
-			});
-			currentOffset += percentage;
-		}
-
-		if (hostStats.unknown > 0) {
-			const percentage = hostStats.unknown / total;
-			segments.push({
-				color: '#6A6E73',
-				dashArray: `${circumference * percentage} ${circumference * (1 - percentage)}`,
-				dashOffset: -currentOffset * circumference,
-				count: hostStats.unknown,
-				label: 'Unknown'
-			});
-		}
-
-		return segments;
-	}
-
-	function renderLogSeverityChart() {
-		const radius = 85;
-		const strokeWidth = 25;
-		const center = 100;
-		const totalLogs = Object.values(logStats).reduce((sum, count) => sum + count, 0) || 1;
-		const circumference = 2 * Math.PI * radius;
-
-		const levelColors = {
-			info: '#0066CC',
-			warning: '#F0AB00',
-			error: '#C9190B',
-			critical: '#A30000'
-		};
-
-		const segments = [];
-		let currentOffset = 0;
-
-		Object.entries(logStats).forEach(([level, count]) => {
-			if (count > 0) {
-				const percentage = count / totalLogs;
-				segments.push({
-					color: levelColors[level],
-					dashArray: `${circumference * percentage} ${circumference * (1 - percentage)}`,
-					dashOffset: -currentOffset * circumference,
-					count,
-					label: level.charAt(0).toUpperCase() + level.slice(1)
+				hostStatusChart = new Chart(ctx, {
+					type: 'doughnut',
+					data,
+					options
 				});
-				currentOffset += percentage;
 			}
-		});
-
-		return segments;
+		}
 	}
+
+	function createLogSeverityChart() {
+		if (userRole === 'user') {
+			const ctx = logChartCanvas.getContext('2d');
+			if (ctx) {
+				const data: ChartData = {
+					labels: ['Info', 'Warning', 'Error', 'Critical'],
+					datasets: [
+						{
+							data: [
+								logStats.info || 0,
+								logStats.warning || 0,
+								logStats.error || 0,
+								logStats.critical || 0
+							],
+							backgroundColor: ['#0066CC', '#F0AB00', '#C9190B', '#A30000'],
+							borderWidth: 0
+						}
+					]
+				};
+
+				const options: ChartOptions = {
+					responsive: true,
+					maintainAspectRatio: false,
+					cutout: '70%',
+					plugins: {
+						legend: {
+							position: 'bottom',
+							labels: {
+								padding: 20
+							}
+						}
+					}
+				};
+
+				logSeverityChart = new Chart(ctx, {
+					type: 'doughnut',
+					data,
+					options
+				});
+			}
+		}
+	}
+
+	onMount(() => {
+		createHostStatusChart();
+		createLogSeverityChart();
+
+		return () => {
+			// Cleanup charts on component destruction
+			if (hostStatusChart) hostStatusChart.destroy();
+			if (logSeverityChart) logSeverityChart.destroy();
+		};
+	});
 </script>
 
 <div class="container mx-auto p-6">
@@ -129,42 +136,13 @@
 					<CardTitle>Host Status Overview</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<Popover>
-						<PopoverTrigger>
-							<div class="relative mx-auto h-[200px] w-[200px]">
-								<svg width="170" height="170" viewBox="0 0 200 200">
-									{#each renderDonutChart() as segment, i (i)}
-										<circle
-											cx="100"
-											cy="100"
-											r="85"
-											fill="none"
-											stroke={segment.color}
-											stroke-width="25"
-											stroke-dasharray={segment.dashArray}
-											stroke-dashoffset={segment.dashOffset}
-											transform="rotate(-90 100 100)"
-										/>
-									{/each}
-									<text x="100" y="95" text-anchor="middle" class="text-4xl font-bold">
-										{hostStats.total}
-									</text>
-									<text x="100" y="125" text-anchor="middle" class="text-base"> hosts </text>
-								</svg>
-							</div>
-						</PopoverTrigger>
-						<PopoverContent>
-							<div class="p-4">
-								<h3 class="mb-2 font-bold">Host Status Summary</h3>
-								{#each renderDonutChart() as segment, i (i)}
-									<div class="mb-1 flex items-center gap-2">
-										<div class="h-3 w-3 rounded-full" style=""></div>
-										<span class="">{segment.label}: {segment.count}</span>
-									</div>
-								{/each}
-							</div>
-						</PopoverContent>
-					</Popover>
+					<div class="relative mx-auto h-[200px] w-[200px]">
+						<canvas bind:this={hostChartCanvas}></canvas>
+					</div>
+					<div class="mt-4 text-center">
+						<span class="text-2xl font-bold">{hostStats.total}</span>
+						<span class="text-base">hosts</span>
+					</div>
 				</CardContent>
 			</Card>
 
