@@ -1,6 +1,6 @@
 export type UserData = {
-	email: string;
-	groups: string;
-	role: string;
-	username: string;
+  email: string;
+  groups: string;
+  role: string;
+  username: string;
 };

@@ -2,11 +2,11 @@ import type { Handle } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
-	const token = event.cookies.get('Authorization');
+  const token = event.cookies.get('Authorization');
 
-	if (!token && event.url.pathname !== '/login') {
-		throw redirect(303, '/login');
-	}
+  if (!token && event.url.pathname !== '/login') {
+    throw redirect(303, '/login');
+  }
 
-	return resolve(event);
+  return resolve(event);
 };
