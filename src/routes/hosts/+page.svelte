@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { PageProps } from './$types';
   import { enhance } from '$app/forms';
-  import * as Alert from '$lib/components/ui/alert';
+
   import * as Table from '$lib/components/ui/table';
   import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
@@ -17,9 +17,16 @@
   import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
   import { Checkbox } from '$lib/components/ui/checkbox';
   import { PlusIcon } from 'lucide-svelte';
+  import { handleFormResponse } from '$lib/stores/alerts';
 
   // Props and state
-  let { data, form } = $props();
+  let {
+    data,
+    form
+  }: {
+    data: any;
+    form: { type?: 'success' | 'error'; message?: string } | null;
+  } = $props();
   let searchValue = $state('');
   let selectedHosts = $state<string[]>([]);
   let currentPage = $state(1);
@@ -27,7 +34,11 @@
   let showDeleteModal = $state(false);
   let hostToForceDelete = $state<string | null>(null);
 
-  // Computed values
+  // Handle form responses
+  $effect(() => {
+    handleFormResponse(form);
+  });
+
   const filteredHosts = $derived(
     data.hosts.filter(
       (host) =>
@@ -61,15 +72,6 @@
 </script>
 
 <div class="container space-y-4 p-4">
-  <!-- Alerts -->
-  {#if form?.message}
-    <Alert.Root class={form.success ? 'bg-green-100' : 'bg-red-100'}>
-      <Alert.Description>
-        {form.message}
-      </Alert.Description>
-    </Alert.Root>
-  {/if}
-
   <!-- Main Content -->
   <div class="bg-card rounded-lg p-6">
     <div class="space-y-4">

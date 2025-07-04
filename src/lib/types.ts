@@ -12,6 +12,12 @@ export type Error = {
   };
 };
 
+export type AlertMessage = {
+  type: 'warn' | 'info' | 'success' | 'error';
+  message: string;
+  id?: string;
+};
+
 export type Inventory = {
   id: string;
   name: string;

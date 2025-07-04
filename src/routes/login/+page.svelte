@@ -1,7 +1,14 @@
 <script lang="ts">
   import Button from '$lib/components/ui/button/button.svelte';
   import { enhance } from '$app/forms';
+  import { handleFormResponse } from '$lib/stores/alerts';
+
   let { form } = $props();
+
+  // Handle form responses
+  $effect(() => {
+    handleFormResponse(form);
+  });
 </script>
 
 <div
@@ -10,9 +17,6 @@
   <div class="w-80 rounded-xs border border-white/20 bg-white/10 p-8 shadow-xs backdrop-blur">
     <h1 class="mb-8 text-center text-2xl text-white">Welcome to Monokit!</h1>
     <form method="POST" action="?/login" use:enhance>
-      {#if form?.error}
-        <div class="mb-4 text-center text-sm text-red-400">{form.error}</div>
-      {/if}
       <div class="mb-4">
         <label for="username" class="mb-2 block font-medium text-white">
           Username <span class="text-red-500">*</span>

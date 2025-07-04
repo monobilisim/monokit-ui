@@ -1,5 +1,5 @@
 import type { LayoutServerLoad } from './$types';
-import type { UserData } from '$lib/types';
+import type { UserData, AlertMessage } from '$lib/types';
 
 import { MONOKIT_URL } from '$env/static/private';
 
@@ -24,12 +24,19 @@ export const load: LayoutServerLoad = async ({ cookies }) => {
 
   if (!res.ok) {
     console.error('Failed to fetch user data:', res.statusText);
+    const alerts: AlertMessage[] = [
+      {
+        type: 'error',
+        message: `Authentication failed: ${res.statusText}`
+      }
+    ];
     return {
       userData: null,
-      error: {
-        status: res.status,
-        message: res.statusText
-      }
+      alerts
     };
   }
+
+  return {
+    userData: null
+  };
 };

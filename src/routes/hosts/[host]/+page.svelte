@@ -2,7 +2,7 @@
   import type { PageProps } from './$types';
   import { goto } from '$app/navigation';
   import { enhance } from '$app/forms';
-  import * as Alert from '$lib/components/ui/alert';
+
   import * as Tabs from '$lib/components/ui/tabs';
   import * as Card from '$lib/components/ui/card';
   import { Button } from '$lib/components/ui/button';
@@ -19,6 +19,7 @@
   import { Badge } from '$lib/components/ui/badge';
   import { ArrowLeft, Trash2, PlusCircle, Info } from 'lucide-svelte';
   import OsHealth from './health-components/osHealth.svelte';
+  import { handleFormResponse } from '$lib/stores/alerts';
 
   let {
     data,
@@ -30,11 +31,17 @@
       healthTools: unknown;
       osHealth: unknown;
     };
+    form: { type?: 'success' | 'error'; message?: string } | null;
   } = $props();
   let selectedTab = $state('overview');
   let showForceDeleteModal = $state(false);
   let showComponentsModal = $state(false);
   let selectedHealthTool = $state('');
+
+  // Handle form responses
+  $effect(() => {
+    handleFormResponse(form);
+  });
 
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
@@ -66,14 +73,6 @@
 </script>
 
 <div class="container space-y-6 p-4">
-  {#if form?.message}
-    <Alert.Root class={form.success ? 'bg-green-100' : 'bg-red-100'}>
-      <Alert.Description>
-        {form.message}
-      </Alert.Description>
-    </Alert.Root>
-  {/if}
-
   <!-- Header -->
   <div class="flex items-center justify-between">
     <div class="flex items-center gap-4">

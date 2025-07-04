@@ -4,9 +4,11 @@
   import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
   import { page } from '$app/state';
   import { X } from 'lucide-svelte';
+  import { onMount } from 'svelte';
   import type { Snippet } from 'svelte';
   import type { LayoutData } from './$types';
-  import type { UserData, Error } from '$lib/types';
+  import type { UserData, AlertMessage } from '$lib/types';
+  import { alerts } from '$lib/stores/alerts';
 
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -19,6 +21,11 @@
   import * as NavigationMenu from '$lib/components/ui/navigation-menu/index.js';
   import NavigationMenuLink from '$lib/components/ui/navigation-menu/navigation-menu-link.svelte';
   import Button from '$lib/components/ui/button/button.svelte';
+  import * as Alert from '$lib/components/ui/alert/index.js';
+  import AlertCircleIcon from '@lucide/svelte/icons/alert-circle';
+  import CheckCircleIcon from '@lucide/svelte/icons/check-circle';
+  import InfoIcon from '@lucide/svelte/icons/info';
+  import AlertTriangleIcon from '@lucide/svelte/icons/alert-triangle';
 
   let dark = $state(false);
 
@@ -50,17 +57,68 @@
   }
 
   interface ExtendedLayoutData extends LayoutData {
-    error?: Error | string;
+    alerts?: AlertMessage[];
   }
 
   let { children, data }: { children: Snippet<[]>; data: ExtendedLayoutData } = $props();
-  let error: Error | null = $state(null);
-  if (data.error) {
-    error = data.error;
+
+  // Add alerts from layout data on mount
+  onMount(() => {
+    if (data.alerts && data.alerts.length > 0) {
+      data.alerts.forEach((alert) => {
+        alerts.add(alert);
+      });
+    }
+  });
+
+  function getAlertVariant(type: AlertMessage['type']) {
+    switch (type) {
+      case 'error':
+        return 'destructive';
+      case 'warn':
+        return 'default';
+      case 'success':
+        return 'default';
+      case 'info':
+        return 'default';
+      default:
+        return 'default';
+    }
   }
 
-  import * as Alert from '$lib/components/ui/alert/index.js';
-  import AlertCircleIcon from '@lucide/svelte/icons/alert-circle';
+  function getAlertIcon(type: AlertMessage['type']) {
+    switch (type) {
+      case 'error':
+        return AlertCircleIcon;
+      case 'warn':
+        return AlertTriangleIcon;
+      case 'success':
+        return CheckCircleIcon;
+      case 'info':
+        return InfoIcon;
+      default:
+        return InfoIcon;
+    }
+  }
+
+  function getAlertStyles(type: AlertMessage['type']) {
+    switch (type) {
+      case 'error':
+        return 'border-red-200 bg-red-50 text-red-800';
+      case 'warn':
+        return 'border-yellow-200 bg-yellow-50 text-yellow-800';
+      case 'success':
+        return 'border-green-200 bg-green-50 text-green-800';
+      case 'info':
+        return 'border-blue-200 bg-blue-50 text-blue-800';
+      default:
+        return '';
+    }
+  }
+
+  function dismissAlert(id: string) {
+    alerts.remove(id);
+  }
 
   let userData: UserData | null = $state(null);
 
@@ -78,17 +136,21 @@
   });
 </script>
 
-{#if error !== null}
-  <div class="fixed right-0 bottom-0 z-50 p-4">
-    <Alert.Root class="cursor-pointer" variant="destructive" onclick={() => (error = null)}>
-      <AlertCircleIcon />
-      <Alert.Title>{error.message}</Alert.Title>
-      <Alert.Description>
-        <p>Hii I'm an error :3</p>
+<!-- Alert Messages -->
+<div class="fixed top-4 right-4 z-50 max-w-md space-y-2">
+  {#each $alerts as alert (alert.id)}
+    <Alert.Root
+      variant={getAlertVariant(alert.type)}
+      class="cursor-pointer {getAlertStyles(alert.type)}"
+      onclick={() => dismissAlert(alert.id!)}
+    >
+      <svelte:component this={getAlertIcon(alert.type)} class="h-4 w-4" />
+      <Alert.Description class="font-medium">
+        {alert.message}
       </Alert.Description>
     </Alert.Root>
-  </div>
-{/if}
+  {/each}
+</div>
 
 <main class="flex">
   {#if page.url.pathname !== '/login'}

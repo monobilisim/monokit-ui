@@ -1,31 +1,34 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
   import { invalidateAll } from '$app/navigation';
-  import * as Alert from '$lib/components/ui/alert';
   import * as Table from '$lib/components/ui/table';
   import * as Card from '$lib/components/ui/card';
   import * as Dialog from '$lib/components/ui/dialog';
-  import * as Pagination from '$lib/components/ui/pagination';
   import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
   import { Checkbox } from '$lib/components/ui/checkbox';
   import { PlusIcon, Trash2Icon, Database } from 'lucide-svelte';
   import type { Inventory } from '$lib/types';
+  import { handleFormResponse } from '$lib/stores/alerts';
 
-  // Props and state
   let {
     data,
     form
   }: {
     data: { inventories: Inventory[] };
-    form: { success?: boolean; message?: string; errors?: string[] } | null;
+    form: { type?: 'success' | 'error'; message?: string; errors?: string[] } | null;
   } = $props();
   let selectedInventories = $state<string[]>([]);
   let showCreateModal = $state(false);
   let showDeleteModal = $state(false);
   let newInventoryName = $state('');
   let isSubmitting = $state(false);
+
+  // Handle form responses
+  $effect(() => {
+    handleFormResponse(form);
+  });
 
   const selectedInventoryNames = $derived(
     data.inventories
@@ -98,15 +101,6 @@
 </script>
 
 <div class="container space-y-6 p-6">
-  <!-- Alerts -->
-  {#if form?.message}
-    <Alert.Root class={form.success ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'}>
-      <Alert.Description class={form.success ? 'text-green-800' : 'text-red-800'}>
-        {form.message}
-      </Alert.Description>
-    </Alert.Root>
-  {/if}
-
   <!-- Main Content -->
   <Card.Root>
     <Card.Header>

@@ -19,7 +19,10 @@ export const actions: Actions = {
     const password = form.get('password');
 
     if (!username || !password) {
-      return fail(400, { error: 'Username and password are required.' });
+      return fail(400, {
+        type: 'error',
+        error: 'Username and password are required.'
+      });
     }
 
     const res = await fetch(`${MONOKIT_URL}/api/v1/auth/login`, {
@@ -30,7 +33,10 @@ export const actions: Actions = {
 
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      return fail(res.status, { error: data.error || 'Login failed.' });
+      return fail(res.status, {
+        type: 'error',
+        error: data.error || 'Login failed.'
+      });
     }
 
     type LoginData = {
@@ -43,7 +49,10 @@ export const actions: Actions = {
     const userData = data.user;
 
     if (!token) {
-      return fail(400, { error: 'No token received from server.' });
+      return fail(400, {
+        type: 'error',
+        error: 'No token received from server.'
+      });
     }
 
     cookies.set('Authorization', `${token}`, {

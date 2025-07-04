@@ -79,7 +79,7 @@ export const actions: Actions = {
     const authToken = cookies.get('Authorization');
     if (!authToken) {
       return fail(401, {
-        success: false,
+        type: 'error',
         message: 'Not authenticated'
       });
     }
@@ -90,12 +90,12 @@ export const actions: Actions = {
 
       if (!name || typeof name !== 'string') {
         return fail(400, {
-          success: false,
+          type: 'error',
           message: 'Inventory name is required'
         });
       }
 
-      const response = await fetch(`${MONOKIT_URL}/api/v1/inventories`, {
+      const response = await fetch(`${MONOKIT_URL}/api/v1/inventory`, {
         method: 'POST',
         headers: {
           Authorization: authToken,
@@ -110,13 +110,13 @@ export const actions: Actions = {
       }
 
       return {
-        success: true,
+        type: 'success',
         message: `Successfully created inventory "${name}"`
       };
     } catch (err) {
       console.error('Failed to create inventory:', err);
       return fail(500, {
-        success: false,
+        type: 'error',
         message: err instanceof Error ? err.message : 'Failed to create inventory'
       });
     }
@@ -126,7 +126,7 @@ export const actions: Actions = {
     const authToken = cookies.get('Authorization');
     if (!authToken) {
       return fail(401, {
-        success: false,
+        type: 'error',
         message: 'Not authenticated'
       });
     }
@@ -137,7 +137,7 @@ export const actions: Actions = {
 
       if (inventoryNames.length === 0) {
         return fail(400, {
-          success: false,
+          type: 'error',
           message: 'No inventories selected for deletion'
         });
       }
@@ -148,7 +148,7 @@ export const actions: Actions = {
 
       for (const name of inventoryNames) {
         try {
-          const response = await fetch(`${MONOKIT_URL}/api/v1/inventories/${name}`, {
+          const response = await fetch(`${MONOKIT_URL}/api/v1/inventory/${name}`, {
             method: 'DELETE',
             headers: {
               Authorization: authToken,
@@ -171,7 +171,7 @@ export const actions: Actions = {
 
       if (errors.length > 0 && successCount === 0) {
         return fail(500, {
-          success: false,
+          type: 'error',
           message: `Failed to delete inventories: ${errors.join(', ')}`
         });
       }
@@ -182,14 +182,14 @@ export const actions: Actions = {
           : 'No inventories were deleted';
 
       return {
-        success: successCount > 0,
+        type: successCount > 0 ? 'success' : 'error',
         message,
         errors: errors.length > 0 ? errors : undefined
       };
     } catch (err) {
       console.error('Failed to delete inventories:', err);
       return fail(500, {
-        success: false,
+        type: 'error',
         message: err instanceof Error ? err.message : 'Failed to delete inventories'
       });
     }

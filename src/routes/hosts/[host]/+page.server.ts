@@ -118,7 +118,7 @@ export const actions: Actions = {
 
     if (!auth) {
       return fail(401, {
-        success: false,
+        type: 'error',
         message: 'Not authenticated'
       });
     }
@@ -136,13 +136,13 @@ export const actions: Actions = {
       }
 
       return {
-        success: true,
+        type: 'success',
         message: `Successfully force deleted host ${host}`
       };
     } catch (err) {
       console.error('Failed to force delete host:', err);
       return fail(500, {
-        success: false,
+        type: 'error',
         message: err instanceof Error ? err.message : 'Failed to force delete host'
       });
     }
@@ -154,7 +154,7 @@ export const actions: Actions = {
 
     if (!auth) {
       return fail(401, {
-        success: false,
+        type: 'error',
         message: 'Not authenticated'
       });
     }
@@ -177,13 +177,13 @@ export const actions: Actions = {
       }
 
       return {
-        success: true,
+        type: 'success',
         message: 'Successfully updated components'
       };
     } catch (err) {
       console.error('Failed to update components:', err);
       return fail(500, {
-        success: false,
+        type: 'error',
         message: err instanceof Error ? err.message : 'Failed to update components'
       });
     }

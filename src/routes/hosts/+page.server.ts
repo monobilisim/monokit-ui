@@ -85,7 +85,7 @@ export const actions: Actions = {
     const auth = cookies.get('Authorization');
     if (!auth) {
       return fail(401, {
-        success: false,
+        type: 'error',
         message: 'Not authenticated'
       });
     }
@@ -96,7 +96,7 @@ export const actions: Actions = {
 
       if (hosts.length === 0) {
         return fail(400, {
-          success: false,
+          type: 'error',
           message: 'No hosts selected for deletion'
         });
       }
@@ -114,13 +114,13 @@ export const actions: Actions = {
       }
 
       return {
-        success: true,
+        type: 'success',
         message: `Successfully deleted ${hosts.length} host${hosts.length === 1 ? '' : 's'}`
       };
     } catch (err) {
       console.error('Failed to delete hosts:', err);
       return fail(500, {
-        success: false,
+        type: 'error',
         message: err instanceof Error ? err.message : 'Failed to delete hosts'
       });
     }
@@ -130,7 +130,7 @@ export const actions: Actions = {
     const auth = cookies.get('Authorization');
     if (!auth) {
       return fail(401, {
-        success: false,
+        type: 'error',
         message: 'Not authenticated'
       });
     }
@@ -141,7 +141,7 @@ export const actions: Actions = {
 
       if (!hostName) {
         return fail(400, {
-          success: false,
+          type: 'error',
           message: 'No host name provided for force deletion'
         });
       }
@@ -158,13 +158,13 @@ export const actions: Actions = {
       }
 
       return {
-        success: true,
+        type: 'success',
         message: `Successfully force deleted host ${hostName}`
       };
     } catch (err) {
       console.error('Failed to force delete host:', err);
       return fail(500, {
-        success: false,
+        type: 'error',
         message: err instanceof Error ? err.message : 'Failed to force delete host'
       });
     }
