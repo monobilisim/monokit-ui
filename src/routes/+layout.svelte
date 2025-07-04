@@ -56,9 +56,9 @@
     });
   }
 
-  interface ExtendedLayoutData extends LayoutData {
+  type ExtendedLayoutData = LayoutData & {
     alerts?: AlertMessage[];
-  }
+  };
 
   let { children, data }: { children: Snippet<[]>; data: ExtendedLayoutData } = $props();
 
@@ -83,21 +83,6 @@
         return 'default';
       default:
         return 'default';
-    }
-  }
-
-  function getAlertIcon(type: AlertMessage['type']) {
-    switch (type) {
-      case 'error':
-        return AlertCircleIcon;
-      case 'warn':
-        return AlertTriangleIcon;
-      case 'success':
-        return CheckCircleIcon;
-      case 'info':
-        return InfoIcon;
-      default:
-        return InfoIcon;
     }
   }
 
@@ -144,7 +129,15 @@
       class="cursor-pointer {getAlertStyles(alert.type)}"
       onclick={() => dismissAlert(alert.id!)}
     >
-      <svelte:component this={getAlertIcon(alert.type)} class="h-4 w-4" />
+      {#if alert.type === 'error'}
+        <AlertCircleIcon class="h-4 w-4" />
+      {:else if alert.type === 'warn'}
+        <AlertTriangleIcon class="h-4 w-4" />
+      {:else if alert.type === 'success'}
+        <CheckCircleIcon class="h-4 w-4" />
+      {:else}
+        <InfoIcon class="h-4 w-4" />
+      {/if}
       <Alert.Description class="font-medium">
         {alert.message}
       </Alert.Description>

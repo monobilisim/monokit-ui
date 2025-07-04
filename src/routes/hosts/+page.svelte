@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { PageProps } from './$types';
   import { enhance } from '$app/forms';
+  import type { Host, FormResponse, PageData } from '$lib/types';
 
   import * as Table from '$lib/components/ui/table';
   import { Button } from '$lib/components/ui/button';
@@ -14,7 +14,6 @@
     DialogTitle,
     DialogTrigger
   } from '$lib/components/ui/dialog';
-  import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
   import { Checkbox } from '$lib/components/ui/checkbox';
   import { PlusIcon } from 'lucide-svelte';
   import { handleFormResponse } from '$lib/stores/alerts';
@@ -24,15 +23,14 @@
     data,
     form
   }: {
-    data: any;
-    form: { type?: 'success' | 'error'; message?: string } | null;
+    data: PageData;
+    form: FormResponse | null;
   } = $props();
   let searchValue = $state('');
   let selectedHosts = $state<string[]>([]);
   let currentPage = $state(1);
   let itemsPerPage = $state(10);
   let showDeleteModal = $state(false);
-  let hostToForceDelete = $state<string | null>(null);
 
   // Handle form responses
   $effect(() => {
@@ -41,7 +39,7 @@
 
   const filteredHosts = $derived(
     data.hosts.filter(
-      (host) =>
+      (host: Host) =>
         !searchValue ||
         host.name.toLowerCase().includes(searchValue.toLowerCase()) ||
         host.address.toLowerCase().includes(searchValue.toLowerCase()) ||
@@ -54,7 +52,8 @@
   );
 
   const allSelected = $derived(
-    paginatedHosts.length > 0 && paginatedHosts.every((host) => selectedHosts.includes(host.name))
+    paginatedHosts.length > 0 &&
+      paginatedHosts.every((host: Host) => selectedHosts.includes(host.name))
   );
 
   const statusIndicatorColor = (status: string) => {
@@ -83,7 +82,7 @@
         </div>
         <!-- Actions -->
         <Dialog bind:open={showDeleteModal}>
-          <DialogTrigger asChild>
+          <DialogTrigger>
             <Button variant="destructive" disabled={selectedHosts.length === 0}>
               Delete Selected ({selectedHosts.length})
             </Button>
@@ -154,7 +153,7 @@
                     onCheckedChange={(checked) => {
                       selectedHosts = checked
                         ? [...selectedHosts, host.name]
-                        : selectedHosts.filter((h) => h !== host.name);
+                        : selectedHosts.filter((h: string) => h !== host.name);
                     }}
                   />
                 </Table.Cell>
@@ -171,13 +170,8 @@
                   <div class="flex gap-2">
                     <Button variant="ghost" size="sm" href="/hosts/{host.name}">View</Button>
                     <Dialog>
-                      <DialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          class="text-destructive"
-                          onclick={() => (hostToForceDelete = host.name)}
-                        >
+                      <DialogTrigger>
+                        <Button variant="ghost" size="sm" class="text-destructive">
                           Force Delete
                         </Button>
                       </DialogTrigger>
@@ -192,9 +186,7 @@
                         <DialogFooter>
                           <form action="?/forceDeleteHost" method="POST" use:enhance>
                             <input type="hidden" name="hostName" value={host.name} />
-                            <Button variant="outline" onclick={() => (hostToForceDelete = null)}>
-                              Cancel
-                            </Button>
+                            <Button variant="outline" type="button">Cancel</Button>
                             <Button type="submit" variant="destructive">Force Delete</Button>
                           </form>
                         </DialogFooter>

@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ cookies, fetch }) => {
       headers: {
         'Content-Type': 'application/json',
         Authorization: authToken
-      }
+      } as Record<string, string>
     });
   } catch (error) {
     console.error(error);

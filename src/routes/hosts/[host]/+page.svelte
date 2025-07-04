@@ -1,7 +1,6 @@
 <script lang="ts">
-  import type { PageProps } from './$types';
-  import { goto } from '$app/navigation';
   import { enhance } from '$app/forms';
+  import type { HostDetailPageData, FormResponse } from '$lib/types';
 
   import * as Tabs from '$lib/components/ui/tabs';
   import * as Card from '$lib/components/ui/card';
@@ -12,10 +11,9 @@
     DialogDescription,
     DialogFooter,
     DialogHeader,
-    DialogTitle,
-    DialogTrigger
+    DialogTitle
   } from '$lib/components/ui/dialog';
-  import { Select, SelectContent, SelectItem, SelectTrigger } from '$lib/components/ui/select';
+  import * as Select from '$lib/components/ui/select';
   import { Badge } from '$lib/components/ui/badge';
   import { ArrowLeft, Trash2, PlusCircle, Info } from 'lucide-svelte';
   import OsHealth from './health-components/osHealth.svelte';
@@ -25,13 +23,8 @@
     data,
     form
   }: {
-    data: {
-      host: unknown;
-      awxJobs: unknown;
-      healthTools: unknown;
-      osHealth: unknown;
-    };
-    form: { type?: 'success' | 'error'; message?: string } | null;
+    data: HostDetailPageData;
+    form: FormResponse | null;
   } = $props();
   let selectedTab = $state('overview');
   let showForceDeleteModal = $state(false);
@@ -227,7 +220,7 @@
               </div>
             {:else}
               <div class="space-y-4">
-                {#each data.awxJobs as job, i (i)}
+                {#each data.awxJobs as job (job.name + job.started)}
                   <div class="flex items-center justify-between rounded-lg border p-4">
                     <div class="space-y-1">
                       <p class="font-medium">{job.name}</p>
@@ -266,22 +259,21 @@
             </div>
           {:else}
             <div class="space-y-4">
-              <Select
-                value={selectedHealthTool}
-                onValueChange={(value) => {
-                  console.log('Selected value:', value); // Debug log
+              <Select.Root
+                type="single"
+                onValueChange={(value: string) => {
                   selectedHealthTool = value;
                 }}
               >
-                <SelectTrigger class="w-full">
-                  {selectedHealthTool}
-                </SelectTrigger>
-                <SelectContent>
-                  {#each data.healthTools as tool, i (i)}
-                    <SelectItem value={tool}>{tool}</SelectItem>
+                <Select.Trigger class="w-full">
+                  {selectedHealthTool || 'Select a health tool'}
+                </Select.Trigger>
+                <Select.Content>
+                  {#each data.healthTools as tool (tool)}
+                    <Select.Item value={tool}>{tool}</Select.Item>
                   {/each}
-                </SelectContent>
-              </Select>
+                </Select.Content>
+              </Select.Root>
             </div>
           {/if}
 

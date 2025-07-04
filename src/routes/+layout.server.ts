@@ -1,13 +1,15 @@
 import type { LayoutServerLoad } from './$types';
 import type { UserData, AlertMessage } from '$lib/types';
-
 import { MONOKIT_URL } from '$env/static/private';
 
 export const load: LayoutServerLoad = async ({ cookies }) => {
   const authToken = cookies.get('Authorization');
 
   const res = await fetch(`${MONOKIT_URL}/api/v1/auth/me`, {
-    headers: { 'Content-Type': 'application/json', Authorization: authToken }
+    headers: { 'Content-Type': 'application/json', Authorization: authToken } as Record<
+      string,
+      string
+    >
   });
 
   if (res.ok) {

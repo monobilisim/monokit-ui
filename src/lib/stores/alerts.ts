@@ -29,7 +29,7 @@
  */
 
 import { writable } from 'svelte/store';
-import type { AlertMessage } from '$lib/types';
+import type { AlertMessage, FormResponse } from '$lib/types';
 
 function createAlertsStore() {
   const { subscribe, set, update } = writable<AlertMessage[]>([]);
@@ -73,7 +73,7 @@ export const alerts = createAlertsStore();
  *
  * @param form - The form object from SvelteKit (containing type, message, or error)
  */
-export function handleFormResponse(form: any) {
+export function handleFormResponse(form: FormResponse | null) {
   if (!form) return;
 
   // Handle standard format: { type, message }
