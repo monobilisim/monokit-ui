@@ -27,3 +27,11 @@ Always use components from $lib/components/ui directory with imports like import
 Make sure to use the components from the ui directory for consistency and maintainability.
 Always name actions in +page.server.ts files as `actionName` and use the `actions` export to define them don't ever use `default` action.
 We're on SvelteKit 2, so actions don't actually use name="" to be called, they are called by <form action="?/actionName" method="POST" use:enhance>
+Don't use the type `any` in your code, always use specific types and if the type does not exists write in and import from `$lib/types`.
+Use global alerts system to display notifications across the application.
+Don't write unnecessary comments in your code, only write comments when it's really needed.
+Project uses TypeScript don't ever write JsDoc comments, only use TypeScript types.
+Don't change the structure of the project, always follow the existing structure.
+Do not change how we authenticate users, always use the Authorization header with the token, don't use any wrapper or something make it less comprehensible.
+Always care about code maintainability, readability and minimality. Performance is not a priority, but it should not be neglected.
+Write your tests with vitest.
