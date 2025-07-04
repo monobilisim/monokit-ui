@@ -52,12 +52,10 @@ export const load: PageServerLoad = async ({ cookies, fetch }) => {
         unknown: normalizedHosts.filter((h) => h.status === 'Unknown').length
       };
 
-      // Fetch log stats for the last 7 days
       const now = new Date();
       const lastWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
       const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
-      // Fetch log statistics for each level
       const logLevels = ['info', 'warning', 'error', 'critical'];
       for (const level of logLevels) {
         const searchParams = {
