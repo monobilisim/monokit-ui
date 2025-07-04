@@ -146,55 +146,6 @@
         </CardContent>
       </Card>
 
-      {#if userRole === 'admin'}
-        <Card>
-          <CardHeader>
-            <CardTitle>Log Severity Overview</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Popover>
-              <PopoverTrigger>
-                <div class="relative mx-auto h-[200px] w-[200px]">
-                  <svg width="170" height="170" viewBox="0 0 200 200">
-                    {#each renderLogSeverityChart() as segment, i (i)}
-                      <circle
-                        cx="100"
-                        cy="100"
-                        r="85"
-                        fill="none"
-                        stroke={segment.color}
-                        stroke-width="25"
-                        stroke-dasharray={segment.dashArray}
-                        stroke-dashoffset={segment.dashOffset}
-                        transform="rotate(-90 100 100)"
-                      />
-                    {/each}
-                    <text x="100" y="95" text-anchor="middle" class="text-4xl font-bold">
-                      {Object.values(logStats).reduce((sum, count) => sum + count, 0)}
-                    </text>
-                    <text x="100" y="125" text-anchor="middle" class="text-base"> logs </text>
-                  </svg>
-                </div>
-              </PopoverTrigger>
-              <PopoverContent>
-                <div class="p-4">
-                  <h3 class="mb-2 font-bold">Log Severity Summary (7 days)</h3>
-                  {#each renderLogSeverityChart() as segment, i (i)}
-                    <div class="mb-1 flex items-center gap-2">
-                      <div
-                        class="h-3 w-3 rounded-full"
-                        style="background-color: {segment.color}"
-                      ></div>
-                      <span>{segment.label}: {segment.count}</span>
-                    </div>
-                  {/each}
-                </div>
-              </PopoverContent>
-            </Popover>
-          </CardContent>
-        </Card>
-      {/if}
-
       <!-- Host Statistics -->
       <Card>
         <CardHeader>
@@ -214,23 +165,21 @@
         </CardContent>
       </Card>
 
-      {#if userRole === 'admin'}
-        <Card>
-          <CardHeader>
-            <CardTitle>System Status</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div class="space-y-2">
-              <Badge variant="success">API Server: Running</Badge>
-              <Badge variant="success">Database: Connected</Badge>
-              <Badge variant="destructive">Errors (24h): {errorCount}</Badge>
-              <Badge variant="secondary">
-                Last Update: {new Date().toLocaleString()}
-              </Badge>
-            </div>
-          </CardContent>
-        </Card>
-      {/if}
+      <Card>
+        <CardHeader>
+          <CardTitle>System Status</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div class="space-y-2">
+            <Badge variant="success">API Server: Running</Badge>
+            <Badge variant="success">Database: Connected</Badge>
+            <Badge variant="destructive">Errors (24h): {errorCount}</Badge>
+            <Badge variant="secondary">
+              Last Update: {new Date().toLocaleString()}
+            </Badge>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   {/if}
 </div>

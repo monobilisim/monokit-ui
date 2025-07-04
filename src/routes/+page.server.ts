@@ -34,7 +34,8 @@ export const load: PageServerLoad = async ({ cookies, fetch }) => {
         throw new Error(`Hosts API failed with status: ${hostsResponse.status}`);
       }
 
-      const hosts: Host[] = await hostsResponse.json();
+      const hostsData = await hostsResponse.json();
+      const hosts: Host[] = Array.isArray(hostsData) ? hostsData : [];
 
       const normalizedHosts = hosts.map((host: Host) => ({
         ...host,
@@ -142,7 +143,8 @@ export const load: PageServerLoad = async ({ cookies, fetch }) => {
         throw new Error(`Assigned hosts API failed with status: ${hostsResponse.status}`);
       }
 
-      const hosts: Host[] = await hostsResponse.json(); // Changed from hostsResponse.data
+      const hostsData = await hostsResponse.json();
+      const hosts: Host[] = Array.isArray(hostsData) ? hostsData : [];
 
       const normalizedHosts = hosts.map((host: Host) => ({
         ...host,

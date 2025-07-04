@@ -38,7 +38,7 @@
   });
 
   const filteredHosts = $derived(
-    data.hosts.filter(
+    (data?.hosts || []).filter(
       (host: Host) =>
         !searchValue ||
         host.name.toLowerCase().includes(searchValue.toLowerCase()) ||

@@ -9,6 +9,7 @@
   import type { LayoutData } from './$types';
   import type { UserData, AlertMessage } from '$lib/types';
   import { alerts } from '$lib/stores/alerts';
+  import { getCookie } from '$lib/utils';
 
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -108,7 +109,7 @@
   let userData: UserData | null = $state(null);
 
   $effect((): void => {
-    const userDataString = localStorage.getItem('userData');
+    const userDataString = getCookie('userData');
     if (userDataString) {
       try {
         userData = JSON.parse(userDataString);
@@ -179,10 +180,11 @@
               >
             </NavigationMenu.Item>
           {/if}
+          <NavigationMenu.Item>
+            <Button onclick={toggleDark} variant="secondary">Toggle Dark Mode</Button>
+          </NavigationMenu.Item>
         </NavigationMenu.List>
       </NavigationMenu.Root>
-
-      <Button onclick={toggleDark} variant="secondary">Toggle Dark Mode</Button>
     </div>
   {/if}
 

@@ -39,3 +39,4 @@ Don't change the structure of the project, always follow the existing structure.
 Do not change how we authenticate users, always use the Authorization header with the token, don't use any wrapper or something make it less comprehensible.
 Always care about code maintainability, readability and minimality. Performance is not a priority, but it should not be neglected.
 Write your tests with vitest.
+Always handle errors with alert manager from $lib/stores/alerts.

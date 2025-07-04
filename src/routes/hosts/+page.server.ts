@@ -46,15 +46,29 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
       throw error(response.status, await response.text());
     }
 
-    const data = await response.json();
+    let data;
+    try {
+      data = await response.json();
+
+      if (data === null) {
+        data = [];
+      }
+    } catch (parseError) {
+      console.error('Failed to parse JSON:', parseError);
+      throw error(500, 'Invalid JSON response from server');
+    }
 
     let hostsData: Host[] = [];
-    if (Array.isArray(data)) {
+    if (data === null || data === undefined) {
+      hostsData = [];
+    } else if (Array.isArray(data)) {
       hostsData = data;
-    } else if (typeof data === 'object' && Array.isArray(data.hosts)) {
+    } else if (typeof data === 'object' && data !== null && Array.isArray(data.hosts)) {
       hostsData = data.hosts;
+    } else if (typeof data === 'object' && data !== null) {
+      hostsData = [];
     } else {
-      throw error(500, 'Invalid data format from server');
+      hostsData = [];
     }
 
     const normalizedHosts: NormalizedHost[] = hostsData.map((host) => ({
@@ -67,8 +81,7 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
     }));
 
     return {
-      hosts: normalizedHosts,
-      authToken // Pass auth token to the client for form actions
+      hosts: normalizedHosts
     };
   } catch (err: unknown) {
     console.error('Failed to fetch hosts:', err);
