@@ -12,7 +12,11 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
   });
 
   if (!res.ok) {
-    throw new Error('Failed to fetch data from Monokit');
+    const data = await res.json().catch(() => ({}));
+    return fail(res.status, {
+      type: 'error',
+      error: data.error || 'Login failed.'
+    });
   }
 
   const data = await res.json();
