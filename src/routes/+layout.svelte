@@ -3,7 +3,17 @@
   import { browser } from '$app/environment';
   import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
   import { page } from '$app/state';
-  import { X } from 'lucide-svelte';
+  import {
+    X,
+    LayoutDashboard,
+    Server,
+    Users,
+    Package,
+    Group,
+    FileText,
+    Moon,
+    Sun
+  } from 'lucide-svelte';
   import { onMount } from 'svelte';
   import type { Snippet } from 'svelte';
   import type { LayoutData } from './$types';
@@ -19,8 +29,7 @@
     }
   });
 
-  import * as NavigationMenu from '$lib/components/ui/navigation-menu/index.js';
-  import NavigationMenuLink from '$lib/components/ui/navigation-menu/navigation-menu-link.svelte';
+  import * as Sidebar from '$lib/components/ui/sidebar/index.js';
   import Button from '$lib/components/ui/button/button.svelte';
   import * as Alert from '$lib/components/ui/alert/index.js';
   import AlertCircleIcon from '@lucide/svelte/icons/alert-circle';
@@ -120,6 +129,15 @@
       userData = null;
     }
   });
+
+  const menuItems = [
+    { href: '/', icon: LayoutDashboard, label: 'Dashboard' },
+    { href: '/hosts', icon: Server, label: 'Hosts' },
+    { href: '/users', icon: Users, label: 'Users' },
+    { href: '/inventories', icon: Package, label: 'Inventories' },
+    { href: '/groups', icon: Group, label: 'Groups' },
+    { href: '/logs', icon: FileText, label: 'Logs' }
+  ];
 </script>
 
 <!-- Alert Messages -->
@@ -148,44 +166,87 @@
 
 <main class="flex">
   {#if page.url.pathname !== '/login'}
-    <div class="sidebar h-screen border border-slate-50">
-      <NavigationMenu.Root class="*:*:*:w-64 *:*:*:px-4 *:*:*:py-2">
-        <NavigationMenu.List class="flex flex-col gap-1">
-          <NavigationMenu.Item>
-            <NavigationMenuLink href="/">Dashboard</NavigationMenuLink>
-          </NavigationMenu.Item>
-          <NavigationMenu.Item>
-            <NavigationMenuLink href="/hosts">Hosts</NavigationMenuLink>
-          </NavigationMenu.Item>
-          <NavigationMenu.Item>
-            <NavigationMenuLink href="/users">Users</NavigationMenuLink>
-          </NavigationMenu.Item>
-          <NavigationMenu.Item>
-            <NavigationMenuLink href="/inventories">Inventories</NavigationMenuLink>
-          </NavigationMenu.Item>
-          <NavigationMenu.Item>
-            <NavigationMenuLink href="/groups">Groups</NavigationMenuLink>
-          </NavigationMenu.Item>
-          <NavigationMenu.Item>
-            <NavigationMenuLink href="/logs">Logs</NavigationMenuLink>
-          </NavigationMenu.Item>
-          {#if userData !== null}
-            <NavigationMenu.Item class="flex justify-between">
-              <NavigationMenuLink>{userData.username}</NavigationMenuLink>
-              <Button
-                type="submit"
-                variant="destructive"
-                class="w-8 cursor-pointer"
-                onclick={async () => logout()}><X></X></Button
+    <Sidebar.Provider class="w-64">
+      <Sidebar.Root variant="sidebar" collapsible="icon">
+        <Sidebar.Header class="border-b px-4 py-3">
+          <div class="flex items-center gap-2">
+            <div
+              class="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-lg"
+            >
+              <Package class="h-4 w-4" />
+            </div>
+            <span class="font-semibold">MonoKit</span>
+          </div>
+        </Sidebar.Header>
+
+        <Sidebar.Content class="px-2 py-4">
+          <Sidebar.Group>
+            <!-- <Sidebar.GroupLabel>Navigation</Sidebar.GroupLabel> -->
+            <Sidebar.GroupContent>
+              <Sidebar.Menu>
+                {#each menuItems as item (item.href)}
+                  {@const IconComponent = item.icon}
+                  <Sidebar.MenuItem>
+                    <a href={item.href} class="block">
+                      <Sidebar.MenuButton
+                        isActive={page.url.pathname === item.href}
+                        tooltipContent={item.label}
+                        class="cursor-pointer p-2"
+                      >
+                        <IconComponent class="h-4 w-4" />
+                        <span>{item.label}</span>
+                      </Sidebar.MenuButton>
+                    </a>
+                  </Sidebar.MenuItem>
+                {/each}
+              </Sidebar.Menu>
+            </Sidebar.GroupContent>
+          </Sidebar.Group>
+        </Sidebar.Content>
+
+        <Sidebar.Footer class="border-t px-2 py-3">
+          <Sidebar.Menu>
+            {#if userData !== null}
+              <Sidebar.MenuItem>
+                <div class="flex w-full items-center justify-between px-2 py-1">
+                  <div class="flex items-center gap-2">
+                    <div
+                      class="bg-muted text-muted-foreground flex h-6 w-6 items-center justify-center rounded-full text-xs"
+                    >
+                      {userData.username.charAt(0).toUpperCase()}
+                    </div>
+                    <span class="text-sm font-medium">{userData.username}</span>
+                  </div>
+                  <Button
+                    type="submit"
+                    variant="ghost"
+                    size="sm"
+                    class="h-6 w-6 p-0"
+                    onclick={async () => logout()}
+                  >
+                    <X class="h-3 w-3" />
+                  </Button>
+                </div>
+              </Sidebar.MenuItem>
+            {/if}
+            <Sidebar.MenuItem>
+              <Sidebar.MenuButton
+                tooltipContent={dark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                onclick={toggleDark}
               >
-            </NavigationMenu.Item>
-          {/if}
-          <NavigationMenu.Item>
-            <Button onclick={toggleDark} variant="secondary">Toggle Dark Mode</Button>
-          </NavigationMenu.Item>
-        </NavigationMenu.List>
-      </NavigationMenu.Root>
-    </div>
+                {#if dark}
+                  <Sun class="h-4 w-4" />
+                  <span>Light Mode</span>
+                {:else}
+                  <Moon class="h-4 w-4" />
+                  <span>Dark Mode</span>
+                {/if}
+              </Sidebar.MenuButton>
+            </Sidebar.MenuItem>
+          </Sidebar.Menu>
+        </Sidebar.Footer>
+      </Sidebar.Root>
+    </Sidebar.Provider>
   {/if}
 
   <QueryClientProvider client={queryClient}>

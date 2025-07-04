@@ -100,7 +100,7 @@
   });
 </script>
 
-<div class="container space-y-6 p-6">
+<div class="w-full space-y-4 p-4">
   <!-- Main Content -->
   <Card.Root>
     <Card.Header>

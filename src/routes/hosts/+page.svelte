@@ -18,7 +18,6 @@
   import { PlusIcon } from 'lucide-svelte';
   import { handleFormResponse } from '$lib/stores/alerts';
 
-  // Props and state
   let {
     data,
     form
@@ -32,7 +31,6 @@
   let itemsPerPage = $state(10);
   let showDeleteModal = $state(false);
 
-  // Handle form responses
   $effect(() => {
     handleFormResponse(form);
   });
@@ -70,7 +68,7 @@
   };
 </script>
 
-<div class="container space-y-4 p-4">
+<div class="w-full space-y-4 p-4">
   <!-- Main Content -->
   <div class="bg-card rounded-lg p-6">
     <div class="space-y-4">

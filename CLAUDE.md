@@ -2,13 +2,14 @@ Every API that will connect to a monokit server must use +page.server.ts for it.
 Monokit base URL is "import { MONOKIT_URL } from '$env/static/private'"
 Always use templating for fetch urls like `${MONOKIT_URL}/api/v1/endpoint`
 Authentication is done using the Authorization header with the token use it like
+
 ```typescript
 export const load: PageServerLoad = async ({ fetch, cookies }) => {
   const authToken = cookies.get('Authorization');
   const res = await fetch(`${MONOKIT_URL}/api/v1/endpoint`, {
     headers: {
-      Authorization: authToken,
-    },
+      Authorization: authToken
+    }
   });
 
   if (!res.ok) {
@@ -23,6 +24,7 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
   return { data };
 };
 ```
+
 The project is based on SvelteKit 2 and Svelte 5, so you can use the latest features of these frameworks.
 Always write types there is a file called $lib/types.ts where you can put your types.
 Project uses SSR rendering technicue, so you can use `load` functions to fetch data on the server side.
