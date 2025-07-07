@@ -56,7 +56,7 @@ ${fileMap.join('\n')}
 console.log('Embedded ${imports.length} files');
 `;
 
-writeFileSync('./build/embedded-imports.js', content);
+writeFileSync('./embedded-imports.js', content);
 
 console.log(`\nGenerated ${imports.length} import statements in embedded-imports.js`);
 console.log('Import this file in your server to embed all assets!');

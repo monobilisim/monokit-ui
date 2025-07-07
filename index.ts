@@ -1,5 +1,5 @@
 // Import all embedded files (this ensures they're bundled)
-import { embeddedFileMap } from './build/embedded-imports.js';
+import { embeddedFileMap } from './embedded-imports.js';
 import { handler_default, build_options, env } from './build/handler.js';
 
 const { httpserver } = handler_default(build_options.assets ?? true);
