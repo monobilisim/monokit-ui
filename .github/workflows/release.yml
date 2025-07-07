@@ -28,11 +28,11 @@ jobs:
       - name: Build project
         run: bun --bun run build
 
-      - name: Compile executable
-        run: bun --bun build build/index.js --compile --outfile build/monokit-ui
+      - name: Prepare assets for embedding
+        run: bun --bun run prepare-assets
 
-      - name: Make binary executable
-        run: chmod +x build/monokit-ui
+      - name: Compile executable
+        run: bun --bun build index.ts --compile --minify --sourcemap --outfile build/monokit-ui
 
       - name: Get latest tag
         id: get_tag
