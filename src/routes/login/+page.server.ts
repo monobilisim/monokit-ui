@@ -10,7 +10,7 @@ export const load: PageServerLoad = async ({ cookies }): Promise<void> => {
   }
 };
 
-import { MONOKIT_URL } from '$env/static/private';
+const MONOKIT_URL = Bun.env.MONOKIT_URL;
 
 export const actions: Actions = {
   login: async ({ request, cookies, fetch }) => {

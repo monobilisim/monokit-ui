@@ -1,6 +1,6 @@
 import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { MONOKIT_URL } from '$env/static/private';
+const MONOKIT_URL = Bun.env.MONOKIT_URL;
 import { alerts } from '$lib/stores/alerts';
 
 export const load: PageServerLoad = async ({ fetch, cookies }) => {

@@ -1,4 +1,4 @@
-import { MONOKIT_URL } from '$env/static/private';
+const MONOKIT_URL = Bun.env.MONOKIT_URL;
 import { fail, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import type { UserData, InventoryData } from '$lib/types';

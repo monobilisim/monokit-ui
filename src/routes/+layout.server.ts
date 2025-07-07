@@ -1,6 +1,7 @@
 import type { LayoutServerLoad } from './$types';
 import type { UserData, AlertMessage } from '$lib/types';
-import { MONOKIT_URL } from '$env/static/private';
+
+const MONOKIT_URL = Bun.env.MONOKIT_URL;
 
 export const load: LayoutServerLoad = async ({ cookies }) => {
   const authToken = cookies.get('Authorization');

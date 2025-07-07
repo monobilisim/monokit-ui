@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { MONOKIT_URL } from '$env/static/private';
+const MONOKIT_URL = Bun.env.MONOKIT_URL;
 
 export const load: PageServerLoad = async ({ cookies, fetch }) => {
   const authToken = cookies.get('Authorization');

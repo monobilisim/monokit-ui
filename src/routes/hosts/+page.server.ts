@@ -1,4 +1,5 @@
-import { AWX_SETUP_TEMPLATE_ID, MONOKIT_URL } from '$env/static/private';
+const MONOKIT_URL = Bun.env.MONOKIT_URL;
+const AWX_SETUP_TEMPLATE_ID = Bun.env.AWX_SETUP_TEMPLATE_ID;
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail } from '@sveltejs/kit';
 
