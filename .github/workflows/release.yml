@@ -32,7 +32,7 @@ jobs:
         run: bun --bun run prepare-assets
 
       - name: Compile executable
-        run: bun --bun build index.ts --compile --minify --sourcemap --outfile build/monokit-ui
+        run: bun --bun build --compile --minify --sourcemap index.ts build/embedded-imports.js --outfile build/monokit-ui
 
       - name: Get latest tag
         id: get_tag
