@@ -49,6 +49,9 @@
   let processingStep = $state(''); // '', 'adding', 'validating', 'setup', 'success'
   let successMessage = $state('');
 
+  // Syntax highlighting
+  let highlightedYaml = $state('');
+
   // Reset form when modal opens
   $effect(() => {
     if (open) {
@@ -71,6 +74,26 @@
     }
   });
 
+  // Update syntax highlighting when extraVars changes
+  // @ts-expect-error somehow it does ot accept the type
+  $effect(async (): Promise<void> => {
+    if (extraVars.trim()) {
+      try {
+        const html = await codeToHtml(extraVars, {
+          lang: 'yaml',
+          theme: 'github-dark'
+        });
+        // Remove the outer pre tags and keep only the inner content
+        highlightedYaml = html.replace(/<pre[^>]*><code[^>]*>/, '').replace(/<\/code><\/pre>/, '');
+      } catch (error) {
+        console.error('Error highlighting YAML:', error);
+        highlightedYaml = '';
+      }
+    } else {
+      highlightedYaml = '';
+    }
+  });
+
   function resetForm() {
     hostName = '';
     ipAddress = '';
@@ -82,7 +105,7 @@
     extraVarsError = '';
     processingStep = '';
     successMessage = '';
-    isSubmitting = false;
+    showPreview = false;
   }
 
   function validateForm() {
@@ -279,15 +302,42 @@
                   </div>
                 </div>
               </div>
-              <Textarea
-                id="extraVars"
-                name="extraVars"
-                bind:value={extraVars}
-                placeholder="ansible_ssh_user: admin&#10;ansible_ssh_port: 22&#10;description: Production server"
-                rows={6}
-                disabled={isSubmitting}
-                class="font-mono text-sm"
-              ></Textarea>
+
+              <!-- Code Editor Container -->
+              <div class="relative">
+                <!-- Hidden textarea for form submission -->
+                <Textarea
+                  id="extraVars"
+                  name="extraVars"
+                  bind:value={extraVars}
+                  class="sr-only"
+                  disabled={isSubmitting}
+                />
+
+                <!-- Visual code editor -->
+                <div class="relative overflow-hidden rounded-md border bg-gray-950">
+                  <!-- Syntax highlighted background -->
+                  {#if highlightedYaml}
+                    <div class="pointer-events-none absolute inset-0 overflow-hidden p-3">
+                      <div class="font-mono text-sm leading-5 break-words whitespace-pre-wrap">
+                        <!-- eslint-disable-next-line -->
+                        {@html highlightedYaml}
+                      </div>
+                    </div>
+                  {/if}
+
+                  <!-- Editable textarea overlay -->
+                  <textarea
+                    bind:value={extraVars}
+                    placeholder="ansible_ssh_user: admin&#10;ansible_ssh_port: 22&#10;description: Production server"
+                    rows={6}
+                    disabled={isSubmitting}
+                    class="relative z-10 w-full resize-none bg-transparent p-3 font-mono text-sm leading-5 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-950 focus:outline-none"
+                    style="color: transparent; caret-color: white;"
+                  ></textarea>
+                </div>
+              </div>
+
               {#if extraVarsError}
                 <p class="text-sm text-red-600">{extraVarsError}</p>
               {/if}

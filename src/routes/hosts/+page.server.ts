@@ -1,4 +1,4 @@
-import { MONOKIT_URL } from '$env/static/private';
+import { AWX_SETUP_TEMPLATE_ID, MONOKIT_URL } from '$env/static/private';
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail } from '@sveltejs/kit';
 
@@ -329,9 +329,8 @@ export const actions: Actions = {
         if (status === 'successful') {
           let finalMessage = `Host "${hostName}" was successfully added to AWX`;
 
-          // If setup toggle is enabled, run setup workflow
           if (runSetupAfterPing) {
-            const setupTemplateId = 95; // workflow-manual-setup-fresh
+            const setupTemplateId = AWX_SETUP_TEMPLATE_ID;
             console.log('Ping successful! Now running setup workflow...');
 
             try {
