@@ -17,6 +17,7 @@
   import { Checkbox } from '$lib/components/ui/checkbox';
   import { PlusIcon } from 'lucide-svelte';
   import { handleFormResponse } from '$lib/stores/alerts';
+  import AwxAddModal from './components/awxAddModal.svelte';
 
   let {
     data,
@@ -30,6 +31,7 @@
   let currentPage = $state(1);
   let itemsPerPage = $state(10);
   let showDeleteModal = $state(false);
+  let showAwxModal = $state(false);
 
   $effect(() => {
     handleFormResponse(form);
@@ -106,7 +108,7 @@
           </DialogContent>
         </Dialog>
 
-        <Button variant="default" href="/hosts/awx/add">
+        <Button variant="default" onclick={() => (showAwxModal = true)}>
           <PlusIcon class="mr-2 h-4 w-4" />
           Add Host to AWX
         </Button>
@@ -229,3 +231,6 @@
     {/if}
   </div>
 </div>
+
+<!-- AWX Add Modal -->
+<AwxAddModal bind:open={showAwxModal} {form} />
