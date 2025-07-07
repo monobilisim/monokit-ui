@@ -3,6 +3,7 @@ export type UserData = {
   groups: string;
   role: string;
   username: string;
+  inventories: string;
 };
 
 export type Error = {
@@ -101,4 +102,10 @@ export type HostDetailPageData = {
   awxJobs: AwxJob[];
   healthTools: string[];
   osHealth?: unknown;
+};
+
+export type InventoryData = {
+  id: number;
+  hosts?: Host[];
+  name: string;
 };
