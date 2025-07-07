@@ -1,4 +1,4 @@
-import { fail, error } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { MONOKIT_URL } from '$env/static/private';
 import { alerts } from '$lib/stores/alerts';

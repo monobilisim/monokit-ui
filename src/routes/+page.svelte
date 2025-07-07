@@ -1,7 +1,6 @@
 <script lang="ts">
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
   import { Badge } from '$lib/components/ui/badge';
-  import { Popover, PopoverContent, PopoverTrigger } from '$lib/components/ui/popover';
   import { Chart, type ChartData, type ChartOptions } from 'chart.js/auto';
 
   import { onMount } from 'svelte';
