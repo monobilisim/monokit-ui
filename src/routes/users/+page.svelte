@@ -66,6 +66,7 @@
 
   $effect(() => {
     console.log(data.inventories);
+    console.log(data.users);
   });
 
   function handleSelect(username: string) {
@@ -395,6 +396,7 @@
           <Label for="create-role">Role</Label>
           <Select.Root
             type="single"
+            name="role"
             onValueChange={(value: string) => {
               newUser.role = value;
             }}
@@ -407,7 +409,6 @@
               <Select.Item value="admin">Admin</Select.Item>
             </Select.Content>
           </Select.Root>
-          <input type="hidden" name="role" value={newUser.role} />
         </div>
 
         <div class="space-y-2">
@@ -438,13 +439,7 @@
               {/each}
             </Select.Content>
           </Select.Root>
-          <!--<Input
-            id="create-inventory"
-            name="inventory"
-            type="text"
-            placeholder="Enter inventory (comma-separated)"
-            bind:value={newUser.inventory}
-          />-->
+          <input type="hidden" name="inventory" value={selectedInventory || ''} />
         </div>
       </div>
 
