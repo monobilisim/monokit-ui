@@ -22,7 +22,7 @@ jobs:
         id: release-please
         with:
           release-type: simple
-          token: ${{ secrets.MONOKIT_UI_PUBLISH_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   build:
     name: Build
