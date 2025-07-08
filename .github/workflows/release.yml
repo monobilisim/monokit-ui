@@ -57,6 +57,8 @@ jobs:
         uses: oven-sh/setup-bun@v2
       - name: Install dependencies
         run: bun --bun i
+      - name: Install test dependencies
+        run: bun run playwright install chromium
       - name: Run tests
         run: bun --bun test
 
