@@ -34,3 +34,6 @@ responses/**
 embedded-imports.js
 
 monokit-ui
+
+**/__screenshots__
+**/__screenshots__/**

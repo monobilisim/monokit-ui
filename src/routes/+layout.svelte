@@ -1,7 +1,5 @@
 <script lang="ts">
   import '../app.css';
-  import { browser } from '$app/environment';
-  import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
   import { page } from '$app/state';
   import {
     X,
@@ -20,15 +18,6 @@
   import type { UserData, AlertMessage } from '$lib/types';
   import { alerts } from '$lib/stores/alerts';
   import { getCookie } from '$lib/utils';
-
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        enabled: browser
-      }
-    }
-  });
-
   import * as Sidebar from '$lib/components/ui/sidebar/index.js';
   import Button from '$lib/components/ui/button/button.svelte';
   import * as Alert from '$lib/components/ui/alert/index.js';
@@ -72,8 +61,7 @@
 
   let { children, data }: { children: Snippet<[]>; data: ExtendedLayoutData } = $props();
 
-  // Add alerts from layout data on mount
-  onMount(() => {
+  $effect(() => {
     if (data.alerts && data.alerts.length > 0) {
       data.alerts.forEach((alert) => {
         alerts.add(alert);
@@ -249,7 +237,5 @@
     </Sidebar.Provider>
   {/if}
 
-  <QueryClientProvider client={queryClient}>
-    {@render children()}
-  </QueryClientProvider>
+  {@render children?.()}
 </main>

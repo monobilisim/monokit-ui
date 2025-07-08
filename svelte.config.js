@@ -5,15 +5,8 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 const config = {
   preprocess: vitePreprocess(),
 
-  optimizeDeps: {
-    exclude: ['@tanstack/svelte-query, chart.js']
-  },
-
   kit: {
-    adapter: adapter(),
-    alias: {
-      '@/*': './path/to/lib/*'
-    }
+    adapter: adapter()
   }
 };
 
