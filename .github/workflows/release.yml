@@ -22,7 +22,6 @@ jobs:
         id: release-please
         with:
           release-type: simple
-          package-name: monokit-ui
           token: ${{ secrets.MONOKIT_UI_PUBLISH_TOKEN }}
 
   build:
