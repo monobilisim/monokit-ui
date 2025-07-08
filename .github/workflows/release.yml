@@ -18,11 +18,12 @@ jobs:
       pr_created: ${{ steps.release-please.outputs.pr_created }}
       pr_number: ${{ steps.release-please.outputs.pr_number }}
     steps:
-      - uses: google-github-actions/release-please-action@v4
+      - uses: googleapis/release-please-action@v4
         id: release-please
         with:
-          release-type: node
+          release-type: simple
           package-name: monokit-ui
+          token: ${{ secrets.MONOKIT_UI_PUBLISH_TOKEN }}
 
   build:
     name: Build
