@@ -1,5 +1,4 @@
 name: Build and Release Monokit UI
-
 on:
   push:
     branches: [main]
@@ -8,75 +7,87 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-release:
+  release-please:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
+    if: github.ref == 'refs/heads/main'
+    outputs:
+      release_created: ${{ steps.release-please.outputs.release_created }}
+      tag_name: ${{ steps.release-please.outputs.tag_name }}
+      version: ${{ steps.release-please.outputs.version }}
+      body: ${{ steps.release-please.outputs.body }}
+    steps:
+      - uses: google-github-actions/release-please-action@v4
+        id: release-please
+        with:
+          release-type: node
+          package-name: monokit-ui
 
+  build:
+    name: Build
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
-
       - name: Install dependencies
         run: bun --bun i
-
       - name: Build project
         run: bun --bun run build
-
       - name: Prepare assets for embedding
         run: bun --bun run prepare-assets
-
       - name: Compile executable
         run: bun --bun build --compile --minify --sourcemap index.ts embedded-imports.js --outfile build/monokit-ui
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: monokit-ui-build
+          path: build/monokit-ui
 
-      - name: Get latest tag
-        id: get_tag
-        run: |
-          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-          echo "latest_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
-          VERSION=${LATEST_TAG#v}
-          echo "current_version=$VERSION" >> $GITHUB_OUTPUT
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+      - name: Install dependencies
+        run: bun --bun i
+      - name: Run tests
+        run: bun --bun test
 
-      - name: Calculate next version
-        id: next_version
-        run: |
-          CURRENT_VERSION="${{ steps.get_tag.outputs.current_version }}"
-          IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
-          MAJOR=${VERSION_PARTS[0]:-0}
-          MINOR=${VERSION_PARTS[1]:-0}
-          PATCH=${VERSION_PARTS[2]:-0}
-          PATCH=$((PATCH + 1))
-          NEW_VERSION="$MAJOR.$MINOR.$PATCH"
-          NEW_TAG="v$NEW_VERSION"
-          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
-          echo "new_tag=$NEW_TAG" >> $GITHUB_OUTPUT
-
-      - name: Create and push tag
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git tag ${{ steps.next_version.outputs.new_tag }}
-          git push origin ${{ steps.next_version.outputs.new_tag }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+  publish-release:
+    name: Publish Release
+    runs-on: ubuntu-latest
+    needs: [build, test, release-please]
+    if: ${{ needs.release-please.outputs.release_created }}
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+      - name: Install dependencies
+        run: bun --bun i
+      - name: Build project
+        run: bun --bun run build
+      - name: Prepare assets for embedding
+        run: bun --bun run prepare-assets
+      - name: Compile executable
+        run: bun --bun build --compile --minify --sourcemap index.ts embedded-imports.js --outfile build/monokit-ui
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ steps.next_version.outputs.new_tag }}
-          name: Release ${{ steps.next_version.outputs.new_tag }}
-          body: |
-            ## Changes
-            - Built with Bun
-            - Compiled executable included
-
-            ## Assets
-            - `monokit-ui` - Compiled executable
+          tag_name: ${{ needs.release-please.outputs.tag_name }}
+          name: Release ${{ needs.release-please.outputs.tag_name }}
+          body: ${{ needs.release-please.outputs.body }}
           files: |
             build/monokit-ui
           draft: false
