@@ -12,5 +12,16 @@ export default defineConfig({
     },
     include: ['src/**/*.svelte.test.ts'],
     setupFiles: ['./vitest-setup-client.ts']
+  },
+  build: {
+    rollupOptions: {
+      onwarn(warning, warn) {
+        if (warning.code === 'UNUSED_EXTERNAL_IMPORT') {
+          return;
+        }
+
+        warn(warning);
+      }
+    }
   }
 });

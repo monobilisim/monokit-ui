@@ -16,10 +16,8 @@
   import { onMount } from 'svelte';
 
   export let data: PageData;
-  export let form: ActionData;
 
   let groups = data.groups || [];
-  let error = data.error | null;
 
   // Selected items for deletion
   let selectedItems: string[] = [];
@@ -138,7 +136,7 @@
   });
 </script>
 
-<div class="container mx-auto p-6">
+<div class="w-full space-y-4 p-4">
   <Card.Root>
     <Card.Header>
       <div class="flex items-center justify-between">

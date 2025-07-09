@@ -5,7 +5,10 @@
   import { Label } from '$lib/components/ui/label';
   import { Textarea } from '$lib/components/ui/textarea';
   import { Switch } from '$lib/components/ui/switch';
+
+  /* prettier-ignore-start */
   import { codeToHtml } from 'shiki';
+  /* prettier-ignore-end */
 
   import {
     Dialog,
@@ -105,7 +108,6 @@
     extraVarsError = '';
     processingStep = '';
     successMessage = '';
-    showPreview = false;
   }
 
   function validateForm() {

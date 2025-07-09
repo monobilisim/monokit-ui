@@ -1,7 +1,15 @@
 <script lang="ts">
-  import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
+  import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    CardFooter,
+    CardDescription
+  } from '$lib/components/ui/card';
   import { Badge } from '$lib/components/ui/badge';
-  import { Chart, type ChartData, type ChartOptions } from 'chart.js/auto';
+  import * as Chart from '$lib/components/ui/chart/index.js';
+  import { PieChart, Text } from 'layerchart';
 
   import { onMount } from 'svelte';
 
@@ -13,104 +21,31 @@
   $: logStats = data.logStats;
   $: errorCount = data.errorCount;
 
-  let hostStatusChart: Chart | null = null;
-  let logSeverityChart: Chart | null = null;
-  let hostChartCanvas: HTMLCanvasElement;
-  let logChartCanvas: HTMLCanvasElement;
-
-  function createHostStatusChart() {
-    if (hostChartCanvas) {
-      const ctx = hostChartCanvas.getContext('2d');
-      if (ctx) {
-        const data: ChartData = {
-          labels: ['Online', 'Offline', 'Pending Deletion', 'Unknown'],
-          datasets: [
-            {
-              data: [
-                hostStats.online || 0,
-                hostStats.offline || 0,
-                hostStats.deletion || 0,
-                hostStats.unknown || 0
-              ],
-              backgroundColor: ['#3E8635', '#C9190B', '#F0AB00', '#6A6E73'],
-              borderWidth: 0
-            }
-          ]
-        };
-
-        const options: ChartOptions = {
-          responsive: true,
-          maintainAspectRatio: true,
-          plugins: {
-            legend: { display: false }
-          }
-        };
-
-        hostStatusChart = new Chart(ctx, {
-          type: 'doughnut',
-          data,
-          options
-        });
-      }
-    }
-  }
-
-  function createLogSeverityChart() {
-    if (userRole === 'user') {
-      const ctx = logChartCanvas.getContext('2d');
-      if (ctx) {
-        const data: ChartData = {
-          labels: ['Info', 'Warning', 'Error', 'Critical'],
-          datasets: [
-            {
-              data: [
-                logStats.info || 0,
-                logStats.warning || 0,
-                logStats.error || 0,
-                logStats.critical || 0
-              ],
-              backgroundColor: ['#0066CC', '#F0AB00', '#C9190B', '#A30000'],
-              borderWidth: 0
-            }
-          ]
-        };
-
-        const options: ChartOptions = {
-          responsive: true,
-          maintainAspectRatio: false,
-          cutout: '70%',
-          plugins: {
-            legend: {
-              position: 'bottom',
-              labels: {
-                padding: 20
-              }
-            }
-          }
-        };
-
-        logSeverityChart = new Chart(ctx, {
-          type: 'doughnut',
-          data,
-          options
-        });
-      }
-    }
-  }
-
   onMount(() => {
-    createHostStatusChart();
-    createLogSeverityChart();
-
-    return () => {
-      // Cleanup charts on component destruction
-      if (hostStatusChart) hostStatusChart.destroy();
-      if (logSeverityChart) logSeverityChart.destroy();
-    };
+    console.log(hostStats);
   });
+
+  $: chartData = hostStats
+    ? [
+        { status: 'online', count: hostStats.online || 0, color: '#3E8635' },
+        { status: 'offline', count: hostStats.offline || 0, color: '#C9190B' },
+        { status: 'deletion', count: hostStats.deletion || 0, color: '#F0AB00' },
+        { status: 'unknown', count: hostStats.unknown || 0, color: '#6A6E73' }
+      ]
+    : [];
+
+  const chartConfig = {
+    count: { label: 'Hosts' },
+    online: { label: 'Online', color: '#3E8635' },
+    offline: { label: 'Offline', color: '#C9190B' },
+    deletion: { label: 'Pending Deletion', color: '#F0AB00' },
+    unknown: { label: 'Unknown', color: '#6A6E73' }
+  } satisfies Chart.ChartConfig;
+
+  const totalHosts = chartData?.reduce((acc, curr) => acc + curr.count, 0) ?? 0;
 </script>
 
-<div class="container mx-auto p-6">
+<div class="w-full space-y-4 p-4">
   <h1 class="mb-8 text-4xl font-bold">Dashboard</h1>
 
   {#if userInfo}
@@ -130,7 +65,7 @@
     </Card>
 
     <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-      <Card>
+      <!-- <Card>
         <CardHeader>
           <CardTitle>Host Status Overview</CardTitle>
         </CardHeader>
@@ -143,6 +78,50 @@
             <span class="text-base">hosts</span>
           </div>
         </CardContent>
+      </Card> -->
+      <Card class="flex flex-col">
+        <CardHeader class="items-center">
+          <CardTitle>Host Status</CardTitle>
+          <CardDescription>System Overview</CardDescription>
+        </CardHeader>
+
+        <CardContent class="flex-1">
+          <Chart.Container config={chartConfig} class="mx-auto aspect-square max-h-[250px]">
+            <PieChart
+              data={chartData}
+              key="status"
+              value="count"
+              c="color"
+              innerRadius={60}
+              padding={28}
+              props={{ pie: { motion: 'tween' } }}
+            >
+              {#snippet aboveMarks()}
+                <Text
+                  value={String(totalHosts)}
+                  textAnchor="middle"
+                  verticalAnchor="middle"
+                  class="fill-foreground text-3xl! font-bold"
+                  dy={3}
+                />
+                <Text
+                  value="Hosts"
+                  textAnchor="middle"
+                  verticalAnchor="middle"
+                  class="fill-muted-foreground! text-muted-foreground"
+                  dy={22}
+                />
+              {/snippet}
+              {#snippet tooltip()}
+                <Chart.Tooltip hideLabel />
+              {/snippet}
+            </PieChart>
+          </Chart.Container>
+        </CardContent>
+
+        <CardFooter class="flex-col gap-2 text-sm">
+          <div class="text-muted-foreground leading-none">Based on current monitored hosts</div>
+        </CardFooter>
       </Card>
 
       <!-- Host Statistics -->

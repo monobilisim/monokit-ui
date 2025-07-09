@@ -109,3 +109,47 @@ export type InventoryData = {
   hosts?: Host[];
   name: string;
 };
+
+export type Log = {
+  id: string;
+  timestamp: string;
+  level: LogLevel;
+  component: string;
+  host_name: string;
+  message: string;
+  type: string;
+};
+
+export type LogChartData = {
+  timestamp: number;
+  info: number;
+  warning: number;
+  error: number;
+  critical: number;
+};
+
+export type LogSearchParams = {
+  page: number;
+  page_size: number;
+  level?: string;
+  host?: string;
+  type?: string;
+  message_text?: string;
+};
+
+export type LogSearchResponse = {
+  logs: Log[];
+  pagination: {
+    total: number;
+    page: number;
+    page_size: number;
+  };
+};
+
+export type LogsPageData = {
+  logs: Log[];
+  totalItems: number;
+  availableHosts: string[];
+  availableTypes: string[];
+  chartData: LogChartData[];
+};

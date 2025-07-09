@@ -1,5 +1,5 @@
 Every API that will connect to a monokit server must use +page.server.ts for it.
-Monokit base URL is "import { MONOKIT_URL } from '$env/static/private'"
+Monokit base URL is "const MONOKIT_URL = Bun.env.MONOKIT_URL"
 Always use templating for fetch urls like `${MONOKIT_URL}/api/v1/endpoint`
 Authentication is done using the Authorization header with the token use it like
 

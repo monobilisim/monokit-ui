@@ -143,7 +143,7 @@
   }
 </script>
 
-<div class="container mx-auto px-4 py-6">
+<div class="w-full space-y-4 p-4">
   <div class="mb-6 flex items-center justify-between">
     <h1 class="text-3xl font-bold tracking-tight">Users</h1>
     <div class="flex items-center gap-2">

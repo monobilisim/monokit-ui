@@ -24,9 +24,11 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
     const data = await response.json();
 
     return { groups: data, error: null };
-  } catch (error: any) {
-    alerts.add({ type: 'error', message: error.message || 'Failed to load groups.' });
-    console.error('Error fetching groups:', error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      alerts.add({ type: 'error', message: error.message || 'Failed to load groups.' });
+      console.error('Error fetching groups:', error);
+    }
     return {
       groups: [],
       error: 'Failed to load groups. Please try again later.'
