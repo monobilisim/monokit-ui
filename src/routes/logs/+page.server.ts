@@ -9,59 +9,6 @@ import type {
   LogsPageData
 } from '$lib/types';
 
-const processLogsForChart = (logs: Log[]): LogChartData[] => {
-  if (!logs.length) return [];
-
-  // Find latest log timestamp and round up to next 10 minutes
-  const latest = new Date(Math.max(...logs.map((l) => new Date(l.timestamp).getTime())));
-  latest.setMilliseconds(0);
-  latest.setSeconds(0);
-  latest.setMinutes(Math.ceil(latest.getMinutes() / 10) * 10);
-
-  // Set start time to one hour before latest, rounded down to nearest 10 minutes
-  const start = new Date(latest);
-  start.setHours(latest.getHours() - 1);
-  start.setMinutes(Math.floor(start.getMinutes() / 10) * 10);
-
-  // Create time slots
-  const timeMap: Record<number, LogChartData> = {};
-  const currentTime = new Date(start);
-  while (currentTime <= latest) {
-    timeMap[currentTime.getTime()] = {
-      timestamp: currentTime.getTime(),
-      info: 0,
-      warning: 0,
-      error: 0,
-      critical: 0
-    };
-    currentTime.setMinutes(currentTime.getMinutes() + 10);
-  }
-
-  const levelMap = {
-    info: 'info',
-    warning: 'warning',
-    error: 'error',
-    critical: 'critical'
-  } as const;
-
-  logs.forEach((log) => {
-    const logTime = new Date(log.timestamp);
-    logTime.setMilliseconds(0);
-    logTime.setSeconds(0);
-    logTime.setMinutes(Math.floor(logTime.getMinutes() / 10) * 10);
-    const slotTime = logTime.getTime();
-
-    const level = log.level.toLowerCase();
-    const mappedLevel = levelMap[level as keyof typeof levelMap];
-
-    if (mappedLevel && timeMap[slotTime]) {
-      timeMap[slotTime][mappedLevel]++;
-    }
-  });
-
-  return Object.values(timeMap);
-};
-
 export const load: PageServerLoad = async ({ fetch, cookies, url }) => {
   const authToken = cookies.get('Authorization');
 
@@ -109,8 +56,6 @@ export const load: PageServerLoad = async ({ fetch, cookies, url }) => {
     // Extract available hosts and types from logs
     const availableHosts = [...new Set(logsData.map((log) => log.host_name).filter(Boolean))];
     const availableTypes = [...new Set(logsData.map((log) => log.type).filter(Boolean))];
-
-    // const chartData = processLogsForChart(logsData);
 
     const logsHourlyResponse = await fetch(`${MONOKIT_URL}/api/v1/logs/hourly`, {
       headers: {
