@@ -42,7 +42,7 @@
     unknown: { label: 'Unknown', color: '#6A6E73' }
   } satisfies Chart.ChartConfig;
 
-  const totalHosts = chartData?.reduce((acc, curr) => acc + curr.count, 0) ?? 0;
+  $: totalHosts = hostStats?.total ?? 0;
 </script>
 
 <div class="w-full space-y-4 p-4">
@@ -102,6 +102,7 @@
                   class="fill-foreground text-3xl! font-bold"
                   dy={3}
                 />
+
                 <Text
                   value="Hosts"
                   textAnchor="middle"
