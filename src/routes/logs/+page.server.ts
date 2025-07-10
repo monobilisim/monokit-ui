@@ -110,7 +110,23 @@ export const load: PageServerLoad = async ({ fetch, cookies, url }) => {
     const availableHosts = [...new Set(logsData.map((log) => log.host_name).filter(Boolean))];
     const availableTypes = [...new Set(logsData.map((log) => log.type).filter(Boolean))];
 
-    const chartData = processLogsForChart(logsData);
+    // const chartData = processLogsForChart(logsData);
+
+    const logsHourlyResponse = await fetch(`${MONOKIT_URL}/api/v1/logs/hourly`, {
+      headers: {
+        Authorization: authToken,
+        'Content-Type': 'application/json'
+      } as Record<string, string>
+    });
+
+    if (!logsHourlyResponse.ok) {
+      if (logsHourlyResponse.status === 401) {
+        throw error(401, 'Session expired');
+      }
+      throw error(logsHourlyResponse.status, await logsHourlyResponse.text());
+    }
+
+    const chartData = (await logsHourlyResponse.json()) as LogChartData[];
 
     const pageData: LogsPageData = {
       logs: logsData,

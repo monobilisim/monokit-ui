@@ -3,7 +3,7 @@
   import { goto } from '$app/navigation';
   import { enhance } from '$app/forms';
   import { alerts, handleFormResponse } from '$lib/stores/alerts';
-  import type { LogsPageData, FormResponse, LogLevel } from '$lib/types';
+  import type { LogsPageData, FormResponse, LogLevel, LogChartData } from '$lib/types';
 
   import * as Card from '$lib/components/ui/card';
   import * as Table from '$lib/components/ui/table';
@@ -16,12 +16,6 @@
   import { Skeleton } from '$lib/components/ui/skeleton';
   import { Trash2 } from 'lucide-svelte';
 
-  // import { LineChart } from 'layerchart';
-  // import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
-  // import { scaleUtc } from 'd3-scale';
-  // import { curveNatural } from 'd3-shape';
-  // import * as Chart from '$lib/components/ui/chart/index.js';
-
   let {
     data,
     form
@@ -29,6 +23,34 @@
     data: LogsPageData;
     form: FormResponse | null;
   } = $props();
+
+  import { LineChart } from 'layerchart';
+  import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
+  import { scaleUtc } from 'd3-scale';
+  import { curveNatural } from 'd3-shape';
+  import * as Chart from '$lib/components/ui/chart/index.js';
+
+  const chartData: LogChartData[] = data.chartData || [];
+
+  let tmpDate = new Date(Date.now() - 60 * 60 * 1000); // subtract 1 hour
+  const dataCompatibleWithCharts = chartData.map((item: LogChartData) => {
+    const date = new Date(tmpDate);
+    tmpDate = new Date(tmpDate.getTime() + 5 * 60 * 1000); // add 5 minutes
+    return {
+      date: date,
+      info: item.info,
+      warning: item.warning,
+      error: item.error,
+      critical: item.critical
+    };
+  });
+
+  const chartConfig = {
+    info: { label: 'Info', color: 'var(--chart-1)' },
+    warning: { label: 'Warning', color: 'var(--chart-2)' },
+    error: { label: 'Error', color: 'var(--chart-3)' },
+    critical: { label: 'Critical', color: 'var(--chart-4)' }
+  } satisfies Chart.ChartConfig;
 
   // Search and filter state
   let searchValue = $state('');
@@ -209,23 +231,6 @@
     console.log(data.chartData);
   });
 
-  // Simple chart data display
-  const renderChartData = (chartData: typeof data.chartData) => {
-    if (!chartData.length) return 'No data available';
-
-    return chartData
-      .map((point) => {
-        const time = new Date(point.timestamp).toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: '2-digit',
-          hour12: true
-        });
-        const total = point.info + point.warning + point.error + point.critical;
-        return `${time}: ${total} logs`;
-      })
-      .join(' | ');
-  };
-
   const totalPages = $derived(Math.ceil(data.totalItems / pageSize));
 </script>
 
@@ -238,17 +243,54 @@
     <h1 class="text-3xl font-bold">System Logs</h1>
   </div>
 
-  <!-- Chart Card -->
-  <Card.Root>
+  <Card.Root class="h-128">
     <Card.Header>
       <Card.Title>Log Activity (Last Hour)</Card.Title>
     </Card.Header>
     <Card.Content>
-      <div class="bg-muted flex h-64 items-center justify-center rounded-lg p-4">
-        <div class="text-muted-foreground text-sm">
-          {renderChartData(data.chartData)}
-        </div>
-      </div>
+      <Chart.Container class="h-100 w-full" config={chartConfig}>
+        <LineChart
+          data={dataCompatibleWithCharts}
+          x="date"
+          xScale={scaleUtc()}
+          axis="x"
+          series={[
+            {
+              key: 'info',
+              label: 'Info',
+              color: chartConfig.info.color
+            },
+            {
+              key: 'warning',
+              label: 'Warning',
+              color: chartConfig.warning.color
+            },
+            {
+              key: 'error',
+              label: 'Error',
+              color: chartConfig.error.color
+            },
+            {
+              key: 'critical',
+              label: 'Critical',
+              color: chartConfig.critical.color
+            }
+          ]}
+          props={{
+            spline: { curve: curveNatural, motion: 'tween', strokeWidth: 2 },
+            xAxis: {
+              // @ts-expect-error hii this is correct, don't touch
+              format: (v: Date = new Date(new Date() - 60 * 60 * 1000)) =>
+                new Date(v.getTime() + 5 * 60 * 1000).getMinutes().toString()
+            },
+            highlight: { points: { r: 4 } }
+          }}
+        >
+          {#snippet tooltip()}
+            <Chart.Tooltip hideLabel />
+          {/snippet}
+        </LineChart>
+      </Chart.Container>
     </Card.Content>
   </Card.Root>
 

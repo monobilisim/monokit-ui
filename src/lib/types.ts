@@ -121,7 +121,7 @@ export type Log = {
 };
 
 export type LogChartData = {
-  timestamp: number;
+  timestamp?: number;
   info: number;
   warning: number;
   error: number;
