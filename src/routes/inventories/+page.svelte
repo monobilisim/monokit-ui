@@ -105,7 +105,8 @@
   <Card.Root>
     <Card.Header>
       <div class="flex items-center justify-between">
-        <Card.Title class="text-2xl font-bold">Inventories</Card.Title>
+        <!-- <Card.Title class="text-2xl font-bold">Inventories</Card.Title> -->
+        <div></div>
         <div class="flex items-center gap-2">
           <Button onclick={openCreateModal} class="flex items-center gap-2">
             <PlusIcon class="h-4 w-4" />
@@ -121,7 +122,7 @@
       </div>
     </Card.Header>
 
-    <Card.Content class="space-y-4">
+    <Card.Content class="space-y-2">
       <!-- Empty State -->
       {#if data.inventories.length === 0}
         <div class="flex flex-col items-center justify-center py-12 text-center">

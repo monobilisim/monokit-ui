@@ -141,8 +141,8 @@
     <Card.Header>
       <div class="flex items-center justify-between">
         <div>
-          <Card.Title class="text-2xl font-bold">Groups</Card.Title>
-          <Card.Description>Manage your groups and their members</Card.Description>
+          <!-- <Card.Title class="text-2xl font-bold">Groups</Card.Title>
+          <Card.Description>Manage your groups and their members</Card.Description> -->
         </div>
         <div class="flex items-center gap-2">
           <Button.Root onclick={openCreateModal} class="flex cursor-pointer items-center gap-2">

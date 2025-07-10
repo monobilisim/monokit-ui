@@ -65,7 +65,7 @@
   };
 </script>
 
-<div class="container space-y-6 p-4">
+<div class="container space-y-4 p-4">
   <!-- Header -->
   <div class="flex items-center justify-between">
     <div class="flex items-center gap-4">

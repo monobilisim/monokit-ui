@@ -46,11 +46,9 @@
 </script>
 
 <div class="w-full space-y-4 p-4">
-  <h1 class="mb-8 text-4xl font-bold">Dashboard</h1>
-
   {#if userInfo}
     <Card class="mb-6">
-      <CardContent class="pt-6">
+      <CardContent class="pt-2">
         <h2 class="mb-4 text-2xl font-bold">Welcome, {userInfo.username}</h2>
         <div class="flex flex-wrap gap-2">
           <Badge variant="default">{userInfo.role}</Badge>

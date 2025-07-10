@@ -145,7 +145,7 @@
 
 <div class="w-full space-y-4 p-4">
   <div class="mb-6 flex items-center justify-between">
-    <h1 class="text-3xl font-bold tracking-tight">Users</h1>
+    <div></div>
     <div class="flex items-center gap-2">
       <Button.Root class="cursor-pointer" variant="outline" onclick={refreshPage}>
         <RefreshCwIcon class="mr-2 h-4 w-4" />

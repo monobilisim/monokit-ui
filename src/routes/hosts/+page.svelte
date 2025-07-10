@@ -74,7 +74,6 @@
   <!-- Main Content -->
   <div class="bg-card rounded-lg p-6">
     <div class="space-y-4">
-      <h2 class="text-2xl font-bold">Hosts</h2>
       <div class="flex items-center gap-4">
         <!-- Search -->
         <div class="flex-grow">

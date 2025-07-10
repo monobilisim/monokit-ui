@@ -239,9 +239,9 @@
 </svelte:head>
 
 <div class="w-full space-y-4 p-4">
-  <div class="flex items-center justify-between">
+  <!-- <div class="flex items-center justify-between">
     <h1 class="text-3xl font-bold">System Logs</h1>
-  </div>
+  </div> -->
 
   <Card.Root class="h-128">
     <Card.Header>
