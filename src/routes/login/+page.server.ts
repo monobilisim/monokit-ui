@@ -72,9 +72,9 @@ export const actions: Actions = {
     });
 
     throw redirect(303, '/');
-  },
-  keycloak: async () => {
-    const redirectUri = `${MONOKIT_URL}/api/v1/auth/sso/callback`;
-    redirect(301, `${MONOKIT_URL}/api/v1/auth/sso/login?redirect_uri=${redirectUri}`);
   }
+  // keycloak: async () => {
+  //   const redirectUri = encodeURIComponent(`${MONOKIT_URL}/api/v1/auth/sso/callback`);
+  //   redirect(302, `${MONOKIT_URL}/api/v1/auth/sso/login?redirect_uri=${redirectUri}`);
+  // }
 };

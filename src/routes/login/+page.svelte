@@ -46,9 +46,10 @@
       <Button type="submit" class="w-full rounded-full">Log in</Button>
     </form>
     <div class="mt-6 text-center">
-      <form method="POST" action="?/keycloak" use:enhance>
+      <!-- <form method="POST" action="?/keycloak" use:enhance>
         <Button type="submit" class="w-full rounded-full">Login with Keycloak</Button>
-      </form>
+      </form> -->
+      <a href="/login/route"><Button class="w-full rounded-full">Login with Keycloak</Button></a>
     </div>
   </div>
 </div>

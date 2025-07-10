@@ -23,6 +23,11 @@ export const load: LayoutServerLoad = async ({ cookies }) => {
       secure: false,
       maxAge: 60 * 60 * 24 * 7 // 1 week
     });
+
+    return {
+      userData,
+      alerts: []
+    };
   }
 
   if (!res.ok) {
