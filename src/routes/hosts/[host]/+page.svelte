@@ -187,7 +187,7 @@
                 <div>
                   <dt class="text-muted-foreground text-sm font-medium">Disabled Components</dt>
                   <dd class="flex flex-wrap gap-2">
-                    {#if data.host.disabledComponents}
+                    {#if data.host.disabledComponents && data.host.disabledComponents !== 'nil'}
                       {#each data.host.disabledComponents.split('::') as component, i (i)}
                         <Badge variant="destructive">{component}</Badge>
                       {/each}

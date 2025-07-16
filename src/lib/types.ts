@@ -71,6 +71,7 @@ export type DashboardData = {
 export type PageData = {
   hosts: Host[];
   userInfo: UserData;
+  awxFreshInstallId?: number | null;
 };
 
 export type HostDetail = {

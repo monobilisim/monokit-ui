@@ -32,6 +32,7 @@
   let itemsPerPage = $state(10);
   let showDeleteModal = $state(false);
   let showAwxModal = $state(false);
+  let awxFreshInstallId = $state<number | null | undefined>(data.awxFreshInstallId);
 
   $effect(() => {
     handleFormResponse(form);
@@ -232,4 +233,4 @@
 </div>
 
 <!-- AWX Add Modal -->
-<AwxAddModal bind:open={showAwxModal} {form} />
+<AwxAddModal bind:open={showAwxModal} {form} {awxFreshInstallId} />

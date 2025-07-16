@@ -82,7 +82,8 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
     }));
 
     return {
-      hosts: normalizedHosts
+      hosts: normalizedHosts,
+      awxFreshInstallId: Bun.env.AWX_SETUP_TEMPLATE_ID || null
     };
   } catch (err: unknown) {
     console.error('Failed to fetch hosts:', err);
@@ -124,19 +125,15 @@ export const actions: Actions = {
           }
         });
 
-        return response;
+        if (!response.ok) {
+          return await response.text();
+        }
       });
 
-      const failedResults = await Promise.all(
-        responses.map(async (response: Promise<Response>) => {
-          if (!response.ok) {
-            return await response.text();
-          }
-        })
-      );
+      const failedResults = (await Promise.all(responses)).filter(Boolean);
 
       if (failedResults.length > 0) {
-        throw new Error(`${failedResults.join(' ')}`);
+        throw new Error(failedResults.join(' '));
       }
 
       return {

@@ -2,7 +2,6 @@
   import '../app.css';
   import { page } from '$app/state';
   import {
-    X,
     LayoutDashboard,
     Server,
     Users,
@@ -12,12 +11,10 @@
     Moon,
     Sun
   } from 'lucide-svelte';
-  import { onMount } from 'svelte';
   import type { Snippet } from 'svelte';
   import type { LayoutData } from './$types';
   import type { UserData, AlertMessage } from '$lib/types';
   import { alerts } from '$lib/stores/alerts';
-  import { getCookie } from '$lib/utils';
   import * as Sidebar from '$lib/components/ui/sidebar/index.js';
   import Button from '$lib/components/ui/button/button.svelte';
   import * as Alert from '$lib/components/ui/alert/index.js';
@@ -181,9 +178,9 @@
                   </div>
                   <Button
                     type="submit"
-                    variant="ghost"
+                    variant="destructive"
                     size="sm"
-                    class="cursor-pointer bg-red-500 p-2"
+                    class="cursor-pointer p-2"
                     onclick={async () => logout()}
                   >
                     Logout

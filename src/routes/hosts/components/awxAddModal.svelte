@@ -30,10 +30,12 @@
 
   let {
     open = $bindable(),
-    form
+    form,
+    awxFreshInstallId
   }: {
     open: boolean;
     form: FormResponse | null;
+    awxFreshInstallId: number | null;
   } = $props();
 
   let hostName = $state('');
@@ -360,8 +362,9 @@
                 <Label for="runSetupAfterPing">Run Fresh Install Setup</Label>
               </div>
               <p class="text-muted-foreground text-xs">
-                After ping test succeeds, run the workflow-manual-setup-fresh job template on this
-                host.
+                After ping test succeeds, run the job template with id {awxFreshInstallId !== null
+                  ? awxFreshInstallId
+                  : 'not available'} on this host.
               </p>
             </div>
           </AccordionContent>
