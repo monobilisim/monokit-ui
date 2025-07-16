@@ -56,7 +56,7 @@
           {#if userInfo.groups !== 'nil'}
             <Badge variant="secondary">Groups: {userInfo.groups}</Badge>
           {/if}
-          {#if userInfo.inventories !== 'nil' && userInfo.inventories !== '' && userInfo.inventories !== null}
+          {#if userInfo.inventories}
             <Badge variant="secondary">Inventories: {userInfo.inventories}</Badge>
           {/if}
         </div>
