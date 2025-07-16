@@ -327,7 +327,7 @@
         <Select.Root
           type="single"
           onValueChange={(value: string) => {
-            if (value) handleLevelFilter(value);
+            handleLevelFilter(value);
           }}
         >
           <Select.Trigger class="w-[180px]">
@@ -351,7 +351,7 @@
         <Select.Root
           type="single"
           onValueChange={(value: string) => {
-            if (value) handleHostFilter(value);
+            handleHostFilter(value);
           }}
         >
           <Select.Trigger class="w-[180px]">
@@ -369,7 +369,7 @@
         <Select.Root
           type="single"
           onValueChange={(value: string) => {
-            if (value) handleTypeFilter(value);
+            handleTypeFilter(value);
           }}
         >
           <Select.Trigger class="w-[180px]">
