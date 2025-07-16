@@ -95,7 +95,7 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
 };
 
 export const actions: Actions = {
-  deleteHosts: async ({ request, fetch, cookies }) => {
+  forceDeleteHosts: async ({ request, fetch, cookies }) => {
     const auth = cookies.get('Authorization');
     if (!auth) {
       return fail(401, {
@@ -115,16 +115,28 @@ export const actions: Actions = {
         });
       }
 
-      const response = await fetch(`${MONOKIT_URL}/api/v1/hosts`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: auth
-        },
-        body: formData
+      const responses = hosts.map(async (host) => {
+        await new Promise((resolve) => setTimeout(resolve, 200));
+        const response = await fetch(`${MONOKIT_URL}/api/v1/hosts/${host}/force`, {
+          method: 'DELETE',
+          headers: {
+            Authorization: auth
+          }
+        });
+
+        return response;
       });
 
-      if (!response.ok) {
-        throw new Error(await response.text());
+      const failedResults = await Promise.all(
+        responses.map(async (response: Promise<Response>) => {
+          if (!response.ok) {
+            return await response.text();
+          }
+        })
+      );
+
+      if (failedResults.length > 0) {
+        throw new Error(`${failedResults.join(' ')}`);
       }
 
       return {

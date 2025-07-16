@@ -84,21 +84,6 @@
     }
   }
 
-  function getAlertStyles(type: AlertMessage['type']) {
-    switch (type) {
-      case 'error':
-        return 'border-red-200 bg-red-50 text-red-800';
-      case 'warn':
-        return 'border-yellow-200 bg-yellow-50 text-yellow-800';
-      case 'success':
-        return 'border-green-200 bg-green-50 text-green-800';
-      case 'info':
-        return 'border-blue-200 bg-blue-50 text-blue-800';
-      default:
-        return '';
-    }
-  }
-
   function dismissAlert(id: string) {
     alerts.remove(id);
   }
@@ -116,6 +101,8 @@
     } else {
       userData = null;
     }
+
+    console.log(userData);
   });
 
   const menuItems = [
@@ -129,11 +116,11 @@
 </script>
 
 <!-- Alert Messages -->
-<div class="fixed top-4 right-4 z-50 max-w-md space-y-2">
+<div class="fixed right-4 bottom-4 z-50 max-w-md space-y-2">
   {#each $alerts as alert (alert.id)}
     <Alert.Root
       variant={getAlertVariant(alert.type)}
-      class="cursor-pointer {getAlertStyles(alert.type)}"
+      class="cursor-pointer"
       onclick={() => dismissAlert(alert.id!)}
     >
       {#if alert.type === 'error'}
@@ -163,7 +150,7 @@
             >
               <Package class="h-4 w-4" />
             </div>
-            <span class="font-semibold">MonoKit</span>
+            <span class="font-semibold">Monokit</span>
           </div>
         </Sidebar.Header>
 

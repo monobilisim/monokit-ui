@@ -107,7 +107,7 @@ export const load: PageServerLoad = async ({ params, fetch, cookies }) => {
     };
   } catch (err) {
     console.error('Failed to fetch host details:', err);
-    throw error(500, err instanceof Error ? err.message : 'An unknown error occurred');
+    //throw error(500, err instanceof Error ? err.message : 'An unknown error occurred');
   }
 };
 

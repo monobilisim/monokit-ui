@@ -23,6 +23,7 @@
 
   onMount(() => {
     console.log(hostStats);
+    console.log(userInfo);
   });
 
   $: chartData = hostStats
@@ -55,7 +56,7 @@
           {#if userInfo.groups !== 'nil'}
             <Badge variant="secondary">Groups: {userInfo.groups}</Badge>
           {/if}
-          {#if userInfo.inventories !== 'nil'}
+          {#if userInfo.inventories !== 'nil' && userInfo.inventories !== '' && userInfo.inventories !== null}
             <Badge variant="secondary">Inventories: {userInfo.inventories}</Badge>
           {/if}
         </div>
@@ -63,20 +64,6 @@
     </Card>
 
     <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-      <!-- <Card>
-        <CardHeader>
-          <CardTitle>Host Status Overview</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div class="relative mx-auto h-[200px] w-[200px]">
-            <canvas bind:this={hostChartCanvas}></canvas>
-          </div>
-          <div class="mt-4 text-center">
-            <span class="text-2xl font-bold">{hostStats.total}</span>
-            <span class="text-base">hosts</span>
-          </div>
-        </CardContent>
-      </Card> -->
       <Card class="flex flex-col">
         <CardHeader class="items-center">
           <CardTitle>Host Status</CardTitle>

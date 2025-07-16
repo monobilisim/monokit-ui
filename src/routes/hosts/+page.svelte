@@ -83,7 +83,7 @@
         <Dialog bind:open={showDeleteModal}>
           <DialogTrigger>
             <Button variant="destructive" disabled={selectedHosts.length === 0}>
-              Delete Selected ({selectedHosts.length})
+              Force Delete Selected ({selectedHosts.length})
             </Button>
           </DialogTrigger>
           <DialogContent>
@@ -96,7 +96,7 @@
               </DialogDescription>
             </DialogHeader>
             <DialogFooter>
-              <form action="?/deleteHosts" method="POST" use:enhance>
+              <form action="?/forceDeleteHosts" method="POST" use:enhance>
                 {#each selectedHosts as host, i (i)}
                   <input type="hidden" name="hosts[]" value={host} />
                 {/each}
@@ -168,7 +168,7 @@
                 <Table.Cell>
                   <div class="flex gap-2">
                     <Button variant="ghost" size="sm" href="/hosts/{host.name}">View</Button>
-                    <Dialog>
+                    <!-- <Dialog>
                       <DialogTrigger>
                         <Button variant="ghost" size="sm" class="text-destructive">
                           Force Delete
@@ -190,7 +190,7 @@
                           </form>
                         </DialogFooter>
                       </DialogContent>
-                    </Dialog>
+                    </Dialog> -->
                   </div>
                 </Table.Cell>
               </Table.Row>

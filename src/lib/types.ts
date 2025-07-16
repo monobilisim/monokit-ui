@@ -153,3 +153,12 @@ export type LogsPageData = {
   availableTypes: string[];
   chartData: LogChartData[];
 };
+
+export type UserPageData = {
+  id: number;
+  email: string;
+  groups: string;
+  inventories: string;
+  role: string;
+  username: string;
+};

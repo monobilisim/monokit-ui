@@ -31,8 +31,6 @@ export const load: LayoutServerLoad = async ({ cookies }) => {
   }
 
   if (!res.ok) {
-    console.error('Failed to fetch user data:', res.statusText);
-
     cookies.delete('Authorization', { path: '/' });
     cookies.delete('userData', { path: '/' });
 
