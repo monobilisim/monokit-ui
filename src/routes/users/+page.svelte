@@ -144,20 +144,6 @@
 </script>
 
 <div class="w-full space-y-4 p-4">
-  <div class="mb-6 flex items-center justify-between">
-    <div></div>
-    <div class="flex items-center gap-2">
-      <Button.Root class="cursor-pointer" variant="outline" onclick={refreshPage}>
-        <RefreshCwIcon class="mr-2 h-4 w-4" />
-        Refresh
-      </Button.Root>
-      <Button.Root class="cursor-pointer" onclick={openCreateModal}>
-        <PlusIcon class="mr-2 h-4 w-4" />
-        Add User
-      </Button.Root>
-    </div>
-  </div>
-
   {#if data.error}
     <Alert.Root variant="destructive" class="mb-6">
       <AlertTriangleIcon class="h-4 w-4" />
@@ -182,18 +168,34 @@
     </Card.Root>
   {:else}
     <Card.Root>
-      <Card.Header>
-        <div class="flex items-center justify-between">
-          <Card.Title>Users ({data.users?.length || 0})</Card.Title>
-          <div class="flex items-center gap-2">
-            <Button.Root
-              variant="destructive"
-              disabled={selectedUsers.length === 0}
-              onclick={openDeleteModal}
-            >
-              <Trash2Icon class="mr-2 h-4 w-4" />
-              Delete Selected ({selectedUsers.length})
-            </Button.Root>
+      <Card.Header class="flex items-center">
+        <Card.Title class="w-32">Users ({data.users?.length || 0})</Card.Title>
+        <div class="flex w-full justify-end">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <Button.Root
+                variant="destructive"
+                disabled={selectedUsers.length === 0}
+                onclick={openDeleteModal}
+              >
+                <Trash2Icon class="mr-2 h-4 w-4" />
+                Delete Selected ({selectedUsers.length})
+              </Button.Root>
+            </div>
+          </div>
+
+          <div class="ml-2 flex items-center justify-between">
+            <div></div>
+            <div class="flex items-center gap-2">
+              <Button.Root class="cursor-pointer" variant="outline" onclick={refreshPage}>
+                <RefreshCwIcon class="mr-2 h-4 w-4" />
+                Refresh
+              </Button.Root>
+              <Button.Root class="cursor-pointer" onclick={openCreateModal}>
+                <PlusIcon class="mr-2 h-4 w-4" />
+                Add User
+              </Button.Root>
+            </div>
           </div>
         </div>
       </Card.Header>
