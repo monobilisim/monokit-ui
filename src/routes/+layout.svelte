@@ -61,10 +61,14 @@
 
   let { children, data }: { children: Snippet<[]>; data: ExtendedLayoutData } = $props();
 
+  let userData: UserData | null = data.userData;
+
   $effect(() => {
     if (data.alerts && data.alerts.length > 0) {
       data.alerts.forEach((alert) => {
-        alerts.add(alert);
+        if (window.location.pathname !== '/login') {
+          alerts.add(alert);
+        }
       });
     }
   });
@@ -87,23 +91,6 @@
   function dismissAlert(id: string) {
     alerts.remove(id);
   }
-
-  let userData: UserData | null = $state(null);
-
-  $effect((): void => {
-    const userDataString = getCookie('userData');
-    if (userDataString) {
-      try {
-        userData = JSON.parse(userDataString);
-      } catch {
-        userData = null;
-      }
-    } else {
-      userData = null;
-    }
-
-    console.log(userData);
-  });
 
   const menuItems = [
     { href: '/', icon: LayoutDashboard, label: 'Dashboard' },
@@ -179,14 +166,14 @@
           </Sidebar.Group>
         </Sidebar.Content>
 
-        <Sidebar.Footer class="border-t px-2 py-3">
+        <Sidebar.Footer class="mb-8 border-t px-2 py-3">
           <Sidebar.Menu>
-            {#if userData !== null}
-              <Sidebar.MenuItem>
-                <div class="flex w-full items-center justify-between px-2 py-1">
+            {#if userData}
+              <Sidebar.MenuItem class="ml-2 flex items-center border-b pb-2 align-middle">
+                <div class="flex w-full items-center justify-between">
                   <div class="flex items-center gap-2">
                     <div
-                      class="bg-muted text-muted-foreground flex h-6 w-6 items-center justify-center rounded-full text-xs"
+                      class="bg-muted text-muted-foreground flex h-4 w-4 items-center justify-center rounded-full text-sm"
                     >
                       {userData.username.charAt(0).toUpperCase()}
                     </div>
@@ -196,10 +183,10 @@
                     type="submit"
                     variant="ghost"
                     size="sm"
-                    class="h-6 w-6 p-0"
+                    class="cursor-pointer bg-red-500 p-2"
                     onclick={async () => logout()}
                   >
-                    <X class="h-3 w-3" />
+                    Logout
                   </Button>
                 </div>
               </Sidebar.MenuItem>
