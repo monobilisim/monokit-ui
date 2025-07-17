@@ -25,7 +25,6 @@
   } = $props();
 
   import { LineChart } from 'layerchart';
-  import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
   import { scaleUtc } from 'd3-scale';
   import { curveNatural } from 'd3-shape';
   import * as Chart from '$lib/components/ui/chart/index.js';
@@ -146,7 +145,7 @@
       url.searchParams.set('page', '1');
     }
 
-    goto(url.toString());
+    goto(url.toString(), { keepFocus: true });
   };
 
   const handleSearch = (event: Event) => {
