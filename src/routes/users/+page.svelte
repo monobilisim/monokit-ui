@@ -64,11 +64,6 @@
     }
   });
 
-  $effect(() => {
-    console.log(data.inventories);
-    console.log(data.users);
-  });
-
   function handleSelect(username: string) {
     if (selectedUsers.includes(username)) {
       selectedUsers = selectedUsers.filter((u) => u !== username);

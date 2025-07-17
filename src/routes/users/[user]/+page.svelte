@@ -10,10 +10,6 @@
 
   const user = data.user || null;
 
-  $effect(() => {
-    console.log(user);
-  });
-
   import { Button } from '$lib/components/ui/button/index.js';
   import { Label } from '$lib/components/ui/label/index.js';
   import { Input } from '$lib/components/ui/input/index.js';

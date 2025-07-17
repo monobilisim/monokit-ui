@@ -333,7 +333,9 @@
                   <!-- Editable textarea overlay -->
                   <textarea
                     bind:value={extraVars}
-                    placeholder="ansible_ssh_user: admin&#10;ansible_ssh_port: 22&#10;description: Production server"
+                    placeholder="ansible_ssh_user: admin&#10;
+ansible_ssh_port: 22&#10;
+description: Production server"
                     rows={6}
                     disabled={isSubmitting}
                     class="relative z-10 w-full resize-none bg-transparent p-3 font-mono text-sm leading-5 text-white placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-950 focus:outline-none"
