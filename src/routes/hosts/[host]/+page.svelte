@@ -70,7 +70,7 @@
     <p class="text-muted-foreground">Host not found</p>
   </div>
 {:else}
-  <div class="container space-y-4 p-4">
+  <div class="w-full space-y-4 p-4">
     <!-- Header -->
     <div class="flex items-center justify-between">
       <div class="flex items-center gap-4">
