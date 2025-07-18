@@ -114,7 +114,7 @@
                         <Badge variant="outline">{data.host.awxHostId}</Badge>
                       </a>
                     {:else}
-                      <Badge variant="outline" class="bg-gray-100">
+                      <Badge variant="outline">
                         {data.host.awxHostId || 'Not configured'}
                       </Badge>
                     {/if}
