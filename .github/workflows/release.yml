@@ -44,11 +44,11 @@ jobs:
           MINOR=${VERSION_PARTS[1]:-0}
           PATCH=${VERSION_PARTS[2]:-0}
 
-          LAST_COMMIT_MSG=$(git log -1 --pretty=%B)
+          LAST_COMMIT_MSG="${{ github.event.head_commit.message }}"
 
-          if [[ "$LAST_COMMIT_MSG" == *"#major"* ]]; then
+          if echo "$LAST_COMMIT_MSG" | grep -iq "#major"; then
             BUMP_TYPE="major"
-          elif [[ "$LAST_COMMIT_MSG" == *"#minor"* ]]; then
+          elif echo "$LAST_COMMIT_MSG" | grep -iq "#minor"; then
             BUMP_TYPE="minor"
           else
             BUMP_TYPE="patch"
