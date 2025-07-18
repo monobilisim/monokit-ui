@@ -1,8 +1,8 @@
-import type { ServerPageLoad } from './$types';
+import type { PageServerLoad } from './$types';
 import { fail } from '@sveltejs/kit';
 const MONOKIT_URL = Bun.env.MONOKIT_URL;
 
-export const load: ServerPageLoad = async ({ fetch, cookies, params }) => {
+export const load: PageServerLoad = async ({ fetch, cookies, params }) => {
   const auth = cookies.get('Authorization');
 
   if (!auth) {
@@ -30,8 +30,24 @@ export const load: ServerPageLoad = async ({ fetch, cookies, params }) => {
     });
   }
 
+  const jobResponse = await fetch(`${MONOKIT_URL}/api/v1/awx/jobs/${jobID}`, {
+    headers: {
+      Authorization: auth
+    }
+  });
+
+  if (!jobResponse.ok) {
+    return fail(jobResponse.status, {
+      type: 'error',
+      message: 'Failed to fetch job details'
+    });
+  }
+
+  const job = await jobResponse.json();
+
   return {
     jobData: data,
-    jobID
+    jobID,
+    job
   };
 };

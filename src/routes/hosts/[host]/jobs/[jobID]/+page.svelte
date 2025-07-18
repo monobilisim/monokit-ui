@@ -5,6 +5,7 @@
   let { data } = $props();
   const jobData = data.jobData || { logs: '' };
   const jobID = data.jobID || 0;
+  const job = data.job || {};
 
   const logLines = jobData.logs.split('\n');
 
@@ -21,6 +22,10 @@
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }
+
+  $effect(() => {
+    console.log(`${job.job_env.AWX_HOST}/#/jobs/playbooks/${jobID}/`);
+  });
 </script>
 
 {#if jobData}
@@ -29,7 +34,15 @@
       <Card.Header class="flex items-center justify-between">
         <Card.Title>Job Logs</Card.Title>
 
-        <Button class="cursor-pointer" onclick={downloadLogsAsTxt}>Download as txt</Button>
+        <div>
+          <Button
+            class="cursor-pointer"
+            href={`${job.job_env.AWX_HOST}/#/jobs/playbooks/${jobID}/`}
+          >
+            View on AWX</Button
+          >
+          <Button class="cursor-pointer" onclick={downloadLogsAsTxt}>Download as txt</Button>
+        </div>
       </Card.Header>
       <Card.Content class="flex-1 overflow-y-auto">
         {#each logLines as line, i (i)}

@@ -30,6 +30,7 @@
   let showForceDeleteModal = $state(false);
   let showComponentsModal = $state(false);
   let selectedHealthTool = $state('');
+  const hostName = data.hostName;
 
   // Handle form responses
   $effect(() => {
@@ -230,7 +231,9 @@
                       <div class="space-y-1">
                         <p class="font-medium">{job.name}</p>
                         <div class="text-muted-foreground flex items-center gap-2 text-sm">
-                          <Badge class={getAwxStatusColor(job.status)}>{job.status}</Badge>
+                          <Badge class={getAwxStatusColor(job.status) + ' ' + 'text-white'}
+                            >{job.status}</Badge
+                          >
                           <span>Started: {new Date(job.started).toLocaleString()}</span>
                           {#if job.finished}
                             <span>Finished: {new Date(job.finished).toLocaleString()}</span>
@@ -238,8 +241,10 @@
                         </div>
                       </div>
                       {#if job.url}
-                        <Button variant="outline" href={job.url} target="_blank"
-                          >View Details</Button
+                        <Button
+                          variant="outline"
+                          href={`/hosts/${hostName}/jobs/${job.id}`}
+                          target="_blank">View Details</Button
                         >
                       {/if}
                     </div>

@@ -103,7 +103,8 @@ export const load: PageServerLoad = async ({ params, fetch, cookies }) => {
       awxJobs,
       healthTools,
       osHealth,
-      auth
+      auth,
+      hostName: host
     };
   } catch (err) {
     console.error('Failed to fetch host details:', err);
