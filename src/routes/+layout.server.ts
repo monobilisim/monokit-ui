@@ -1,6 +1,6 @@
 import type { LayoutServerLoad } from './$types';
 import type { UserData, AlertMessage } from '$lib/types';
-
+import { redirect } from '@sveltejs/kit';
 const MONOKIT_URL = Bun.env.MONOKIT_URL;
 
 export const load: LayoutServerLoad = async ({ cookies }) => {
@@ -46,7 +46,18 @@ export const load: LayoutServerLoad = async ({ cookies }) => {
     };
   }
 
-  return {
-    userData: null
-  };
+  const userData = cookies.get('userData');
+
+  if (userData) {
+    return {
+      userData: JSON.parse(userData),
+      alerts: []
+    };
+  } else {
+    redirect(301, '/login');
+    return {
+      userData: null,
+      alerts: []
+    };
+  }
 };

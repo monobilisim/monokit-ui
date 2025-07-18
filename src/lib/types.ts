@@ -103,6 +103,7 @@ export type HostDetailPageData = {
   awxJobs: AwxJob[];
   healthTools: string[];
   osHealth?: unknown;
+  hostName: string;
 };
 
 export type InventoryData = {

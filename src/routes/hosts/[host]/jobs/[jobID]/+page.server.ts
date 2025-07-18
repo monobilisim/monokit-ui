@@ -43,7 +43,7 @@ export const load: PageServerLoad = async ({ fetch, cookies, params }) => {
     });
   }
 
-  const job = await jobResponse.json();
+  const job: { job_env: { AWX_HOST: string } } = await jobResponse.json();
 
   return {
     jobData: data,

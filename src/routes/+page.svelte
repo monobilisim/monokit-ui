@@ -11,8 +11,6 @@
   import * as Chart from '$lib/components/ui/chart/index.js';
   import { PieChart, Text } from 'layerchart';
 
-  import { onMount } from 'svelte';
-
   export let data;
 
   $: userInfo = data.userInfo;
@@ -20,11 +18,6 @@
   $: userRole = userInfo?.role;
   $: logStats = data.logStats;
   $: errorCount = data.errorCount;
-
-  onMount(() => {
-    console.log(hostStats);
-    console.log(userInfo);
-  });
 
   $: chartData = hostStats
     ? [

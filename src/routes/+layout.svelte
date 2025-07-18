@@ -1,6 +1,7 @@
 <script lang="ts">
   import '../app.css';
   import { page } from '$app/state';
+  import { goto } from '$app/navigation';
   import {
     LayoutDashboard,
     Server,
@@ -47,9 +48,24 @@
   }
 
   async function logout(): Promise<void> {
-    await fetch(`/logout`, {
+    const response = await fetch(`/logout`, {
       credentials: 'include'
     });
+
+    if (!response.ok) {
+      return;
+    }
+
+    const data = await response.json();
+
+    if (data.logout === true) {
+      await goto('/login');
+    } else {
+      alerts.add({
+        type: 'error',
+        message: 'Failed to log out. Please try again.'
+      });
+    }
   }
 
   type ExtendedLayoutData = LayoutData & {
@@ -192,6 +208,7 @@
               <Sidebar.MenuButton
                 tooltipContent={dark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
                 onclick={toggleDark}
+                class="cursor-pointer p-2"
               >
                 {#if dark}
                   <Sun class="h-4 w-4" />

@@ -1,11 +1,24 @@
 <script lang="ts">
+  import type { PageData } from './$types';
   import * as Card from '$lib/components/ui/card';
   import { Button } from '$lib/components/ui/button';
 
-  let { data } = $props();
+  type ExtendedPageData = PageData & {
+    jobData?: {
+      logs: string;
+    };
+    jobID?: number;
+    job?: {
+      job_env: {
+        AWX_HOST: string;
+      };
+    };
+  };
+
+  let { data }: { data: ExtendedPageData } = $props();
   const jobData = data.jobData || { logs: '' };
   const jobID = data.jobID || 0;
-  const job = data.job || {};
+  const job = data.job;
 
   const logLines = jobData.logs.split('\n');
 
@@ -22,10 +35,6 @@
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }
-
-  $effect(() => {
-    console.log(`${job.job_env.AWX_HOST}/#/jobs/playbooks/${jobID}/`);
-  });
 </script>
 
 {#if jobData}
@@ -37,7 +46,7 @@
         <div>
           <Button
             class="cursor-pointer"
-            href={`${job.job_env.AWX_HOST}/#/jobs/playbooks/${jobID}/`}
+            href={job && `${job.job_env.AWX_HOST}/#/jobs/playbooks/${jobID}/`}
           >
             View on AWX</Button
           >
