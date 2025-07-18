@@ -72,15 +72,12 @@
 </script>
 
 <div class="w-full space-y-4 p-4">
-  <!-- Main Content -->
   <div class="bg-card rounded-lg p-6">
     <div class="space-y-4">
       <div class="flex items-center gap-4">
-        <!-- Search -->
         <div class="flex-grow">
           <Input type="text" placeholder="Filter hosts..." bind:value={searchValue} />
         </div>
-        <!-- Actions -->
         <Dialog bind:open={showDeleteModal}>
           <DialogTrigger>
             <Button variant="destructive" disabled={selectedHosts.length === 0}>

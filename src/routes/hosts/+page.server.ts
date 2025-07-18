@@ -1,5 +1,6 @@
 const MONOKIT_URL = Bun.env.MONOKIT_URL;
 const AWX_SETUP_TEMPLATE_ID = Bun.env.AWX_SETUP_TEMPLATE_ID;
+const AWX_PING_TEMPLATE_ID = Bun.env.AWX_PING_TEMPLATE_ID;
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail } from '@sveltejs/kit';
 
@@ -216,17 +217,14 @@ export const actions: Actions = {
         });
       }
 
-      // Prepare request payload
       const payload: Record<string, unknown> = {
         name: hostName,
         ip_address: ipAddress,
         awx_only: true
       };
 
-      // Add extra variables if provided
       if (extraVars?.trim()) {
         try {
-          // Parse YAML-like variables into object
           const vars: Record<string, string> = {};
           const lines = extraVars.trim().split('\n');
           for (const line of lines) {
@@ -251,7 +249,6 @@ export const actions: Actions = {
 
       console.log('Creating AWX host with payload:', payload);
 
-      // Step 1: Create host in AWX
       const createResponse = await fetch(`${MONOKIT_URL}/api/v1/hosts/awx`, {
         method: 'POST',
         headers: {
@@ -268,18 +265,23 @@ export const actions: Actions = {
           if (errorMsg === 'Host with this Name and Inventory already exists.') {
             return fail(400, {
               type: 'error',
-              message: `A host with the name "${hostName}" already exists in AWX.`
+              message: `A host with the name "${hostName}" already exists in AWX. Please choose a different name.`
             });
           }
         }
-        throw new Error(errorData.error || `Failed to create host: ${createResponse.status}`);
+
+        const errorMessage =
+          errorData.error ||
+          errorData.message ||
+          `Failed to create host (${createResponse.status})`;
+        return fail(createResponse.status, {
+          type: 'error',
+          message: `Failed to create host "${hostName}": ${errorMessage}`
+        });
       }
 
       const createdHost = await createResponse.json();
       console.log('Host created successfully:', createdHost);
-
-      // Step 2: Run ping job with hardcoded template ID
-      const pingTemplateId = 107; // manual-check-ping
       console.log('Running ping job...');
 
       const jobResponse = await fetch(`${MONOKIT_URL}/api/v1/hosts/${hostName}/awx-jobs/execute`, {
@@ -289,13 +291,12 @@ export const actions: Actions = {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          template_id: pingTemplateId,
+          template_id: AWX_PING_TEMPLATE_ID,
           extra_vars: { limit: hostName }
         })
       });
 
       if (!jobResponse.ok) {
-        // Clean up by deleting the host
         if (createdHost && createdHost.id) {
           try {
             await fetch(`${MONOKIT_URL}/api/v1/hosts/awx/${createdHost.id}`, {
@@ -306,30 +307,47 @@ export const actions: Actions = {
             console.error('Failed to delete host after job launch failure:', deleteErr);
           }
         }
-        throw new Error('Failed to launch ping job');
+
+        const errorData = await jobResponse.json().catch(() => ({}));
+        const errorMessage =
+          errorData.error ||
+          errorData.message ||
+          `Failed to launch ping job (${jobResponse.status})`;
+
+        return fail(jobResponse.status, {
+          type: 'error',
+          message: `Host "${hostName}" was created but connectivity test failed to start: ${errorMessage}`
+        });
       }
 
       const jobData = await jobResponse.json();
       const jobId = jobData.job_id || jobData.id;
       console.log('Ping job launched with ID:', jobId);
 
-      // Step 3: Poll for job status
       let attempts = 0;
-      const maxAttempts = 20;
+      const maxAttempts = 30;
+      const pollInterval = 2000;
 
       while (attempts < maxAttempts) {
         attempts++;
         console.log(`Checking job status (attempt ${attempts}/${maxAttempts})...`);
 
-        // Wait 3 seconds between checks
-        await new Promise((resolve) => setTimeout(resolve, 3000));
+        await new Promise((resolve) => setTimeout(resolve, pollInterval));
 
         const statusResponse = await fetch(`${MONOKIT_URL}/api/v1/awx/jobs/${jobId}`, {
           headers: { Authorization: auth }
         });
 
         if (!statusResponse.ok) {
-          throw new Error('Failed to check job status');
+          if (attempts < maxAttempts - 5) {
+            console.log('Failed to check job status, retrying...');
+            continue;
+          }
+
+          return fail(500, {
+            type: 'error',
+            message: `Host "${hostName}" was created but connectivity test status could not be verified`
+          });
         }
 
         const statusData = await statusResponse.json();
@@ -337,7 +355,7 @@ export const actions: Actions = {
         console.log(`Job status: ${status}`);
 
         if (status === 'successful') {
-          let finalMessage = `Host "${hostName}" was successfully added to AWX`;
+          let finalMessage = `Host "${hostName}" was successfully added to AWX and connectivity verified`;
 
           if (runSetupAfterPing) {
             const setupTemplateId = AWX_SETUP_TEMPLATE_ID;
@@ -364,13 +382,19 @@ export const actions: Actions = {
                 const setupData = await setupResponse.json();
                 const setupJobId = setupData.job_id || setupData.id;
                 console.log('Setup job launched with ID:', setupJobId);
-                finalMessage = `Host "${hostName}" successfully added to AWX and setup job launched`;
+                finalMessage = `Host "${hostName}" successfully added to AWX, connectivity verified, and setup workflow started (Job ID: ${setupJobId})`;
               } else {
-                finalMessage = `Host "${hostName}" added to AWX, but setup job failed to launch`;
+                const setupErrorData = await setupResponse.json().catch(() => ({}));
+                const setupError =
+                  setupErrorData.error || setupErrorData.message || 'Unknown error';
+                console.error('Setup job failed:', setupError);
+                finalMessage = `Host "${hostName}" added to AWX and connectivity verified, but setup workflow failed to start: ${setupError}`;
               }
             } catch (setupErr) {
               console.error('Failed to run setup job:', setupErr);
-              finalMessage = `Host "${hostName}" added to AWX, but setup job failed to launch`;
+              const setupErrorMessage =
+                setupErr instanceof Error ? setupErr.message : 'Unknown error';
+              finalMessage = `Host "${hostName}" added to AWX and connectivity verified, but setup workflow failed to start: ${setupErrorMessage}`;
             }
           }
 
@@ -379,7 +403,6 @@ export const actions: Actions = {
             message: finalMessage
           };
         } else if (['failed', 'error', 'canceled'].includes(status)) {
-          // Job failed, delete the host
           console.log('Ping check failed, deleting host');
 
           if (createdHost && createdHost.id) {
@@ -388,28 +411,54 @@ export const actions: Actions = {
                 method: 'DELETE',
                 headers: { Authorization: auth }
               });
+              console.log('Host deleted after failed ping check');
             } catch (deleteErr) {
               console.error('Failed to delete host after failed ping check:', deleteErr);
             }
           }
 
+          let failureDetails = '';
+          try {
+            const jobDetailsResponse = await fetch(`${MONOKIT_URL}/api/v1/awx/jobs/${jobId}`, {
+              headers: { Authorization: auth }
+            });
+            if (jobDetailsResponse.ok) {
+              const jobDetails = await jobDetailsResponse.json();
+              if (jobDetails.job_explanation) {
+                failureDetails = ` (${jobDetails.job_explanation})`;
+              }
+            }
+          } catch {
+            // Ignore error getting job details
+          }
+
           return fail(400, {
             type: 'error',
-            message: `Host validation failed. The host could not be reached. Job status: ${status}`
+            message: `Host "${hostName}" connectivity test failed${failureDetails}. The host could not be reached and has been removed from AWX.`
           });
+        } else if (status === 'pending' || status === 'running') {
+          continue;
+        } else {
+          console.log(`Unknown job status: ${status}, continuing to poll...`);
+          continue;
         }
       }
 
-      // Timeout
       return fail(408, {
         type: 'error',
-        message: 'Validation timed out after multiple attempts'
+        message: `Host "${hostName}" connectivity test timed out after ${(maxAttempts * pollInterval) / 1000} seconds. The host may have been created but connectivity could not be verified.`
       });
     } catch (err) {
       console.error('Failed to add AWX host:', err);
+
+      let errorMessage = 'An unexpected error occurred while adding the host';
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+
       return fail(500, {
         type: 'error',
-        message: err instanceof Error ? err.message : 'Failed to add AWX host'
+        message: `Failed to add AWX host: ${errorMessage}`
       });
     }
   }

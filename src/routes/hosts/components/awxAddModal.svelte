@@ -24,8 +24,8 @@
     AccordionItem,
     AccordionTrigger
   } from '$lib/components/ui/accordion';
-  import { handleFormResponse } from '$lib/stores/alerts';
-  import { PlusCircleIcon, HelpCircleIcon } from 'lucide-svelte';
+  import { alerts, handleFormResponse } from '$lib/stores/alerts';
+  import { PlusCircleIcon, HelpCircleIcon, Loader2 } from 'lucide-svelte';
   import type { FormResponse } from '$lib/types';
 
   let {
@@ -41,32 +41,24 @@
   let hostName = $state('');
   let ipAddress = $state('');
   let extraVars = $state('');
-
   let runSetupAfterPing = $state(false);
   let isSubmitting = $state(false);
-
-  // Form validation
   let hostNameError = $state('');
   let ipAddressError = $state('');
   let extraVarsError = $state('');
-
-  // Processing states
   let processingStep = $state(''); // '', 'adding', 'validating', 'setup', 'success'
   let successMessage = $state('');
-
-  // Syntax highlighting
   let highlightedYaml = $state('');
 
-  // Reset form when modal opens
   $effect(() => {
     if (open) {
       resetForm();
     }
   });
 
-  // Handle form response
   $effect(() => {
     if (form) {
+      isSubmitting = true;
       handleFormResponse(form);
       if (form.type === 'success') {
         successMessage = form.message || 'Host added successfully';
@@ -79,7 +71,6 @@
     }
   });
 
-  // Update syntax highlighting when extraVars changes
   // @ts-expect-error somehow it does ot accept the type
   $effect(async (): Promise<void> => {
     if (extraVars.trim()) {
@@ -88,7 +79,6 @@
           lang: 'yaml',
           theme: 'github-dark'
         });
-        // Remove the outer pre tags and keep only the inner content
         highlightedYaml = html.replace(/<pre[^>]*><code[^>]*>/, '').replace(/<\/code><\/pre>/, '');
       } catch (error) {
         console.error('Error highlighting YAML:', error);
@@ -110,12 +100,12 @@
     extraVarsError = '';
     processingStep = '';
     successMessage = '';
+    isSubmitting = false;
   }
 
   function validateForm() {
     let isValid = true;
 
-    // Validate host name
     if (!hostName.trim()) {
       hostNameError = 'Host name is required';
       isValid = false;
@@ -123,7 +113,6 @@
       hostNameError = '';
     }
 
-    // Validate IP address
     if (!ipAddress.trim()) {
       ipAddressError = 'IP address is required';
       isValid = false;
@@ -131,10 +120,8 @@
       ipAddressError = '';
     }
 
-    // Validate extra vars if present
     if (extraVars.trim()) {
       try {
-        // Simple YAML validation - check basic syntax
         const lines = extraVars.trim().split('\n');
         for (const line of lines) {
           if (line.trim() && !line.includes(':') && !line.startsWith('#')) {
@@ -163,19 +150,22 @@
       processingStep = 'adding';
       successMessage = '';
 
+      alerts.add({
+        type: 'info',
+        message: `Adding host "${hostName}" to AWX. This may take a few moments...`
+      });
+
       await update();
-      // The form response will be handled by the $effect above
     };
   }
 
   function handleClose() {
-    if (!isSubmitting) {
+    if (!isSubmitting || processingStep === 'success') {
       open = false;
       resetForm();
     }
   }
 
-  // Clear individual field errors when user types
   $effect(() => {
     if (hostNameError && hostName.trim()) {
       hostNameError = '';
@@ -208,7 +198,6 @@
     </DialogHeader>
 
     <form action="?/addAwxHost" method="POST" use:enhance={handleSubmit} class="space-y-4">
-      <!-- Success Message -->
       {#if successMessage}
         <div class="rounded-md bg-green-50 p-4">
           <div class="flex">
@@ -219,37 +208,21 @@
         </div>
       {/if}
 
-      <!-- Processing Status -->
-      {#if processingStep === 'adding'}
+      {#if isSubmitting}
         <div class="rounded-md bg-blue-50 p-4">
           <div class="flex items-center">
-            <div class="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-blue-600"></div>
-            <div class="text-sm text-blue-800">Creating host in AWX...</div>
-          </div>
-        </div>
-      {/if}
-
-      {#if processingStep === 'validating'}
-        <div class="rounded-md bg-blue-50 p-4">
-          <div class="flex items-center">
-            <div class="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-blue-600"></div>
+            <Loader2 class="mr-2 h-4 w-4 animate-spin text-blue-600" />
             <div class="text-sm text-blue-800">
-              Running ping check on the new host. This may take a few moments...
+              {#if processingStep === 'adding'}
+                Creating host "{hostName}" in AWX...
+              {:else}
+                Processing host "{hostName}". This may take a few moments...
+              {/if}
             </div>
           </div>
         </div>
       {/if}
 
-      {#if processingStep === 'setup'}
-        <div class="rounded-md bg-blue-50 p-4">
-          <div class="flex items-center">
-            <div class="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-blue-600"></div>
-            <div class="text-sm text-blue-800">Running setup workflow on the new host...</div>
-          </div>
-        </div>
-      {/if}
-
-      <!-- Host Name -->
       <div class="space-y-2">
         <Label for="hostName">Host Name *</Label>
         <Input
@@ -266,7 +239,6 @@
         {/if}
       </div>
 
-      <!-- IP Address -->
       <div class="space-y-2">
         <Label for="ipAddress">IP Address *</Label>
         <Input
@@ -283,12 +255,10 @@
         {/if}
       </div>
 
-      <!-- Advanced Options -->
       <Accordion type="single">
         <AccordionItem value="advanced">
           <AccordionTrigger>Advanced Options</AccordionTrigger>
           <AccordionContent class="space-y-4">
-            <!-- Extra Variables -->
             <div class="space-y-2">
               <div class="flex items-center gap-2">
                 <Label for="extraVars">Extra Variables (YAML format)</Label>
@@ -307,9 +277,7 @@
                 </div>
               </div>
 
-              <!-- Code Editor Container -->
               <div class="relative">
-                <!-- Hidden textarea for form submission -->
                 <Textarea
                   id="extraVars"
                   name="extraVars"
@@ -318,9 +286,7 @@
                   disabled={isSubmitting}
                 />
 
-                <!-- Visual code editor -->
                 <div class="relative overflow-hidden rounded-md border bg-gray-950">
-                  <!-- Syntax highlighted background -->
                   {#if highlightedYaml}
                     <div class="pointer-events-none absolute inset-0 overflow-hidden p-3">
                       <div class="font-mono text-sm leading-5 break-words whitespace-pre-wrap">
@@ -330,7 +296,6 @@
                     </div>
                   {/if}
 
-                  <!-- Editable textarea overlay -->
                   <textarea
                     bind:value={extraVars}
                     placeholder="ansible_ssh_user: admin&#10;
@@ -352,7 +317,6 @@ description: Production server"
               </p>
             </div>
 
-            <!-- Run Setup Toggle -->
             <div class="space-y-2">
               <div class="flex items-center space-x-2">
                 <Switch
@@ -387,7 +351,7 @@ description: Production server"
         </Button>
         <Button type="submit" disabled={isSubmitting || processingStep === 'success'}>
           {#if isSubmitting}
-            <div class="mr-2 h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
+            <Loader2 class="mr-2 h-4 w-4 animate-spin" />
             Processing...
           {:else}
             Add Host
