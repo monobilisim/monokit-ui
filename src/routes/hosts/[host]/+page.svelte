@@ -22,6 +22,14 @@
   import VaultHealth from './health-components/vaultHealth.svelte';
   import WppconnectHealth from './health-components/wppconnectHealth.svelte';
   import ZimbraHealth from './health-components/zimbraHealth.svelte';
+  import MysqlHealth from './health-components/mysqlHealth.svelte';
+  import PgsqlHealth from './health-components/pgsqlHealth.svelte';
+  import RedisHealth from './health-components/redisHealth.svelte';
+  import EsHealth from './health-components/esHealth.svelte';
+  import RmqHealth from './health-components/rmqHealth.svelte';
+  import TraefikHealth from './health-components/traefikHealth.svelte';
+  import K8sHealth from './health-components/k8sHealth.svelte';
+  import PmgHealth from './health-components/pmgHealth.svelte';
   import { handleFormResponse } from '$lib/stores/alerts';
 
   let {
@@ -265,6 +273,15 @@
         <Card.Root>
           <Card.Header>
             <Card.Title>System Health Details</Card.Title>
+            <div class="text-muted-foreground text-sm">
+              {#if data.healthTools.length > 0}
+                {data.healthTools.length} health monitoring tool{data.healthTools.length === 1
+                  ? ''
+                  : 's'} available
+              {:else}
+                No health monitoring tools registered
+              {/if}
+            </div>
           </Card.Header>
           <Card.Content>
             {#if data.healthTools.length === 0}
@@ -273,46 +290,98 @@
                 <p class="text-muted-foreground">
                   No health monitoring tools registered for this host
                 </p>
+                <p class="text-muted-foreground text-sm">
+                  Health tools need to be configured on the host to view monitoring data
+                </p>
               </div>
             {:else}
               <div class="space-y-4">
-                <Select.Root
-                  type="single"
-                  onValueChange={(value: string) => {
-                    selectedHealthTool = value;
-                  }}
-                >
-                  <Select.Trigger class="w-full">
-                    {selectedHealthTool || 'Select a health tool'}
-                  </Select.Trigger>
-                  <Select.Content>
-                    {#each data.healthTools as tool (tool)}
-                      <Select.Item value={tool}>{tool}</Select.Item>
-                    {/each}
-                  </Select.Content>
-                </Select.Root>
+                <div class="space-y-2">
+                  <Select.Root
+                    type="single"
+                    onValueChange={(value: string) => {
+                      selectedHealthTool = value;
+                    }}
+                  >
+                    <Select.Trigger class="w-full">
+                      <span class="truncate">
+                        {selectedHealthTool
+                          ? selectedHealthTool
+                          : 'Choose a health monitoring tool...'}
+                      </span>
+                    </Select.Trigger>
+                    <Select.Content>
+                      {#each data.healthTools as tool (tool)}
+                        <Select.Item value={tool} class="capitalize">
+                          {tool.replace('Health', ' Health')}
+                        </Select.Item>
+                      {/each}
+                    </Select.Content>
+                  </Select.Root>
+                </div>
+
+                {#if !selectedHealthTool}
+                  <div
+                    class="border-border flex flex-col items-center justify-center space-y-3 rounded-lg border-2 border-dashed py-12"
+                  >
+                    <Info class="text-muted-foreground h-12 w-12" />
+                    <div class="space-y-1 text-center">
+                      <p class="font-medium">Select a Health Tool</p>
+                      <p class="text-muted-foreground text-sm">
+                        Choose from the {data.healthTools.length} available monitoring tool{data
+                          .healthTools.length === 1
+                          ? ''
+                          : 's'} above
+                      </p>
+                    </div>
+                  </div>
+                {/if}
               </div>
             {/if}
 
             {#if selectedHealthTool}
-              {#if selectedHealthTool.includes('osHealth') && data.osHealth}
-                <OsHealth osHealth={data.osHealth}></OsHealth>
-              {/if}
-              {#if selectedHealthTool.includes('postalHealth') && data.postalHealth}
-                <PostalHealth postalHealth={data.postalHealth}></PostalHealth>
-              {/if}
-              {#if selectedHealthTool.includes('pritunlHealth') && data.pritunlHealth}
-                <PritunlHealth pritunlHealth={data.pritunlHealth}></PritunlHealth>
-              {/if}
-              {#if selectedHealthTool.includes('vaultHealth') && data.vaultHealth}
-                <VaultHealth vaultHealth={data.vaultHealth}></VaultHealth>
-              {/if}
-              {#if selectedHealthTool.includes('wppconnectHealth') && data.wppconnectHealth}
-                <WppconnectHealth wppconnectHealth={data.wppconnectHealth}></WppconnectHealth>
-              {/if}
-              {#if selectedHealthTool.includes('zimbraHealth') && data.zimbraHealth}
-                <ZimbraHealth zimbraHealth={data.zimbraHealth}></ZimbraHealth>
-              {/if}
+              <div class="mt-6">
+                {#if selectedHealthTool === 'osHealth' && data.osHealth}
+                  <OsHealth osHealth={data.osHealth}></OsHealth>
+                {:else if selectedHealthTool === 'mysqlHealth' && data.mysqlHealth}
+                  <MysqlHealth mysqlHealth={data.mysqlHealth}></MysqlHealth>
+                {:else if selectedHealthTool === 'pgsqlHealth' && data.pgsqlHealth}
+                  <PgsqlHealth pgsqlHealth={data.pgsqlHealth}></PgsqlHealth>
+                {:else if selectedHealthTool === 'redisHealth' && data.redisHealth}
+                  <RedisHealth redisHealth={data.redisHealth}></RedisHealth>
+                {:else if selectedHealthTool === 'esHealth' && data.esHealth}
+                  <EsHealth esHealth={data.esHealth}></EsHealth>
+                {:else if selectedHealthTool === 'rmqHealth' && data.rmqHealth}
+                  <RmqHealth rmqHealth={data.rmqHealth}></RmqHealth>
+                {:else if selectedHealthTool === 'traefikHealth' && data.traefikHealth}
+                  <TraefikHealth traefikHealth={data.traefikHealth}></TraefikHealth>
+                {:else if selectedHealthTool === 'k8sHealth' && data.k8sHealth}
+                  <K8sHealth k8sHealth={data.k8sHealth}></K8sHealth>
+                {:else if selectedHealthTool === 'pmgHealth' && data.pmgHealth}
+                  <PmgHealth pmgHealth={data.pmgHealth}></PmgHealth>
+                {:else if selectedHealthTool === 'postalHealth' && data.postalHealth}
+                  <PostalHealth postalHealth={data.postalHealth}></PostalHealth>
+                {:else if selectedHealthTool === 'pritunlHealth' && data.pritunlHealth}
+                  <PritunlHealth pritunlHealth={data.pritunlHealth}></PritunlHealth>
+                {:else if selectedHealthTool === 'vaultHealth' && data.vaultHealth}
+                  <VaultHealth vaultHealth={data.vaultHealth}></VaultHealth>
+                {:else if selectedHealthTool === 'wppconnectHealth' && data.wppconnectHealth}
+                  <WppconnectHealth wppconnectHealth={data.wppconnectHealth}></WppconnectHealth>
+                {:else if selectedHealthTool === 'zimbraHealth' && data.zimbraHealth}
+                  <ZimbraHealth zimbraHealth={data.zimbraHealth}></ZimbraHealth>
+                {:else}
+                  <div
+                    class="border-border bg-muted/50 flex flex-col items-center justify-center space-y-2 rounded-lg border py-8"
+                  >
+                    <Info class="text-muted-foreground h-8 w-8" />
+                    <p class="font-medium">No Data Available</p>
+                    <p class="text-muted-foreground text-center text-sm">
+                      {selectedHealthTool.replace('Health', ' Health')} monitoring data is not available
+                      for this host
+                    </p>
+                  </div>
+                {/if}
+              </div>
             {/if}
           </Card.Content>
         </Card.Root>

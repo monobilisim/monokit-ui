@@ -84,102 +84,22 @@ export const load: PageServerLoad = async ({ params, fetch, cookies }) => {
 
     const healthTools = healthToolsResponse.ok ? await healthToolsResponse.json() : [];
 
-    // Fetch OS health data
-    let osHealth = null;
-    if (healthTools.includes('osHealth')) {
-      const osHealthResponse = await fetch(`${MONOKIT_URL}/api/v1/hosts/${host}/health/osHealth`, {
-        headers: {
-          Authorization: auth
-        }
-      });
+    // Fetch health data for all available tools
+    const healthData: Record<string, unknown> = {};
 
-      if (osHealthResponse.ok) {
-        osHealth = await osHealthResponse.json();
-      }
-    }
-
-    // Fetch Postal health data
-    let postalHealth = null;
-    if (healthTools.includes('postalHealth')) {
-      const postalHealthResponse = await fetch(
-        `${MONOKIT_URL}/api/v1/hosts/${host}/health/postalHealth`,
-        {
+    for (const tool of healthTools) {
+      try {
+        const healthResponse = await fetch(`${MONOKIT_URL}/api/v1/hosts/${host}/health/${tool}`, {
           headers: {
             Authorization: auth
           }
+        });
+
+        if (healthResponse.ok) {
+          healthData[tool] = await healthResponse.json();
         }
-      );
-
-      if (postalHealthResponse.ok) {
-        postalHealth = await postalHealthResponse.json();
-      }
-    }
-
-    // Fetch Pritunl health data
-    let pritunlHealth = null;
-    if (healthTools.includes('pritunlHealth')) {
-      const pritunlHealthResponse = await fetch(
-        `${MONOKIT_URL}/api/v1/hosts/${host}/health/pritunlHealth`,
-        {
-          headers: {
-            Authorization: auth
-          }
-        }
-      );
-
-      if (pritunlHealthResponse.ok) {
-        pritunlHealth = await pritunlHealthResponse.json();
-      }
-    }
-
-    // Fetch Vault health data
-    let vaultHealth = null;
-    if (healthTools.includes('vaultHealth')) {
-      const vaultHealthResponse = await fetch(
-        `${MONOKIT_URL}/api/v1/hosts/${host}/health/vaultHealth`,
-        {
-          headers: {
-            Authorization: auth
-          }
-        }
-      );
-
-      if (vaultHealthResponse.ok) {
-        vaultHealth = await vaultHealthResponse.json();
-      }
-    }
-
-    // Fetch WppConnect health data
-    let wppconnectHealth = null;
-    if (healthTools.includes('wppconnectHealth')) {
-      const wppconnectHealthResponse = await fetch(
-        `${MONOKIT_URL}/api/v1/hosts/${host}/health/wppconnectHealth`,
-        {
-          headers: {
-            Authorization: auth
-          }
-        }
-      );
-
-      if (wppconnectHealthResponse.ok) {
-        wppconnectHealth = await wppconnectHealthResponse.json();
-      }
-    }
-
-    // Fetch Zimbra health data
-    let zimbraHealth = null;
-    if (healthTools.includes('zimbraHealth')) {
-      const zimbraHealthResponse = await fetch(
-        `${MONOKIT_URL}/api/v1/hosts/${host}/health/zimbraHealth`,
-        {
-          headers: {
-            Authorization: auth
-          }
-        }
-      );
-
-      if (zimbraHealthResponse.ok) {
-        zimbraHealth = await zimbraHealthResponse.json();
+      } catch (error) {
+        console.error(`Failed to fetch ${tool} data:`, error);
       }
     }
 
@@ -187,12 +107,20 @@ export const load: PageServerLoad = async ({ params, fetch, cookies }) => {
       host: hostData,
       awxJobs,
       healthTools,
-      osHealth,
-      postalHealth,
-      pritunlHealth,
-      vaultHealth,
-      wppconnectHealth,
-      zimbraHealth,
+      osHealth: healthData.osHealth,
+      mysqlHealth: healthData.mysqlHealth,
+      pgsqlHealth: healthData.pgsqlHealth,
+      redisHealth: healthData.redisHealth,
+      esHealth: healthData.esHealth,
+      rmqHealth: healthData.rmqHealth,
+      traefikHealth: healthData.traefikHealth,
+      k8sHealth: healthData.k8sHealth,
+      pmgHealth: healthData.pmgHealth,
+      postalHealth: healthData.postalHealth,
+      pritunlHealth: healthData.pritunlHealth,
+      vaultHealth: healthData.vaultHealth,
+      wppconnectHealth: healthData.wppconnectHealth,
+      zimbraHealth: healthData.zimbraHealth,
       auth,
       hostName: host
     };
