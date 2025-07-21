@@ -17,6 +17,11 @@
   import { Badge } from '$lib/components/ui/badge';
   import { ArrowLeft, Trash2, PlusCircle, Info } from 'lucide-svelte';
   import OsHealth from './health-components/osHealth.svelte';
+  import PostalHealth from './health-components/postalHealth.svelte';
+  import PritunlHealth from './health-components/pritunlHealth.svelte';
+  import VaultHealth from './health-components/vaultHealth.svelte';
+  import WppconnectHealth from './health-components/wppconnectHealth.svelte';
+  import ZimbraHealth from './health-components/zimbraHealth.svelte';
   import { handleFormResponse } from '$lib/stores/alerts';
 
   let {
@@ -292,6 +297,21 @@
             {#if selectedHealthTool}
               {#if selectedHealthTool.includes('osHealth') && data.osHealth}
                 <OsHealth osHealth={data.osHealth}></OsHealth>
+              {/if}
+              {#if selectedHealthTool.includes('postalHealth') && data.postalHealth}
+                <PostalHealth postalHealth={data.postalHealth}></PostalHealth>
+              {/if}
+              {#if selectedHealthTool.includes('pritunlHealth') && data.pritunlHealth}
+                <PritunlHealth pritunlHealth={data.pritunlHealth}></PritunlHealth>
+              {/if}
+              {#if selectedHealthTool.includes('vaultHealth') && data.vaultHealth}
+                <VaultHealth vaultHealth={data.vaultHealth}></VaultHealth>
+              {/if}
+              {#if selectedHealthTool.includes('wppconnectHealth') && data.wppconnectHealth}
+                <WppconnectHealth wppconnectHealth={data.wppconnectHealth}></WppconnectHealth>
+              {/if}
+              {#if selectedHealthTool.includes('zimbraHealth') && data.zimbraHealth}
+                <ZimbraHealth zimbraHealth={data.zimbraHealth}></ZimbraHealth>
               {/if}
             {/if}
           </Card.Content>

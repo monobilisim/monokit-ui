@@ -98,11 +98,101 @@ export const load: PageServerLoad = async ({ params, fetch, cookies }) => {
       }
     }
 
+    // Fetch Postal health data
+    let postalHealth = null;
+    if (healthTools.includes('postalHealth')) {
+      const postalHealthResponse = await fetch(
+        `${MONOKIT_URL}/api/v1/hosts/${host}/health/postalHealth`,
+        {
+          headers: {
+            Authorization: auth
+          }
+        }
+      );
+
+      if (postalHealthResponse.ok) {
+        postalHealth = await postalHealthResponse.json();
+      }
+    }
+
+    // Fetch Pritunl health data
+    let pritunlHealth = null;
+    if (healthTools.includes('pritunlHealth')) {
+      const pritunlHealthResponse = await fetch(
+        `${MONOKIT_URL}/api/v1/hosts/${host}/health/pritunlHealth`,
+        {
+          headers: {
+            Authorization: auth
+          }
+        }
+      );
+
+      if (pritunlHealthResponse.ok) {
+        pritunlHealth = await pritunlHealthResponse.json();
+      }
+    }
+
+    // Fetch Vault health data
+    let vaultHealth = null;
+    if (healthTools.includes('vaultHealth')) {
+      const vaultHealthResponse = await fetch(
+        `${MONOKIT_URL}/api/v1/hosts/${host}/health/vaultHealth`,
+        {
+          headers: {
+            Authorization: auth
+          }
+        }
+      );
+
+      if (vaultHealthResponse.ok) {
+        vaultHealth = await vaultHealthResponse.json();
+      }
+    }
+
+    // Fetch WppConnect health data
+    let wppconnectHealth = null;
+    if (healthTools.includes('wppconnectHealth')) {
+      const wppconnectHealthResponse = await fetch(
+        `${MONOKIT_URL}/api/v1/hosts/${host}/health/wppconnectHealth`,
+        {
+          headers: {
+            Authorization: auth
+          }
+        }
+      );
+
+      if (wppconnectHealthResponse.ok) {
+        wppconnectHealth = await wppconnectHealthResponse.json();
+      }
+    }
+
+    // Fetch Zimbra health data
+    let zimbraHealth = null;
+    if (healthTools.includes('zimbraHealth')) {
+      const zimbraHealthResponse = await fetch(
+        `${MONOKIT_URL}/api/v1/hosts/${host}/health/zimbraHealth`,
+        {
+          headers: {
+            Authorization: auth
+          }
+        }
+      );
+
+      if (zimbraHealthResponse.ok) {
+        zimbraHealth = await zimbraHealthResponse.json();
+      }
+    }
+
     return {
       host: hostData,
       awxJobs,
       healthTools,
       osHealth,
+      postalHealth,
+      pritunlHealth,
+      vaultHealth,
+      wppconnectHealth,
+      zimbraHealth,
       auth,
       hostName: host
     };

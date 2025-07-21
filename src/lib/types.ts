@@ -101,6 +101,7 @@ export type HostDetail = {
 };
 
 export type AwxJob = {
+  id: number;
   name: string;
   status: string;
   started: string;
@@ -113,6 +114,11 @@ export type HostDetailPageData = {
   awxJobs: AwxJob[];
   healthTools: string[];
   osHealth?: unknown;
+  postalHealth?: unknown;
+  pritunlHealth?: unknown;
+  vaultHealth?: unknown;
+  wppconnectHealth?: unknown;
+  zimbraHealth?: unknown;
   hostName: string;
 };
 
