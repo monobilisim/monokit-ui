@@ -11,6 +11,8 @@ const PUBLIC_ROUTES = [
   `${MONOKIT_URL}/api/v1/auth/sso/login?redirect_uri=${encodeURIComponent(`${MONOKIT_URL}/api/v1/auth/sso/callback`)}`
 ];
 
+const ALLOWED_ORIGINS = JSON.parse(Bun.env.ORIGINS);
+
 export const handle: Handle = async ({ event, resolve }) => {
   const token = event.cookies.get('Authorization');
 
@@ -18,5 +20,16 @@ export const handle: Handle = async ({ event, resolve }) => {
     throw redirect(303, '/login');
   }
 
-  return resolve(event);
+  const origin = event.request.headers.get('origin');
+  if (origin && !ALLOWED_ORIGINS.includes(origin)) {
+    return new Response('Forbidden: Invalid Origin', {
+      status: 403
+    });
+  }
+
+  const response = await resolve(event);
+  if (origin && ALLOWED_ORIGINS.includes(origin)) {
+    response.headers.set('Access-Control-Allow-Origin', origin);
+  }
+  return response;
 };

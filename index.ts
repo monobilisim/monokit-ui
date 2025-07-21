@@ -44,7 +44,15 @@ Bun.serve({
       });
     }
 
-    return httpserver(req);
+    // Origin does not pass from request if we give req directly??
+    const newRequest = new Request(req.url, {
+      method: req.method,
+      headers: req.headers,
+      body: req.body,
+      redirect: 'manual'
+    });
+
+    return httpserver(newRequest);
   },
   error(error: Error): Response {
     console.error('Server error:', error);
