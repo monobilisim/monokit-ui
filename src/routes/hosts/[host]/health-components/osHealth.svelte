@@ -1,13 +1,6 @@
 <script lang="ts">
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-  import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow
-  } from '$lib/components/ui/table';
+  import { Table, TableBody, TableCell, TableRow } from '$lib/components/ui/table';
   import { Progress } from '$lib/components/ui/progress';
   import { Badge } from '$lib/components/ui/badge';
 
@@ -21,8 +14,8 @@
   // Helper function to determine status color
   function getStatusColor(percentage: number) {
     if (percentage >= 90) return 'destructive';
-    if (percentage >= 70) return 'warning';
-    return 'success';
+    if (percentage >= 70) return 'outline';
+    return 'default';
   }
 </script>
 

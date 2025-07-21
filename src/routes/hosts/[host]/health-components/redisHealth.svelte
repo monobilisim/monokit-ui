@@ -24,7 +24,7 @@
         case 'master':
         case 'up':
         case 'ok':
-          return 'success';
+          return 'default';
         case 'offline':
         case 'disconnected':
         case 'stopped':
@@ -35,15 +35,15 @@
         case 'replica':
         case 'warning':
         case 'slow':
-          return 'warning';
+          return 'outline';
         default:
           return 'secondary';
       }
     }
     if (typeof status === 'number') {
       if (status >= 90) return 'destructive';
-      if (status >= 70) return 'warning';
-      return 'success';
+      if (status >= 70) return 'outline';
+      return 'default';
     }
     return 'secondary';
   }
@@ -51,21 +51,26 @@
   // Calculate memory usage percentage
   const memoryUsagePercentage = $derived(
     redisHealth.Memory?.UsedPercent ||
-    (redisHealth.Memory?.UsedMemory && redisHealth.Memory?.MaxMemory ?
-     (redisHealth.Memory.UsedMemory / redisHealth.Memory.MaxMemory) * 100 : 0)
+      (redisHealth.Memory?.UsedMemory && redisHealth.Memory?.MaxMemory
+        ? (redisHealth.Memory.UsedMemory / redisHealth.Memory.MaxMemory) * 100
+        : 0)
   );
 
   // Calculate connection usage percentage
   const connectionUsagePercentage = $derived(
-    redisHealth.Clients?.Connected && redisHealth.Clients?.MaxClients ?
-    (redisHealth.Clients.Connected / redisHealth.Clients.MaxClients) * 100 : 0
+    redisHealth.Clients?.Connected && redisHealth.Clients?.MaxClients
+      ? (redisHealth.Clients.Connected / redisHealth.Clients.MaxClients) * 100
+      : 0
   );
 
   // Calculate hit ratio
   const hitRatio = $derived(
     redisHealth.Stats?.KeyspaceHitRatio ||
-    (redisHealth.Stats?.KeyspaceHits && redisHealth.Stats?.KeyspaceMisses ?
-     (redisHealth.Stats.KeyspaceHits / (redisHealth.Stats.KeyspaceHits + redisHealth.Stats.KeyspaceMisses)) * 100 : 0)
+      (redisHealth.Stats?.KeyspaceHits && redisHealth.Stats?.KeyspaceMisses
+        ? (redisHealth.Stats.KeyspaceHits /
+            (redisHealth.Stats.KeyspaceHits + redisHealth.Stats.KeyspaceMisses)) *
+          100
+        : 0)
   );
 </script>
 
@@ -148,7 +153,9 @@
             </TableRow>
             <TableRow>
               <TableCell>Used Memory Human</TableCell>
-              <TableCell class="text-right">{redisHealth.Memory?.UsedMemoryHuman || 'N/A'}</TableCell>
+              <TableCell class="text-right"
+                >{redisHealth.Memory?.UsedMemoryHuman || 'N/A'}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Used Memory RSS</TableCell>
@@ -156,7 +163,8 @@
             </TableRow>
             <TableRow>
               <TableCell>Used Memory Peak</TableCell>
-              <TableCell class="text-right">{redisHealth.Memory?.UsedMemoryPeak || 'N/A'}</TableCell>
+              <TableCell class="text-right">{redisHealth.Memory?.UsedMemoryPeak || 'N/A'}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Max Memory</TableCell>
@@ -166,7 +174,9 @@
               <TableCell>Memory Fragmentation Ratio</TableCell>
               <TableCell class="text-right">
                 {#if redisHealth.Memory?.FragmentationRatio}
-                  <Badge variant={redisHealth.Memory.FragmentationRatio > 1.5 ? 'warning' : 'success'}>
+                  <Badge
+                    variant={redisHealth.Memory.FragmentationRatio > 1.5 ? 'outline' : 'default'}
+                  >
                     {redisHealth.Memory.FragmentationRatio.toFixed(2)}
                   </Badge>
                 {:else}
@@ -207,11 +217,14 @@
             </TableRow>
             <TableRow>
               <TableCell>Client Longest Output List</TableCell>
-              <TableCell class="text-right">{redisHealth.Clients?.LongestOutputList || 0}</TableCell>
+              <TableCell class="text-right">{redisHealth.Clients?.LongestOutputList || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Client Biggest Input Buffer</TableCell>
-              <TableCell class="text-right">{redisHealth.Clients?.BiggestInputBuffer || 0}</TableCell>
+              <TableCell class="text-right"
+                >{redisHealth.Clients?.BiggestInputBuffer || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Blocked Clients</TableCell>
@@ -223,7 +236,9 @@
             </TableRow>
             <TableRow>
               <TableCell>Total Connections Received</TableCell>
-              <TableCell class="text-right">{redisHealth.Clients?.TotalConnectionsReceived?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{redisHealth.Clients?.TotalConnectionsReceived?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
           </TableBody>
         </Table>
@@ -254,31 +269,45 @@
           <TableBody>
             <TableRow>
               <TableCell>Total Commands Processed</TableCell>
-              <TableCell class="text-right">{redisHealth.Stats?.TotalCommandsProcessed?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{redisHealth.Stats?.TotalCommandsProcessed?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Instantaneous Ops/sec</TableCell>
-              <TableCell class="text-right">{redisHealth.Stats?.InstantaneousOpsPerSec || 0}</TableCell>
+              <TableCell class="text-right"
+                >{redisHealth.Stats?.InstantaneousOpsPerSec || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Keyspace Hits</TableCell>
-              <TableCell class="text-right">{redisHealth.Stats?.KeyspaceHits?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{redisHealth.Stats?.KeyspaceHits?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Keyspace Misses</TableCell>
-              <TableCell class="text-right">{redisHealth.Stats?.KeyspaceMisses?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{redisHealth.Stats?.KeyspaceMisses?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Evicted Keys</TableCell>
-              <TableCell class="text-right">{redisHealth.Stats?.EvictedKeys?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{redisHealth.Stats?.EvictedKeys?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Expired Keys</TableCell>
-              <TableCell class="text-right">{redisHealth.Stats?.ExpiredKeys?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{redisHealth.Stats?.ExpiredKeys?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Rejected Connections</TableCell>
-              <TableCell class="text-right">{redisHealth.Stats?.RejectedConnections?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{redisHealth.Stats?.RejectedConnections?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
           </TableBody>
         </Table>
@@ -300,11 +329,15 @@
           </TableRow>
           <TableRow>
             <TableCell>Total Keys</TableCell>
-            <TableCell class="text-right">{redisHealth.Keyspace?.TotalKeys?.toLocaleString() || 0}</TableCell>
+            <TableCell class="text-right"
+              >{redisHealth.Keyspace?.TotalKeys?.toLocaleString() || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Keys with Expiry</TableCell>
-            <TableCell class="text-right">{redisHealth.Keyspace?.KeysWithExpiry?.toLocaleString() || 0}</TableCell>
+            <TableCell class="text-right"
+              >{redisHealth.Keyspace?.KeysWithExpiry?.toLocaleString() || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Average TTL</TableCell>
@@ -326,7 +359,7 @@
               </TableRow>
             </TableHeader>
             <TableBody>
-              {#each redisHealth.DatabaseInfo as db}
+              {#each redisHealth.DatabaseInfo as db (db.Name)}
                 <TableRow>
                   <TableCell>db{db.Database}</TableCell>
                   <TableCell>{db.Keys?.toLocaleString() || 0}</TableCell>
@@ -352,7 +385,9 @@
           <TableRow>
             <TableCell>RDB Status</TableCell>
             <TableCell class="text-right">
-              <Badge variant={getStatusColor(redisHealth.Persistence?.RdbLastBgsaveStatus || 'unknown')}>
+              <Badge
+                variant={getStatusColor(redisHealth.Persistence?.RdbLastBgsaveStatus || 'unknown')}
+              >
                 {redisHealth.Persistence?.RdbLastBgsaveStatus || 'Unknown'}
               </Badge>
             </TableCell>
@@ -360,22 +395,27 @@
           <TableRow>
             <TableCell>RDB Last Save Time</TableCell>
             <TableCell class="text-right">
-              {redisHealth.Persistence?.RdbLastSaveTime ?
-               new Date(redisHealth.Persistence.RdbLastSaveTime * 1000).toLocaleString() : 'N/A'}
+              {redisHealth.Persistence?.RdbLastSaveTime
+                ? new Date(redisHealth.Persistence.RdbLastSaveTime * 1000).toLocaleString()
+                : 'N/A'}
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>RDB Changes Since Last Save</TableCell>
-            <TableCell class="text-right">{redisHealth.Persistence?.RdbChangesSinceLastSave?.toLocaleString() || 0}</TableCell>
+            <TableCell class="text-right"
+              >{redisHealth.Persistence?.RdbChangesSinceLastSave?.toLocaleString() || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>RDB Current Bgsave Time</TableCell>
-            <TableCell class="text-right">{redisHealth.Persistence?.RdbCurrentBgsaveTimeSec || 0}s</TableCell>
+            <TableCell class="text-right"
+              >{redisHealth.Persistence?.RdbCurrentBgsaveTimeSec || 0}s</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>AOF Enabled</TableCell>
             <TableCell class="text-right">
-              <Badge variant={redisHealth.Persistence?.AofEnabled ? 'success' : 'secondary'}>
+              <Badge variant={redisHealth.Persistence?.AofEnabled ? 'default' : 'secondary'}>
                 {redisHealth.Persistence?.AofEnabled ? 'Yes' : 'No'}
               </Badge>
             </TableCell>
@@ -384,7 +424,11 @@
             <TableRow>
               <TableCell>AOF Last Rewrite Status</TableCell>
               <TableCell class="text-right">
-                <Badge variant={getStatusColor(redisHealth.Persistence?.AofLastRewriteStatus || 'unknown')}>
+                <Badge
+                  variant={getStatusColor(
+                    redisHealth.Persistence?.AofLastRewriteStatus || 'unknown'
+                  )}
+                >
                   {redisHealth.Persistence?.AofLastRewriteStatus || 'Unknown'}
                 </Badge>
               </TableCell>
@@ -392,14 +436,18 @@
             <TableRow>
               <TableCell>AOF Last Write Status</TableCell>
               <TableCell class="text-right">
-                <Badge variant={getStatusColor(redisHealth.Persistence?.AofLastWriteStatus || 'unknown')}>
+                <Badge
+                  variant={getStatusColor(redisHealth.Persistence?.AofLastWriteStatus || 'unknown')}
+                >
                   {redisHealth.Persistence?.AofLastWriteStatus || 'Unknown'}
                 </Badge>
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>AOF Current Size</TableCell>
-              <TableCell class="text-right">{redisHealth.Persistence?.AofCurrentSize || 'N/A'}</TableCell>
+              <TableCell class="text-right"
+                >{redisHealth.Persistence?.AofCurrentSize || 'N/A'}</TableCell
+              >
             </TableRow>
           {/if}
         </TableBody>
@@ -426,33 +474,45 @@
             </TableRow>
             <TableRow>
               <TableCell>Connected Slaves</TableCell>
-              <TableCell class="text-right">{redisHealth.Replication?.ConnectedSlaves || 0}</TableCell>
+              <TableCell class="text-right"
+                >{redisHealth.Replication?.ConnectedSlaves || 0}</TableCell
+              >
             </TableRow>
             {#if redisHealth.Replication?.Role === 'slave'}
               <TableRow>
                 <TableCell>Master Host</TableCell>
-                <TableCell class="text-right">{redisHealth.Replication?.MasterHost || 'N/A'}</TableCell>
+                <TableCell class="text-right"
+                  >{redisHealth.Replication?.MasterHost || 'N/A'}</TableCell
+                >
               </TableRow>
               <TableRow>
                 <TableCell>Master Port</TableCell>
-                <TableCell class="text-right">{redisHealth.Replication?.MasterPort || 'N/A'}</TableCell>
+                <TableCell class="text-right"
+                  >{redisHealth.Replication?.MasterPort || 'N/A'}</TableCell
+                >
               </TableRow>
               <TableRow>
                 <TableCell>Master Link Status</TableCell>
                 <TableCell class="text-right">
-                  <Badge variant={getStatusColor(redisHealth.Replication?.MasterLinkStatus || 'unknown')}>
+                  <Badge
+                    variant={getStatusColor(redisHealth.Replication?.MasterLinkStatus || 'unknown')}
+                  >
                     {redisHealth.Replication?.MasterLinkStatus || 'Unknown'}
                   </Badge>
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Master Last IO Seconds Ago</TableCell>
-                <TableCell class="text-right">{redisHealth.Replication?.MasterLastIoSecondsAgo || 0}s</TableCell>
+                <TableCell class="text-right"
+                  >{redisHealth.Replication?.MasterLastIoSecondsAgo || 0}s</TableCell
+                >
               </TableRow>
               <TableRow>
                 <TableCell>Master Sync in Progress</TableCell>
                 <TableCell class="text-right">
-                  <Badge variant={redisHealth.Replication?.MasterSyncInProgress ? 'warning' : 'success'}>
+                  <Badge
+                    variant={redisHealth.Replication?.MasterSyncInProgress ? 'outline' : 'default'}
+                  >
                     {redisHealth.Replication?.MasterSyncInProgress ? 'Yes' : 'No'}
                   </Badge>
                 </TableCell>
@@ -461,14 +521,18 @@
             <TableRow>
               <TableCell>Repl Backlog Active</TableCell>
               <TableCell class="text-right">
-                <Badge variant={redisHealth.Replication?.ReplBacklogActive ? 'success' : 'secondary'}>
+                <Badge
+                  variant={redisHealth.Replication?.ReplBacklogActive ? 'default' : 'secondary'}
+                >
                   {redisHealth.Replication?.ReplBacklogActive ? 'Yes' : 'No'}
                 </Badge>
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Repl Backlog Size</TableCell>
-              <TableCell class="text-right">{redisHealth.Replication?.ReplBacklogSize || 'N/A'}</TableCell>
+              <TableCell class="text-right"
+                >{redisHealth.Replication?.ReplBacklogSize || 'N/A'}</TableCell
+              >
             </TableRow>
           </TableBody>
         </Table>
@@ -486,7 +550,7 @@
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {#each redisHealth.SlaveInfo as slave}
+                {#each redisHealth.SlaveInfo as slave (slave.IP + ':' + slave.Port)}
                   <TableRow>
                     <TableCell>{slave.Id}</TableCell>
                     <TableCell>{slave.Ip}:{slave.Port}</TableCell>
@@ -517,19 +581,27 @@
           <TableBody>
             <TableRow>
               <TableCell>Used CPU Sys</TableCell>
-              <TableCell class="text-right">{redisHealth.CPU?.UsedCpuSys?.toFixed(2) || 0}</TableCell>
+              <TableCell class="text-right"
+                >{redisHealth.CPU?.UsedCpuSys?.toFixed(2) || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Used CPU User</TableCell>
-              <TableCell class="text-right">{redisHealth.CPU?.UsedCpuUser?.toFixed(2) || 0}</TableCell>
+              <TableCell class="text-right"
+                >{redisHealth.CPU?.UsedCpuUser?.toFixed(2) || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Used CPU Sys Children</TableCell>
-              <TableCell class="text-right">{redisHealth.CPU?.UsedCpuSysChildren?.toFixed(2) || 0}</TableCell>
+              <TableCell class="text-right"
+                >{redisHealth.CPU?.UsedCpuSysChildren?.toFixed(2) || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Used CPU User Children</TableCell>
-              <TableCell class="text-right">{redisHealth.CPU?.UsedCpuUserChildren?.toFixed(2) || 0}</TableCell>
+              <TableCell class="text-right"
+                >{redisHealth.CPU?.UsedCpuUserChildren?.toFixed(2) || 0}</TableCell
+              >
             </TableRow>
           </TableBody>
         </Table>

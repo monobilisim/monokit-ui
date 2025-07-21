@@ -21,11 +21,11 @@
         case 'running':
         case 'active':
         case 'healthy':
-          return 'success';
+          return 'default';
         case 'notready':
         case 'pending':
         case 'warning':
-          return 'warning';
+          return 'outline';
         case 'failed':
         case 'error':
         case 'unhealthy':
@@ -36,24 +36,21 @@
     }
     if (typeof status === 'number') {
       if (status >= 90) return 'destructive';
-      if (status >= 70) return 'warning';
-      return 'success';
+      if (status >= 70) return 'outline';
+      return 'default';
     }
     return 'secondary';
   }
 
   // Calculate resource usage percentages
-  const cpuUsagePercentage = $derived(
-    k8sHealth.Resources?.CPU?.UsedPercent || 0
-  );
+  const cpuUsagePercentage = $derived(k8sHealth.Resources?.CPU?.UsedPercent || 0);
 
-  const memoryUsagePercentage = $derived(
-    k8sHealth.Resources?.Memory?.UsedPercent || 0
-  );
+  const memoryUsagePercentage = $derived(k8sHealth.Resources?.Memory?.UsedPercent || 0);
 
   const podUsagePercentage = $derived(
-    k8sHealth.Resources?.Pods?.Used && k8sHealth.Resources?.Pods?.Capacity ?
-    (k8sHealth.Resources.Pods.Used / k8sHealth.Resources.Pods.Capacity) * 100 : 0
+    k8sHealth.Resources?.Pods?.Used && k8sHealth.Resources?.Pods?.Capacity
+      ? (k8sHealth.Resources.Pods.Used / k8sHealth.Resources.Pods.Capacity) * 100
+      : 0
   );
 </script>
 
@@ -160,7 +157,7 @@
               </TableRow>
             </TableHeader>
             <TableBody>
-              {#each k8sHealth.NodeList as node}
+              {#each k8sHealth.NodeList as node (node.Name)}
                 <TableRow>
                   <TableCell>{node.Name}</TableCell>
                   <TableCell>
@@ -251,11 +248,15 @@
               <TableBody>
                 <TableRow>
                   <TableCell>Allocated</TableCell>
-                  <TableCell class="text-right">{k8sHealth.Resources.CPU.Allocated || 'N/A'}</TableCell>
+                  <TableCell class="text-right"
+                    >{k8sHealth.Resources.CPU.Allocated || 'N/A'}</TableCell
+                  >
                 </TableRow>
                 <TableRow>
                   <TableCell>Capacity</TableCell>
-                  <TableCell class="text-right">{k8sHealth.Resources.CPU.Capacity || 'N/A'}</TableCell>
+                  <TableCell class="text-right"
+                    >{k8sHealth.Resources.CPU.Capacity || 'N/A'}</TableCell
+                  >
                 </TableRow>
               </TableBody>
             </Table>
@@ -275,11 +276,15 @@
               <TableBody>
                 <TableRow>
                   <TableCell>Allocated</TableCell>
-                  <TableCell class="text-right">{k8sHealth.Resources.Memory.Allocated || 'N/A'}</TableCell>
+                  <TableCell class="text-right"
+                    >{k8sHealth.Resources.Memory.Allocated || 'N/A'}</TableCell
+                  >
                 </TableRow>
                 <TableRow>
                   <TableCell>Capacity</TableCell>
-                  <TableCell class="text-right">{k8sHealth.Resources.Memory.Capacity || 'N/A'}</TableCell>
+                  <TableCell class="text-right"
+                    >{k8sHealth.Resources.Memory.Capacity || 'N/A'}</TableCell
+                  >
                 </TableRow>
               </TableBody>
             </Table>
@@ -324,7 +329,7 @@
               </TableRow>
             </TableHeader>
             <TableBody>
-              {#each k8sHealth.NamespaceList as namespace}
+              {#each k8sHealth.NamespaceList as namespace (namespace.Name)}
                 <TableRow>
                   <TableCell>{namespace.Name}</TableCell>
                   <TableCell>

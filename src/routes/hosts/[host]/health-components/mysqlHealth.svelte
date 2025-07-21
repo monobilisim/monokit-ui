@@ -22,7 +22,7 @@
         case 'running':
         case 'active':
         case 'yes':
-          return 'success';
+          return 'default';
         case 'offline':
         case 'disconnected':
         case 'stopped':
@@ -30,34 +30,31 @@
           return 'destructive';
         case 'warning':
         case 'slow':
-          return 'warning';
+          return 'outline';
         default:
           return 'secondary';
       }
     }
     if (typeof status === 'number') {
       if (status >= 90) return 'destructive';
-      if (status >= 70) return 'warning';
-      return 'success';
+      if (status >= 70) return 'outline';
+      return 'default';
     }
     return 'secondary';
   }
 
   // Calculate connection usage percentage
   const connectionUsagePercentage = $derived(
-    mysqlHealth.Connections?.Used && mysqlHealth.Connections?.MaxConnections ?
-    (mysqlHealth.Connections.Used / mysqlHealth.Connections.MaxConnections) * 100 : 0
+    mysqlHealth.Connections?.Used && mysqlHealth.Connections?.MaxConnections
+      ? (mysqlHealth.Connections.Used / mysqlHealth.Connections.MaxConnections) * 100
+      : 0
   );
 
   // Calculate buffer pool usage percentage
-  const bufferPoolUsagePercentage = $derived(
-    mysqlHealth.BufferPool?.UsedPercent || 0
-  );
+  const bufferPoolUsagePercentage = $derived(mysqlHealth.BufferPool?.UsedPercent || 0);
 
   // Calculate query cache hit ratio
-  const queryCacheHitRatio = $derived(
-    mysqlHealth.QueryCache?.HitRatio || 0
-  );
+  const queryCacheHitRatio = $derived(mysqlHealth.QueryCache?.HitRatio || 0);
 </script>
 
 <div class="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -131,15 +128,21 @@
             </TableRow>
             <TableRow>
               <TableCell>Max Connections</TableCell>
-              <TableCell class="text-right">{mysqlHealth.Connections?.MaxConnections || 'N/A'}</TableCell>
+              <TableCell class="text-right"
+                >{mysqlHealth.Connections?.MaxConnections || 'N/A'}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Total Connections</TableCell>
-              <TableCell class="text-right">{mysqlHealth.Connections?.Total?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{mysqlHealth.Connections?.Total?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Aborted Connections</TableCell>
-              <TableCell class="text-right">{mysqlHealth.Connections?.Aborted?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{mysqlHealth.Connections?.Aborted?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Running Queries</TableCell>
@@ -165,7 +168,9 @@
           </TableRow>
           <TableRow>
             <TableCell>Total Tables</TableCell>
-            <TableCell class="text-right">{mysqlHealth.Tables?.Count?.toLocaleString() || 0}</TableCell>
+            <TableCell class="text-right"
+              >{mysqlHealth.Tables?.Count?.toLocaleString() || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Total Size</TableCell>
@@ -194,7 +199,7 @@
               </TableRow>
             </TableHeader>
             <TableBody>
-              {#each mysqlHealth.DatabaseList as database}
+              {#each mysqlHealth.DatabaseList as database (database.Name)}
                 <TableRow>
                   <TableCell>{database.Name}</TableCell>
                   <TableCell>{database.Size || 'N/A'}</TableCell>
@@ -218,31 +223,45 @@
         <TableBody>
           <TableRow>
             <TableCell>Queries/sec</TableCell>
-            <TableCell class="text-right">{mysqlHealth.Performance?.QueriesPerSecond?.toFixed(2) || 0}</TableCell>
+            <TableCell class="text-right"
+              >{mysqlHealth.Performance?.QueriesPerSecond?.toFixed(2) || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Questions</TableCell>
-            <TableCell class="text-right">{mysqlHealth.Performance?.Questions?.toLocaleString() || 0}</TableCell>
+            <TableCell class="text-right"
+              >{mysqlHealth.Performance?.Questions?.toLocaleString() || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Slow Queries</TableCell>
-            <TableCell class="text-right">{mysqlHealth.Performance?.SlowQueries?.toLocaleString() || 0}</TableCell>
+            <TableCell class="text-right"
+              >{mysqlHealth.Performance?.SlowQueries?.toLocaleString() || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Select Operations</TableCell>
-            <TableCell class="text-right">{mysqlHealth.Performance?.ComSelect?.toLocaleString() || 0}</TableCell>
+            <TableCell class="text-right"
+              >{mysqlHealth.Performance?.ComSelect?.toLocaleString() || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Insert Operations</TableCell>
-            <TableCell class="text-right">{mysqlHealth.Performance?.ComInsert?.toLocaleString() || 0}</TableCell>
+            <TableCell class="text-right"
+              >{mysqlHealth.Performance?.ComInsert?.toLocaleString() || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Update Operations</TableCell>
-            <TableCell class="text-right">{mysqlHealth.Performance?.ComUpdate?.toLocaleString() || 0}</TableCell>
+            <TableCell class="text-right"
+              >{mysqlHealth.Performance?.ComUpdate?.toLocaleString() || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Delete Operations</TableCell>
-            <TableCell class="text-right">{mysqlHealth.Performance?.ComDelete?.toLocaleString() || 0}</TableCell>
+            <TableCell class="text-right"
+              >{mysqlHealth.Performance?.ComDelete?.toLocaleString() || 0}</TableCell
+            >
           </TableRow>
         </TableBody>
       </Table>
@@ -276,15 +295,21 @@
             </TableRow>
             <TableRow>
               <TableCell>Buffer Pool Pages</TableCell>
-              <TableCell class="text-right">{mysqlHealth.BufferPool?.TotalPages?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{mysqlHealth.BufferPool?.TotalPages?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Free Pages</TableCell>
-              <TableCell class="text-right">{mysqlHealth.BufferPool?.FreePages?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{mysqlHealth.BufferPool?.FreePages?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Hit Rate</TableCell>
-              <TableCell class="text-right">{mysqlHealth.BufferPool?.HitRate?.toFixed(2) || 0}%</TableCell>
+              <TableCell class="text-right"
+                >{mysqlHealth.BufferPool?.HitRate?.toFixed(2) || 0}%</TableCell
+              >
             </TableRow>
           </TableBody>
         </Table>
@@ -309,11 +334,15 @@
                 </TableRow>
                 <TableRow>
                   <TableCell>Cached Queries</TableCell>
-                  <TableCell class="text-right">{mysqlHealth.QueryCache.QueriesInCache?.toLocaleString() || 0}</TableCell>
+                  <TableCell class="text-right"
+                    >{mysqlHealth.QueryCache.QueriesInCache?.toLocaleString() || 0}</TableCell
+                  >
                 </TableRow>
                 <TableRow>
                   <TableCell>Cache Hits</TableCell>
-                  <TableCell class="text-right">{mysqlHealth.QueryCache.Hits?.toLocaleString() || 0}</TableCell>
+                  <TableCell class="text-right"
+                    >{mysqlHealth.QueryCache.Hits?.toLocaleString() || 0}</TableCell
+                  >
                 </TableRow>
               </TableBody>
             </Table>
@@ -350,17 +379,23 @@
             </TableRow>
             <TableRow>
               <TableCell>Master Host</TableCell>
-              <TableCell class="text-right">{mysqlHealth.Replication.MasterHost || 'N/A'}</TableCell>
+              <TableCell class="text-right">{mysqlHealth.Replication.MasterHost || 'N/A'}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Master Port</TableCell>
-              <TableCell class="text-right">{mysqlHealth.Replication.MasterPort || 'N/A'}</TableCell>
+              <TableCell class="text-right">{mysqlHealth.Replication.MasterPort || 'N/A'}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Seconds Behind Master</TableCell>
               <TableCell class="text-right">
                 {#if mysqlHealth.Replication.SecondsBehindMaster !== undefined}
-                  <Badge variant={mysqlHealth.Replication.SecondsBehindMaster > 60 ? 'warning' : 'success'}>
+                  <Badge
+                    variant={mysqlHealth.Replication.SecondsBehindMaster > 60
+                      ? 'outline'
+                      : 'default'}
+                  >
                     {mysqlHealth.Replication.SecondsBehindMaster}s
                   </Badge>
                 {:else}
@@ -374,7 +409,7 @@
                 {#if mysqlHealth.Replication.LastError}
                   <Badge variant="destructive">Error</Badge>
                 {:else}
-                  <Badge variant="success">None</Badge>
+                  <Badge variant="default">Master</Badge>
                 {/if}
               </TableCell>
             </TableRow>

@@ -101,7 +101,9 @@
           </TableRow>
           <TableRow>
             <TableCell>Phone Number</TableCell>
-            <TableCell class="text-right">{wppconnectHealth.Connection?.PhoneNumber || 'N/A'}</TableCell>
+            <TableCell class="text-right"
+              >{wppconnectHealth.Connection?.PhoneNumber || 'N/A'}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>QR Code Status</TableCell>
@@ -140,7 +142,8 @@
           </TableRow>
           <TableRow>
             <TableCell>Total Sessions</TableCell>
-            <TableCell class="text-right">{wppconnectHealth.Sessions?.TotalSessions || 0}</TableCell>
+            <TableCell class="text-right">{wppconnectHealth.Sessions?.TotalSessions || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Session Timeout</TableCell>
@@ -179,7 +182,8 @@
           </TableRow>
           <TableRow>
             <TableCell>Messages Received Today</TableCell>
-            <TableCell class="text-right">{wppconnectHealth.Messages?.ReceivedToday || 0}</TableCell>
+            <TableCell class="text-right">{wppconnectHealth.Messages?.ReceivedToday || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Failed Messages</TableCell>
@@ -306,7 +310,9 @@
             <TableBody>
               <TableRow>
                 <TableCell>Memory Used</TableCell>
-                <TableCell class="text-right">{wppconnectHealth.Resources.Memory?.Used || 'N/A'}</TableCell>
+                <TableCell class="text-right"
+                  >{wppconnectHealth.Resources.Memory?.Used || 'N/A'}</TableCell
+                >
               </TableRow>
               <TableRow>
                 <TableCell>Disk Usage</TableCell>
@@ -350,7 +356,9 @@
             </TableRow>
             <TableRow>
               <TableCell>Max Instances</TableCell>
-              <TableCell class="text-right">{wppconnectHealth.Instances.MaxInstances || 'Unlimited'}</TableCell>
+              <TableCell class="text-right"
+                >{wppconnectHealth.Instances.MaxInstances || 'Unlimited'}</TableCell
+              >
             </TableRow>
           </TableBody>
         </Table>
@@ -368,7 +376,7 @@
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {#each wppconnectHealth.Instances.List as instance}
+                {#each wppconnectHealth.Instances.List as instance (instance.Name)}
                   <TableRow>
                     <TableCell>{instance.Name}</TableCell>
                     <TableCell>
@@ -377,7 +385,11 @@
                       </Badge>
                     </TableCell>
                     <TableCell>{instance.Phone || 'N/A'}</TableCell>
-                    <TableCell>{instance.ConnectedAt ? new Date(instance.ConnectedAt).toLocaleString() : 'N/A'}</TableCell>
+                    <TableCell
+                      >{instance.ConnectedAt
+                        ? new Date(instance.ConnectedAt).toLocaleString()
+                        : 'N/A'}</TableCell
+                    >
                   </TableRow>
                 {/each}
               </TableBody>

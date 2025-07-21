@@ -1,13 +1,6 @@
 <script lang="ts">
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-  import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow
-  } from '$lib/components/ui/table';
+  import { Table, TableBody, TableCell, TableRow } from '$lib/components/ui/table';
   import { Progress } from '$lib/components/ui/progress';
   import { Badge } from '$lib/components/ui/badge';
 
@@ -18,9 +11,9 @@
     if (typeof status === 'string') {
       switch (status.toLowerCase()) {
         case 'green':
-          return 'success';
+          return 'default';
         case 'yellow':
-          return 'warning';
+          return 'outline';
         case 'red':
           return 'destructive';
         default:
@@ -29,8 +22,8 @@
     }
     if (typeof status === 'number') {
       if (status >= 90) return 'destructive';
-      if (status >= 70) return 'warning';
-      return 'success';
+      if (status >= 70) return 'outline';
+      return 'default';
     }
     return 'secondary';
   }
@@ -38,15 +31,17 @@
   // Calculate memory usage percentage if available
   const memoryUsagePercentage = $derived(
     esHealth.Memory?.UsedPercent ||
-    (esHealth.Memory?.Used && esHealth.Memory?.Total ?
-     (esHealth.Memory.Used / esHealth.Memory.Total) * 100 : 0)
+      (esHealth.Memory?.Used && esHealth.Memory?.Total
+        ? (esHealth.Memory.Used / esHealth.Memory.Total) * 100
+        : 0)
   );
 
   // Calculate heap usage percentage if available
   const heapUsagePercentage = $derived(
     esHealth.HeapMemory?.UsedPercent ||
-    (esHealth.HeapMemory?.Used && esHealth.HeapMemory?.Max ?
-     (esHealth.HeapMemory.Used / esHealth.HeapMemory.Max) * 100 : 0)
+      (esHealth.HeapMemory?.Used && esHealth.HeapMemory?.Max
+        ? (esHealth.HeapMemory.Used / esHealth.HeapMemory.Max) * 100
+        : 0)
   );
 </script>
 
@@ -77,11 +72,15 @@
           </TableRow>
           <TableRow>
             <TableCell>Data Nodes</TableCell>
-            <TableCell class="text-right">{esHealth.ClusterStatus?.NumberOfDataNodes || 0}</TableCell>
+            <TableCell class="text-right"
+              >{esHealth.ClusterStatus?.NumberOfDataNodes || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Active Shards</TableCell>
-            <TableCell class="text-right">{esHealth.ClusterStatus?.ActivePrimaryShards || 0}</TableCell>
+            <TableCell class="text-right"
+              >{esHealth.ClusterStatus?.ActivePrimaryShards || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Last Updated</TableCell>
@@ -120,7 +119,9 @@
           </TableRow>
           <TableRow>
             <TableCell>Available Processors</TableCell>
-            <TableCell class="text-right">{esHealth.NodeInfo?.AvailableProcessors || 'N/A'}</TableCell>
+            <TableCell class="text-right"
+              >{esHealth.NodeInfo?.AvailableProcessors || 'N/A'}</TableCell
+            >
           </TableRow>
         </TableBody>
       </Table>
@@ -203,11 +204,15 @@
           </TableRow>
           <TableRow>
             <TableCell>Total Documents</TableCell>
-            <TableCell class="text-right">{esHealth.Indices?.DocsCount?.toLocaleString() || 0}</TableCell>
+            <TableCell class="text-right"
+              >{esHealth.Indices?.DocsCount?.toLocaleString() || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Deleted Documents</TableCell>
-            <TableCell class="text-right">{esHealth.Indices?.DocsDeleted?.toLocaleString() || 0}</TableCell>
+            <TableCell class="text-right"
+              >{esHealth.Indices?.DocsDeleted?.toLocaleString() || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Store Size</TableCell>
@@ -233,27 +238,39 @@
           <TableBody>
             <TableRow>
               <TableCell>Query Total</TableCell>
-              <TableCell class="text-right">{esHealth.Performance.QueryTotal?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{esHealth.Performance.QueryTotal?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Query Time</TableCell>
-              <TableCell class="text-right">{esHealth.Performance.QueryTimeInMillis || 0}ms</TableCell>
+              <TableCell class="text-right"
+                >{esHealth.Performance.QueryTimeInMillis || 0}ms</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Fetch Total</TableCell>
-              <TableCell class="text-right">{esHealth.Performance.FetchTotal?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{esHealth.Performance.FetchTotal?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Fetch Time</TableCell>
-              <TableCell class="text-right">{esHealth.Performance.FetchTimeInMillis || 0}ms</TableCell>
+              <TableCell class="text-right"
+                >{esHealth.Performance.FetchTimeInMillis || 0}ms</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Indexing Total</TableCell>
-              <TableCell class="text-right">{esHealth.Performance.IndexTotal?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{esHealth.Performance.IndexTotal?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Indexing Time</TableCell>
-              <TableCell class="text-right">{esHealth.Performance.IndexTimeInMillis || 0}ms</TableCell>
+              <TableCell class="text-right"
+                >{esHealth.Performance.IndexTimeInMillis || 0}ms</TableCell
+              >
             </TableRow>
           </TableBody>
         </Table>

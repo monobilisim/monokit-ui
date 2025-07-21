@@ -23,7 +23,7 @@
         case 'active':
         case 'up':
         case 'available':
-          return 'success';
+          return 'default';
         case 'offline':
         case 'disconnected':
         case 'stopped':
@@ -33,39 +33,34 @@
         case 'warning':
         case 'slow':
         case 'degraded':
-          return 'warning';
+          return 'outline';
         default:
           return 'secondary';
       }
     }
     if (typeof status === 'number') {
       if (status >= 90) return 'destructive';
-      if (status >= 70) return 'warning';
-      return 'success';
+      if (status >= 70) return 'outline';
+      return 'default';
     }
     return 'secondary';
   }
 
   // Calculate connection usage percentage
   const connectionUsagePercentage = $derived(
-    pgsqlHealth.Connections?.Active && pgsqlHealth.Connections?.MaxConnections ?
-    (pgsqlHealth.Connections.Active / pgsqlHealth.Connections.MaxConnections) * 100 : 0
+    pgsqlHealth.Connections?.Active && pgsqlHealth.Connections?.MaxConnections
+      ? (pgsqlHealth.Connections.Active / pgsqlHealth.Connections.MaxConnections) * 100
+      : 0
   );
 
   // Calculate buffer cache hit ratio
-  const bufferCacheHitRatio = $derived(
-    pgsqlHealth.BufferCache?.HitRatio || 0
-  );
+  const bufferCacheHitRatio = $derived(pgsqlHealth.BufferCache?.HitRatio || 0);
 
   // Calculate shared buffer usage
-  const sharedBufferUsage = $derived(
-    pgsqlHealth.SharedBuffers?.UsedPercent || 0
-  );
+  const sharedBufferUsage = $derived(pgsqlHealth.SharedBuffers?.UsedPercent || 0);
 
   // Calculate WAL usage
-  const walUsage = $derived(
-    pgsqlHealth.WAL?.UsedPercent || 0
-  );
+  const walUsage = $derived(pgsqlHealth.WAL?.UsedPercent || 0);
 </script>
 
 <div class="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -99,12 +94,14 @@
           </TableRow>
           <TableRow>
             <TableCell>Data Directory</TableCell>
-            <TableCell class="text-right">{pgsqlHealth.ServerInfo?.DataDirectory || 'N/A'}</TableCell>
+            <TableCell class="text-right"
+              >{pgsqlHealth.ServerInfo?.DataDirectory || 'N/A'}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Recovery Mode</TableCell>
             <TableCell class="text-right">
-              <Badge variant={pgsqlHealth.ServerInfo?.IsInRecovery ? 'warning' : 'success'}>
+              <Badge variant={pgsqlHealth.ServerInfo?.IsInRecovery ? 'outline' : 'default'}>
                 {pgsqlHealth.ServerInfo?.IsInRecovery ? 'Yes' : 'No'}
               </Badge>
             </TableCell>
@@ -151,11 +148,15 @@
             </TableRow>
             <TableRow>
               <TableCell>Idle in Transaction</TableCell>
-              <TableCell class="text-right">{pgsqlHealth.Connections?.IdleInTransaction || 0}</TableCell>
+              <TableCell class="text-right"
+                >{pgsqlHealth.Connections?.IdleInTransaction || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Max Connections</TableCell>
-              <TableCell class="text-right">{pgsqlHealth.Connections?.MaxConnections || 'N/A'}</TableCell>
+              <TableCell class="text-right"
+                >{pgsqlHealth.Connections?.MaxConnections || 'N/A'}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Total Used</TableCell>
@@ -185,15 +186,21 @@
           </TableRow>
           <TableRow>
             <TableCell>Largest Database</TableCell>
-            <TableCell class="text-right">{pgsqlHealth.Databases?.LargestDatabase || 'N/A'}</TableCell>
+            <TableCell class="text-right"
+              >{pgsqlHealth.Databases?.LargestDatabase || 'N/A'}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Total Tables</TableCell>
-            <TableCell class="text-right">{pgsqlHealth.Tables?.Count?.toLocaleString() || 0}</TableCell>
+            <TableCell class="text-right"
+              >{pgsqlHealth.Tables?.Count?.toLocaleString() || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Total Indexes</TableCell>
-            <TableCell class="text-right">{pgsqlHealth.Indexes?.Count?.toLocaleString() || 0}</TableCell>
+            <TableCell class="text-right"
+              >{pgsqlHealth.Indexes?.Count?.toLocaleString() || 0}</TableCell
+            >
           </TableRow>
         </TableBody>
       </Table>
@@ -210,7 +217,7 @@
               </TableRow>
             </TableHeader>
             <TableBody>
-              {#each pgsqlHealth.DatabaseList as database}
+              {#each pgsqlHealth.DatabaseList as database, i (i)}
                 <TableRow>
                   <TableCell>{database.Name}</TableCell>
                   <TableCell>{database.Size || 'N/A'}</TableCell>
@@ -234,43 +241,63 @@
         <TableBody>
           <TableRow>
             <TableCell>Transactions/sec</TableCell>
-            <TableCell class="text-right">{pgsqlHealth.Performance?.TransactionsPerSecond?.toFixed(2) || 0}</TableCell>
+            <TableCell class="text-right"
+              >{pgsqlHealth.Performance?.TransactionsPerSecond?.toFixed(2) || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Commits</TableCell>
-            <TableCell class="text-right">{pgsqlHealth.Performance?.Commits?.toLocaleString() || 0}</TableCell>
+            <TableCell class="text-right"
+              >{pgsqlHealth.Performance?.Commits?.toLocaleString() || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Rollbacks</TableCell>
-            <TableCell class="text-right">{pgsqlHealth.Performance?.Rollbacks?.toLocaleString() || 0}</TableCell>
+            <TableCell class="text-right"
+              >{pgsqlHealth.Performance?.Rollbacks?.toLocaleString() || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Blocks Read</TableCell>
-            <TableCell class="text-right">{pgsqlHealth.Performance?.BlocksRead?.toLocaleString() || 0}</TableCell>
+            <TableCell class="text-right"
+              >{pgsqlHealth.Performance?.BlocksRead?.toLocaleString() || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Blocks Hit</TableCell>
-            <TableCell class="text-right">{pgsqlHealth.Performance?.BlocksHit?.toLocaleString() || 0}</TableCell>
+            <TableCell class="text-right"
+              >{pgsqlHealth.Performance?.BlocksHit?.toLocaleString() || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Tuples Returned</TableCell>
-            <TableCell class="text-right">{pgsqlHealth.Performance?.TuplesReturned?.toLocaleString() || 0}</TableCell>
+            <TableCell class="text-right"
+              >{pgsqlHealth.Performance?.TuplesReturned?.toLocaleString() || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Tuples Fetched</TableCell>
-            <TableCell class="text-right">{pgsqlHealth.Performance?.TuplesFetched?.toLocaleString() || 0}</TableCell>
+            <TableCell class="text-right"
+              >{pgsqlHealth.Performance?.TuplesFetched?.toLocaleString() || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Tuples Inserted</TableCell>
-            <TableCell class="text-right">{pgsqlHealth.Performance?.TuplesInserted?.toLocaleString() || 0}</TableCell>
+            <TableCell class="text-right"
+              >{pgsqlHealth.Performance?.TuplesInserted?.toLocaleString() || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Tuples Updated</TableCell>
-            <TableCell class="text-right">{pgsqlHealth.Performance?.TuplesUpdated?.toLocaleString() || 0}</TableCell>
+            <TableCell class="text-right"
+              >{pgsqlHealth.Performance?.TuplesUpdated?.toLocaleString() || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Tuples Deleted</TableCell>
-            <TableCell class="text-right">{pgsqlHealth.Performance?.TuplesDeleted?.toLocaleString() || 0}</TableCell>
+            <TableCell class="text-right"
+              >{pgsqlHealth.Performance?.TuplesDeleted?.toLocaleString() || 0}</TableCell
+            >
           </TableRow>
         </TableBody>
       </Table>
@@ -316,7 +343,9 @@
             </TableRow>
             <TableRow>
               <TableCell>Effective Cache Size</TableCell>
-              <TableCell class="text-right">{pgsqlHealth.Memory?.EffectiveCacheSize || 'N/A'}</TableCell>
+              <TableCell class="text-right"
+                >{pgsqlHealth.Memory?.EffectiveCacheSize || 'N/A'}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Work Memory</TableCell>
@@ -324,15 +353,21 @@
             </TableRow>
             <TableRow>
               <TableCell>Maintenance Work Memory</TableCell>
-              <TableCell class="text-right">{pgsqlHealth.Memory?.MaintenanceWorkMem || 'N/A'}</TableCell>
+              <TableCell class="text-right"
+                >{pgsqlHealth.Memory?.MaintenanceWorkMem || 'N/A'}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Buffer Alloc</TableCell>
-              <TableCell class="text-right">{pgsqlHealth.BufferCache?.BuffersAlloc?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{pgsqlHealth.BufferCache?.BuffersAlloc?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Buffer Backend</TableCell>
-              <TableCell class="text-right">{pgsqlHealth.BufferCache?.BuffersBackend?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{pgsqlHealth.BufferCache?.BuffersBackend?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
           </TableBody>
         </Table>
@@ -371,15 +406,21 @@
             </TableRow>
             <TableRow>
               <TableCell>WAL Bytes</TableCell>
-              <TableCell class="text-right">{pgsqlHealth.WAL?.Bytes?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{pgsqlHealth.WAL?.Bytes?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Checkpoints Timed</TableCell>
-              <TableCell class="text-right">{pgsqlHealth.Checkpoints?.Timed?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{pgsqlHealth.Checkpoints?.Timed?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Checkpoints Requested</TableCell>
-              <TableCell class="text-right">{pgsqlHealth.Checkpoints?.Requested?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{pgsqlHealth.Checkpoints?.Requested?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Checkpoint Write Time</TableCell>
@@ -415,7 +456,7 @@
             <TableCell>Long Running Queries</TableCell>
             <TableCell class="text-right">
               {#if (pgsqlHealth.Activity?.LongRunningQueries || 0) > 0}
-                <Badge variant="warning">{pgsqlHealth.Activity.LongRunningQueries}</Badge>
+                <Badge variant="outline">{pgsqlHealth.Activity.LongRunningQueries}</Badge>
               {:else}
                 0
               {/if}
@@ -437,7 +478,9 @@
           </TableRow>
           <TableRow>
             <TableCell>Granted Locks</TableCell>
-            <TableCell class="text-right">{pgsqlHealth.Locks?.Granted?.toLocaleString() || 0}</TableCell>
+            <TableCell class="text-right"
+              >{pgsqlHealth.Locks?.Granted?.toLocaleString() || 0}</TableCell
+            >
           </TableRow>
         </TableBody>
       </Table>
@@ -456,20 +499,21 @@
             <TableRow>
               <TableCell>Replication Role</TableCell>
               <TableCell class="text-right">
-                <Badge variant={pgsqlHealth.Replication.IsMaster ? 'success' : 'secondary'}>
+                <Badge variant={pgsqlHealth.Replication.IsMaster ? 'default' : 'secondary'}>
                   {pgsqlHealth.Replication.IsMaster ? 'Master' : 'Slave'}
                 </Badge>
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Active Replicas</TableCell>
-              <TableCell class="text-right">{pgsqlHealth.Replication.ActiveReplicas || 0}</TableCell>
+              <TableCell class="text-right">{pgsqlHealth.Replication.ActiveReplicas || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Replication Lag</TableCell>
               <TableCell class="text-right">
                 {#if pgsqlHealth.Replication.LagSeconds !== undefined}
-                  <Badge variant={pgsqlHealth.Replication.LagSeconds > 60 ? 'warning' : 'success'}>
+                  <Badge variant={pgsqlHealth.Replication.LagSeconds > 60 ? 'outline' : 'default'}>
                     {pgsqlHealth.Replication.LagSeconds}s
                   </Badge>
                 {:else}
@@ -479,11 +523,15 @@
             </TableRow>
             <TableRow>
               <TableCell>WAL Sent Location</TableCell>
-              <TableCell class="text-right">{pgsqlHealth.Replication.WalSentLocation || 'N/A'}</TableCell>
+              <TableCell class="text-right"
+                >{pgsqlHealth.Replication.WalSentLocation || 'N/A'}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>WAL Flush Location</TableCell>
-              <TableCell class="text-right">{pgsqlHealth.Replication.WalFlushLocation || 'N/A'}</TableCell>
+              <TableCell class="text-right"
+                >{pgsqlHealth.Replication.WalFlushLocation || 'N/A'}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Sync State</TableCell>
@@ -508,7 +556,7 @@
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {#each pgsqlHealth.ReplicationSlots as slot}
+                {#each pgsqlHealth.ReplicationSlots as slot, i (i)}
                   <TableRow>
                     <TableCell>{slot.SlotName}</TableCell>
                     <TableCell>

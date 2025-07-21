@@ -25,7 +25,7 @@
         case 'running':
         case 'valid':
         case 'success':
-          return 'success';
+          return 'default';
         case 'sealed':
         case 'standby':
         case 'inactive':
@@ -41,34 +41,34 @@
         case 'degraded':
         case 'partial':
         case 'initializing':
-          return 'warning';
+          return 'outline';
         default:
           return 'secondary';
       }
     }
     if (typeof status === 'number') {
       if (status >= 90) return 'destructive';
-      if (status >= 70) return 'warning';
-      return 'success';
+      if (status >= 70) return 'outline';
+      return 'default';
     }
     return 'secondary';
   }
 
   // Calculate seal progress percentage
   const sealProgressPercentage = $derived(
-    vaultHealth.SealStatus?.Progress && vaultHealth.SealStatus?.Threshold ?
-    (vaultHealth.SealStatus.Progress / vaultHealth.SealStatus.Threshold) * 100 : 0
+    vaultHealth.SealStatus?.Progress && vaultHealth.SealStatus?.Threshold
+      ? (vaultHealth.SealStatus.Progress / vaultHealth.SealStatus.Threshold) * 100
+      : 0
   );
 
   // Calculate storage usage if available
-  const storageUsagePercentage = $derived(
-    vaultHealth.Storage?.UsedPercent || 0
-  );
+  const storageUsagePercentage = $derived(vaultHealth.Storage?.UsedPercent || 0);
 
   // Calculate token usage if available
   const tokenUsagePercentage = $derived(
-    vaultHealth.Tokens?.Used && vaultHealth.Tokens?.Limit ?
-    (vaultHealth.Tokens.Used / vaultHealth.Tokens.Limit) * 100 : 0
+    vaultHealth.Tokens?.Used && vaultHealth.Tokens?.Limit
+      ? (vaultHealth.Tokens.Used / vaultHealth.Tokens.Limit) * 100
+      : 0
   );
 </script>
 
@@ -92,7 +92,9 @@
           <TableRow>
             <TableCell>Seal Status</TableCell>
             <TableCell class="text-right">
-              <Badge variant={getStatusColor(vaultHealth.SealStatus?.Sealed ? 'sealed' : 'unsealed')}>
+              <Badge
+                variant={getStatusColor(vaultHealth.SealStatus?.Sealed ? 'sealed' : 'unsealed')}
+              >
                 {vaultHealth.SealStatus?.Sealed ? 'Sealed' : 'Unsealed'}
               </Badge>
             </TableCell>
@@ -100,7 +102,9 @@
           <TableRow>
             <TableCell>HA Status</TableCell>
             <TableCell class="text-right">
-              <Badge variant={getStatusColor(vaultHealth.HAStatus?.IsActive ? 'active' : 'standby')}>
+              <Badge
+                variant={getStatusColor(vaultHealth.HAStatus?.IsActive ? 'active' : 'standby')}
+              >
                 {vaultHealth.HAStatus?.IsActive ? 'Active' : 'Standby'}
               </Badge>
             </TableCell>
@@ -172,7 +176,7 @@
             <TableRow>
               <TableCell>Migration</TableCell>
               <TableCell class="text-right">
-                <Badge variant={vaultHealth.SealStatus?.Migration ? 'warning' : 'success'}>
+                <Badge variant={vaultHealth.SealStatus?.Migration ? 'outline' : 'default'}>
                   {vaultHealth.SealStatus?.Migration ? 'In Progress' : 'None'}
                 </Badge>
               </TableCell>
@@ -180,7 +184,7 @@
             <TableRow>
               <TableCell>Recovery Seal</TableCell>
               <TableCell class="text-right">
-                <Badge variant={vaultHealth.SealStatus?.RecoverySeal ? 'success' : 'secondary'}>
+                <Badge variant={vaultHealth.SealStatus?.RecoverySeal ? 'default' : 'secondary'}>
                   {vaultHealth.SealStatus?.RecoverySeal ? 'Enabled' : 'Disabled'}
                 </Badge>
               </TableCell>
@@ -210,7 +214,7 @@
           <TableRow>
             <TableCell>Token Auth</TableCell>
             <TableCell class="text-right">
-              <Badge variant={vaultHealth.AuthMethods?.TokenEnabled ? 'success' : 'secondary'}>
+              <Badge variant={vaultHealth.AuthMethods?.TokenEnabled ? 'default' : 'secondary'}>
                 {vaultHealth.AuthMethods?.TokenEnabled ? 'Enabled' : 'Disabled'}
               </Badge>
             </TableCell>
@@ -218,7 +222,7 @@
           <TableRow>
             <TableCell>LDAP Auth</TableCell>
             <TableCell class="text-right">
-              <Badge variant={vaultHealth.AuthMethods?.LdapEnabled ? 'success' : 'secondary'}>
+              <Badge variant={vaultHealth.AuthMethods?.LdapEnabled ? 'default' : 'secondary'}>
                 {vaultHealth.AuthMethods?.LdapEnabled ? 'Enabled' : 'Disabled'}
               </Badge>
             </TableCell>
@@ -226,7 +230,7 @@
           <TableRow>
             <TableCell>AWS Auth</TableCell>
             <TableCell class="text-right">
-              <Badge variant={vaultHealth.AuthMethods?.AwsEnabled ? 'success' : 'secondary'}>
+              <Badge variant={vaultHealth.AuthMethods?.AwsEnabled ? 'default' : 'secondary'}>
                 {vaultHealth.AuthMethods?.AwsEnabled ? 'Enabled' : 'Disabled'}
               </Badge>
             </TableCell>
@@ -247,7 +251,7 @@
               </TableRow>
             </TableHeader>
             <TableBody>
-              {#each vaultHealth.AuthMethodList as method}
+              {#each vaultHealth.AuthMethodList as method (method.Path)}
                 <TableRow>
                   <TableCell>{method.Path}</TableCell>
                   <TableCell>{method.Type}</TableCell>
@@ -314,7 +318,7 @@
               </TableRow>
             </TableHeader>
             <TableBody>
-              {#each vaultHealth.SecretEngineList as engine}
+              {#each vaultHealth.SecretEngineList as engine (engine.Path)}
                 <TableRow>
                   <TableCell>{engine.Path}</TableCell>
                   <TableCell>{engine.Type}</TableCell>
@@ -424,7 +428,7 @@
             <TableRow>
               <TableCell>HA Enabled</TableCell>
               <TableCell class="text-right">
-                <Badge variant={vaultHealth.Storage?.HAEnabled ? 'success' : 'secondary'}>
+                <Badge variant={vaultHealth.Storage?.HAEnabled ? 'default' : 'secondary'}>
                   {vaultHealth.Storage?.HAEnabled ? 'Yes' : 'No'}
                 </Badge>
               </TableCell>
@@ -435,15 +439,21 @@
             </TableRow>
             <TableRow>
               <TableCell>Request Rate</TableCell>
-              <TableCell class="text-right">{vaultHealth.Performance?.RequestRate || 0} req/s</TableCell>
+              <TableCell class="text-right"
+                >{vaultHealth.Performance?.RequestRate || 0} req/s</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Average Request Time</TableCell>
-              <TableCell class="text-right">{vaultHealth.Performance?.AvgRequestTime || 0}ms</TableCell>
+              <TableCell class="text-right"
+                >{vaultHealth.Performance?.AvgRequestTime || 0}ms</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Total Requests</TableCell>
-              <TableCell class="text-right">{vaultHealth.Performance?.TotalRequests?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{vaultHealth.Performance?.TotalRequests?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
           </TableBody>
         </Table>
@@ -496,7 +506,7 @@
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {#each vaultHealth.AuditDeviceList as device}
+                {#each vaultHealth.AuditDeviceList as device (device.Path)}
                   <TableRow>
                     <TableCell>{device.Path}</TableCell>
                     <TableCell>{device.Type}</TableCell>
@@ -528,7 +538,7 @@
             <TableRow>
               <TableCell>HA Mode</TableCell>
               <TableCell class="text-right">
-                <Badge variant={vaultHealth.HAStatus?.HAEnabled ? 'success' : 'secondary'}>
+                <Badge variant={vaultHealth.HAStatus?.HAEnabled ? 'default' : 'secondary'}>
                   {vaultHealth.HAStatus?.HAEnabled ? 'Enabled' : 'Disabled'}
                 </Badge>
               </TableCell>
@@ -536,7 +546,7 @@
             <TableRow>
               <TableCell>Is Active</TableCell>
               <TableCell class="text-right">
-                <Badge variant={vaultHealth.HAStatus?.IsActive ? 'success' : 'warning'}>
+                <Badge variant={vaultHealth.HAStatus?.IsActive ? 'default' : 'outline'}>
                   {vaultHealth.HAStatus?.IsActive ? 'Yes' : 'No'}
                 </Badge>
               </TableCell>
@@ -547,27 +557,35 @@
             </TableRow>
             <TableRow>
               <TableCell>Leader Address</TableCell>
-              <TableCell class="text-right">{vaultHealth.HAStatus?.LeaderAddress || 'N/A'}</TableCell>
+              <TableCell class="text-right"
+                >{vaultHealth.HAStatus?.LeaderAddress || 'N/A'}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Leader Cluster Address</TableCell>
-              <TableCell class="text-right">{vaultHealth.HAStatus?.LeaderClusterAddress || 'N/A'}</TableCell>
+              <TableCell class="text-right"
+                >{vaultHealth.HAStatus?.LeaderClusterAddress || 'N/A'}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Performance Standby</TableCell>
               <TableCell class="text-right">
-                <Badge variant={vaultHealth.HAStatus?.PerformanceStandby ? 'success' : 'secondary'}>
+                <Badge variant={vaultHealth.HAStatus?.PerformanceStandby ? 'default' : 'secondary'}>
                   {vaultHealth.HAStatus?.PerformanceStandby ? 'Yes' : 'No'}
                 </Badge>
               </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Raft Applied Index</TableCell>
-              <TableCell class="text-right">{vaultHealth.HAStatus?.RaftAppliedIndex || 'N/A'}</TableCell>
+              <TableCell class="text-right"
+                >{vaultHealth.HAStatus?.RaftAppliedIndex || 'N/A'}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Raft Committed Index</TableCell>
-              <TableCell class="text-right">{vaultHealth.HAStatus?.RaftCommittedIndex || 'N/A'}</TableCell>
+              <TableCell class="text-right"
+                >{vaultHealth.HAStatus?.RaftCommittedIndex || 'N/A'}</TableCell
+              >
             </TableRow>
           </TableBody>
         </Table>

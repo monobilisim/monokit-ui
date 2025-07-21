@@ -1,13 +1,6 @@
 <script lang="ts">
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-  import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow
-  } from '$lib/components/ui/table';
+  import { Table, TableBody, TableCell, TableRow } from '$lib/components/ui/table';
   import { Progress } from '$lib/components/ui/progress';
   import { Badge } from '$lib/components/ui/badge';
 
@@ -24,7 +17,7 @@
         case 'up':
         case 'ok':
         case 'enabled':
-          return 'success';
+          return 'default';
         case 'stopped':
         case 'offline':
         case 'inactive':
@@ -38,15 +31,15 @@
         case 'slow':
         case 'degraded':
         case 'partial':
-          return 'warning';
+          return 'outline';
         default:
           return 'secondary';
       }
     }
     if (typeof status === 'number') {
       if (status >= 90) return 'destructive';
-      if (status >= 70) return 'warning';
-      return 'success';
+      if (status >= 70) return 'outline';
+      return 'default';
     }
     return 'secondary';
   }
@@ -58,14 +51,16 @@
 
   // Calculate queue usage
   const queueUsagePercentage = $derived(
-    pmgHealth.Queue?.Active && pmgHealth.Queue?.MaxSize ?
-    (pmgHealth.Queue.Active / pmgHealth.Queue.MaxSize) * 100 : 0
+    pmgHealth.Queue?.Active && pmgHealth.Queue?.MaxSize
+      ? (pmgHealth.Queue.Active / pmgHealth.Queue.MaxSize) * 100
+      : 0
   );
 
   // Calculate spam detection rate
   const spamDetectionRate = $derived(
-    pmgHealth.MailStats?.SpamDetected && pmgHealth.MailStats?.TotalProcessed ?
-    (pmgHealth.MailStats.SpamDetected / pmgHealth.MailStats.TotalProcessed) * 100 : 0
+    pmgHealth.MailStats?.SpamDetected && pmgHealth.MailStats?.TotalProcessed
+      ? (pmgHealth.MailStats.SpamDetected / pmgHealth.MailStats.TotalProcessed) * 100
+      : 0
   );
 </script>
 
@@ -164,7 +159,8 @@
           <TableBody>
             <TableRow>
               <TableCell>Total Memory</TableCell>
-              <TableCell class="text-right">{pmgHealth.Resources?.Memory?.Total || 'N/A'}</TableCell>
+              <TableCell class="text-right">{pmgHealth.Resources?.Memory?.Total || 'N/A'}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Used Memory</TableCell>
@@ -207,13 +203,17 @@
           <TableBody>
             <TableRow>
               <TableCell>Total Processed</TableCell>
-              <TableCell class="text-right">{pmgHealth.MailStats?.TotalProcessed?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{pmgHealth.MailStats?.TotalProcessed?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Spam Detected</TableCell>
               <TableCell class="text-right">
                 {#if (pmgHealth.MailStats?.SpamDetected || 0) > 0}
-                  <Badge variant="warning">{pmgHealth.MailStats.SpamDetected.toLocaleString()}</Badge>
+                  <Badge variant="outline"
+                    >{pmgHealth.MailStats.SpamDetected.toLocaleString()}</Badge
+                  >
                 {:else}
                   0
                 {/if}
@@ -223,7 +223,9 @@
               <TableCell>Virus Detected</TableCell>
               <TableCell class="text-right">
                 {#if (pmgHealth.MailStats?.VirusDetected || 0) > 0}
-                  <Badge variant="destructive">{pmgHealth.MailStats.VirusDetected.toLocaleString()}</Badge>
+                  <Badge variant="destructive"
+                    >{pmgHealth.MailStats.VirusDetected.toLocaleString()}</Badge
+                  >
                 {:else}
                   0
                 {/if}
@@ -231,19 +233,27 @@
             </TableRow>
             <TableRow>
               <TableCell>Bounced</TableCell>
-              <TableCell class="text-right">{pmgHealth.MailStats?.Bounced?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{pmgHealth.MailStats?.Bounced?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Greylisted</TableCell>
-              <TableCell class="text-right">{pmgHealth.MailStats?.Greylisted?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{pmgHealth.MailStats?.Greylisted?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Accepted</TableCell>
-              <TableCell class="text-right">{pmgHealth.MailStats?.Accepted?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{pmgHealth.MailStats?.Accepted?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Bytes Processed</TableCell>
-              <TableCell class="text-right">{pmgHealth.MailStats?.BytesProcessed || 'N/A'}</TableCell>
+              <TableCell class="text-right"
+                >{pmgHealth.MailStats?.BytesProcessed || 'N/A'}</TableCell
+              >
             </TableRow>
           </TableBody>
         </Table>
@@ -381,30 +391,38 @@
         <TableBody>
           <TableRow>
             <TableCell>Virus Definitions</TableCell>
-            <TableCell class="text-right">{pmgHealth.Security?.VirusDefinitions || 'N/A'}</TableCell>
+            <TableCell class="text-right">{pmgHealth.Security?.VirusDefinitions || 'N/A'}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Last Virus DB Update</TableCell>
             <TableCell class="text-right">
-              {pmgHealth.Security?.LastVirusUpdate ?
-               new Date(pmgHealth.Security.LastVirusUpdate).toLocaleString() : 'N/A'}
+              {pmgHealth.Security?.LastVirusUpdate
+                ? new Date(pmgHealth.Security.LastVirusUpdate).toLocaleString()
+                : 'N/A'}
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>Spam Rules Version</TableCell>
-            <TableCell class="text-right">{pmgHealth.Security?.SpamRulesVersion || 'N/A'}</TableCell>
+            <TableCell class="text-right">{pmgHealth.Security?.SpamRulesVersion || 'N/A'}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Last Rules Update</TableCell>
             <TableCell class="text-right">
-              {pmgHealth.Security?.LastRulesUpdate ?
-               new Date(pmgHealth.Security.LastRulesUpdate).toLocaleString() : 'N/A'}
+              {pmgHealth.Security?.LastRulesUpdate
+                ? new Date(pmgHealth.Security.LastRulesUpdate).toLocaleString()
+                : 'N/A'}
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>Greylisting Status</TableCell>
             <TableCell class="text-right">
-              <Badge variant={getStatusColor(pmgHealth.Security?.GreylistEnabled ? 'enabled' : 'disabled')}>
+              <Badge
+                variant={getStatusColor(
+                  pmgHealth.Security?.GreylistEnabled ? 'enabled' : 'disabled'
+                )}
+              >
                 {pmgHealth.Security?.GreylistEnabled ? 'Enabled' : 'Disabled'}
               </Badge>
             </TableCell>
@@ -412,7 +430,9 @@
           <TableRow>
             <TableCell>RBL Checks</TableCell>
             <TableCell class="text-right">
-              <Badge variant={getStatusColor(pmgHealth.Security?.RBLEnabled ? 'enabled' : 'disabled')}>
+              <Badge
+                variant={getStatusColor(pmgHealth.Security?.RBLEnabled ? 'enabled' : 'disabled')}
+              >
                 {pmgHealth.Security?.RBLEnabled ? 'Enabled' : 'Disabled'}
               </Badge>
             </TableCell>
@@ -441,16 +461,19 @@
           <TableBody>
             <TableRow>
               <TableCell>Relay Mode</TableCell>
-              <TableCell class="text-right">{pmgHealth.Configuration?.RelayMode || 'N/A'}</TableCell>
+              <TableCell class="text-right">{pmgHealth.Configuration?.RelayMode || 'N/A'}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Max Message Size</TableCell>
-              <TableCell class="text-right">{pmgHealth.Configuration?.MaxMessageSize || 'N/A'}</TableCell>
+              <TableCell class="text-right"
+                >{pmgHealth.Configuration?.MaxMessageSize || 'N/A'}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Backup MX</TableCell>
               <TableCell class="text-right">
-                <Badge variant={pmgHealth.Configuration?.BackupMX ? 'success' : 'secondary'}>
+                <Badge variant={pmgHealth.Configuration?.BackupMX ? 'default' : 'secondary'}>
                   {pmgHealth.Configuration?.BackupMX ? 'Enabled' : 'Disabled'}
                 </Badge>
               </TableCell>
@@ -458,7 +481,7 @@
             <TableRow>
               <TableCell>LDAP Authentication</TableCell>
               <TableCell class="text-right">
-                <Badge variant={pmgHealth.Configuration?.LDAPAuth ? 'success' : 'secondary'}>
+                <Badge variant={pmgHealth.Configuration?.LDAPAuth ? 'default' : 'secondary'}>
                   {pmgHealth.Configuration?.LDAPAuth ? 'Enabled' : 'Disabled'}
                 </Badge>
               </TableCell>
@@ -466,7 +489,9 @@
             <TableRow>
               <TableCell>Quarantine</TableCell>
               <TableCell class="text-right">
-                <Badge variant={pmgHealth.Configuration?.QuarantineEnabled ? 'success' : 'secondary'}>
+                <Badge
+                  variant={pmgHealth.Configuration?.QuarantineEnabled ? 'default' : 'secondary'}
+                >
                   {pmgHealth.Configuration?.QuarantineEnabled ? 'Enabled' : 'Disabled'}
                 </Badge>
               </TableCell>
@@ -474,7 +499,7 @@
             <TableRow>
               <TableCell>Archive</TableCell>
               <TableCell class="text-right">
-                <Badge variant={pmgHealth.Configuration?.ArchiveEnabled ? 'success' : 'secondary'}>
+                <Badge variant={pmgHealth.Configuration?.ArchiveEnabled ? 'default' : 'secondary'}>
                   {pmgHealth.Configuration?.ArchiveEnabled ? 'Enabled' : 'Disabled'}
                 </Badge>
               </TableCell>

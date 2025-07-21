@@ -24,7 +24,7 @@
         case 'healthy':
         case 'up':
         case 'ok':
-          return 'success';
+          return 'default';
         case 'stopped':
         case 'offline':
         case 'disconnected':
@@ -38,15 +38,15 @@
         case 'slow':
         case 'degraded':
         case 'partial':
-          return 'warning';
+          return 'outline';
         default:
           return 'secondary';
       }
     }
     if (typeof status === 'number') {
       if (status >= 90) return 'destructive';
-      if (status >= 70) return 'warning';
-      return 'success';
+      if (status >= 70) return 'outline';
+      return 'default';
     }
     return 'secondary';
   }
@@ -54,27 +54,31 @@
   // Calculate memory usage percentage
   const memoryUsagePercentage = $derived(
     rmqHealth.Memory?.UsedPercent ||
-    (rmqHealth.Memory?.Used && rmqHealth.Memory?.Total ?
-     (rmqHealth.Memory.Used / rmqHealth.Memory.Total) * 100 : 0)
+      (rmqHealth.Memory?.Used && rmqHealth.Memory?.Total
+        ? (rmqHealth.Memory.Used / rmqHealth.Memory.Total) * 100
+        : 0)
   );
 
   // Calculate disk usage percentage
   const diskUsagePercentage = $derived(
     rmqHealth.Disk?.UsedPercent ||
-    (rmqHealth.Disk?.Used && rmqHealth.Disk?.Total ?
-     (rmqHealth.Disk.Used / rmqHealth.Disk.Total) * 100 : 0)
+      (rmqHealth.Disk?.Used && rmqHealth.Disk?.Total
+        ? (rmqHealth.Disk.Used / rmqHealth.Disk.Total) * 100
+        : 0)
   );
 
   // Calculate connection usage percentage
   const connectionUsagePercentage = $derived(
-    rmqHealth.Connections?.Used && rmqHealth.Connections?.Limit ?
-    (rmqHealth.Connections.Used / rmqHealth.Connections.Limit) * 100 : 0
+    rmqHealth.Connections?.Used && rmqHealth.Connections?.Limit
+      ? (rmqHealth.Connections.Used / rmqHealth.Connections.Limit) * 100
+      : 0
   );
 
   // Calculate queue health percentage
   const queueHealthPercentage = $derived(
-    rmqHealth.Queues?.Running && rmqHealth.Queues?.Total ?
-    (rmqHealth.Queues.Running / rmqHealth.Queues.Total) * 100 : 0
+    rmqHealth.Queues?.Running && rmqHealth.Queues?.Total
+      ? (rmqHealth.Queues.Running / rmqHealth.Queues.Total) * 100
+      : 0
   );
 </script>
 
@@ -113,7 +117,8 @@
           </TableRow>
           <TableRow>
             <TableCell>Management Port</TableCell>
-            <TableCell class="text-right">{rmqHealth.ServerInfo?.ManagementPort || 15672}</TableCell>
+            <TableCell class="text-right">{rmqHealth.ServerInfo?.ManagementPort || 15672}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>Last Updated</TableCell>
@@ -275,15 +280,21 @@
             </TableRow>
             <TableRow>
               <TableCell>Total Messages</TableCell>
-              <TableCell class="text-right">{rmqHealth.Messages?.Total?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{rmqHealth.Messages?.Total?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Ready Messages</TableCell>
-              <TableCell class="text-right">{rmqHealth.Messages?.Ready?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{rmqHealth.Messages?.Ready?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Unacked Messages</TableCell>
-              <TableCell class="text-right">{rmqHealth.Messages?.Unacked?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{rmqHealth.Messages?.Unacked?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
           </TableBody>
         </Table>
@@ -301,7 +312,7 @@
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {#each rmqHealth.QueueList.slice(0, 5) as queue}
+                {#each rmqHealth.QueueList.slice(0, 5) as queue (queue.Name)}
                   <TableRow>
                     <TableCell>{queue.Name}</TableCell>
                     <TableCell>{queue.VHost || '/'}</TableCell>
@@ -369,13 +380,13 @@
               </TableRow>
             </TableHeader>
             <TableBody>
-              {#each rmqHealth.ExchangeList.slice(0, 5) as exchange}
+              {#each rmqHealth.ExchangeList.slice(0, 5) as exchange (exchange.Name)}
                 <TableRow>
                   <TableCell>{exchange.Name}</TableCell>
                   <TableCell>{exchange.Type}</TableCell>
                   <TableCell>{exchange.VHost || '/'}</TableCell>
                   <TableCell>
-                    <Badge variant={exchange.Durable ? 'success' : 'secondary'}>
+                    <Badge variant={exchange.Durable ? 'default' : 'secondary'}>
                       {exchange.Durable ? 'Yes' : 'No'}
                     </Badge>
                   </TableCell>
@@ -420,7 +431,7 @@
               </TableRow>
             </TableHeader>
             <TableBody>
-              {#each rmqHealth.VirtualHostList as vhost}
+              {#each rmqHealth.VirtualHostList as vhost (vhost.Name)}
                 <TableRow>
                   <TableCell>{vhost.Name}</TableCell>
                   <TableCell>
@@ -450,35 +461,51 @@
           <TableBody>
             <TableRow>
               <TableCell>Publish Rate</TableCell>
-              <TableCell class="text-right">{rmqHealth.Performance?.PublishRate?.toFixed(2) || 0} msg/s</TableCell>
+              <TableCell class="text-right"
+                >{rmqHealth.Performance?.PublishRate?.toFixed(2) || 0} msg/s</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Deliver Rate</TableCell>
-              <TableCell class="text-right">{rmqHealth.Performance?.DeliverRate?.toFixed(2) || 0} msg/s</TableCell>
+              <TableCell class="text-right"
+                >{rmqHealth.Performance?.DeliverRate?.toFixed(2) || 0} msg/s</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Ack Rate</TableCell>
-              <TableCell class="text-right">{rmqHealth.Performance?.AckRate?.toFixed(2) || 0} msg/s</TableCell>
+              <TableCell class="text-right"
+                >{rmqHealth.Performance?.AckRate?.toFixed(2) || 0} msg/s</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Published Messages</TableCell>
-              <TableCell class="text-right">{rmqHealth.Performance?.PublishedTotal?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{rmqHealth.Performance?.PublishedTotal?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Delivered Messages</TableCell>
-              <TableCell class="text-right">{rmqHealth.Performance?.DeliveredTotal?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{rmqHealth.Performance?.DeliveredTotal?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Acknowledged Messages</TableCell>
-              <TableCell class="text-right">{rmqHealth.Performance?.AckedTotal?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{rmqHealth.Performance?.AckedTotal?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Redelivered Messages</TableCell>
-              <TableCell class="text-right">{rmqHealth.Performance?.RedeliveredTotal?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{rmqHealth.Performance?.RedeliveredTotal?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Returned Messages</TableCell>
-              <TableCell class="text-right">{rmqHealth.Performance?.ReturnedTotal?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{rmqHealth.Performance?.ReturnedTotal?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
           </TableBody>
         </Table>
@@ -533,7 +560,7 @@
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {#each rmqHealth.ClusterNodes as node}
+                {#each rmqHealth.ClusterNodes as node (node.Name)}
                   <TableRow>
                     <TableCell>{node.Name}</TableCell>
                     <TableCell>

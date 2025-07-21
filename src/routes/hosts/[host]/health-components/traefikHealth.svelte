@@ -24,7 +24,7 @@
         case 'enabled':
         case 'valid':
         case 'success':
-          return 'success';
+          return 'default';
         case 'down':
         case 'unhealthy':
         case 'stopped':
@@ -38,38 +38,40 @@
         case 'degraded':
         case 'partial':
         case 'expiring':
-          return 'warning';
+          return 'outline';
         default:
           return 'secondary';
       }
     }
     if (typeof status === 'number') {
       if (status >= 90) return 'destructive';
-      if (status >= 70) return 'warning';
-      return 'success';
+      if (status >= 70) return 'outline';
+      return 'default';
     }
     return 'secondary';
   }
 
   // Calculate service health percentage
   const serviceHealthPercentage = $derived(
-    traefikHealth.Services?.Healthy && traefikHealth.Services?.Total ?
-    (traefikHealth.Services.Healthy / traefikHealth.Services.Total) * 100 : 0
+    traefikHealth.Services?.Healthy && traefikHealth.Services?.Total
+      ? (traefikHealth.Services.Healthy / traefikHealth.Services.Total) * 100
+      : 0
   );
 
   // Calculate router health percentage
   const routerHealthPercentage = $derived(
-    traefikHealth.Routers?.Active && traefikHealth.Routers?.Total ?
-    (traefikHealth.Routers.Active / traefikHealth.Routers.Total) * 100 : 0
+    traefikHealth.Routers?.Active && traefikHealth.Routers?.Total
+      ? (traefikHealth.Routers.Active / traefikHealth.Routers.Total) * 100
+      : 0
   );
 
   // Calculate average response time color
   const responseTimeColor = $derived(() => {
-    if (!traefikHealth.Metrics?.AverageResponseTime) return 'success';
+    if (!traefikHealth.Metrics?.AverageResponseTime) return 'default';
     const avgTime = traefikHealth.Metrics.AverageResponseTime;
     if (avgTime > 1000) return 'destructive';
-    if (avgTime > 500) return 'warning';
-    return 'success';
+    if (avgTime > 500) return 'outline';
+    return 'default';
   });
 </script>
 
@@ -104,7 +106,9 @@
           </TableRow>
           <TableRow>
             <TableCell>Dashboard Port</TableCell>
-            <TableCell class="text-right">{traefikHealth.ServerInfo?.DashboardPort || 8080}</TableCell>
+            <TableCell class="text-right"
+              >{traefikHealth.ServerInfo?.DashboardPort || 8080}</TableCell
+            >
           </TableRow>
           <TableRow>
             <TableCell>API Status</TableCell>
@@ -117,7 +121,9 @@
           <TableRow>
             <TableCell>Last Updated</TableCell>
             <TableCell class="text-right">
-              {traefikHealth.LastChecked ? new Date(traefikHealth.LastChecked).toLocaleString() : 'N/A'}
+              {traefikHealth.LastChecked
+                ? new Date(traefikHealth.LastChecked).toLocaleString()
+                : 'N/A'}
             </TableCell>
           </TableRow>
         </TableBody>
@@ -186,7 +192,7 @@
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {#each traefikHealth.ServiceList as service}
+                {#each traefikHealth.ServiceList as service (service.Name)}
                   <TableRow>
                     <TableCell>{service.Name}</TableCell>
                     <TableCell>{service.Type || 'HTTP'}</TableCell>
@@ -263,10 +269,12 @@
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {#each traefikHealth.RouterList as router}
+                {#each traefikHealth.RouterList as router (router.Name)}
                   <TableRow>
                     <TableCell>{router.Name}</TableCell>
-                    <TableCell class="max-w-32 truncate" title={router.Rule}>{router.Rule || 'N/A'}</TableCell>
+                    <TableCell class="max-w-32 truncate" title={router.Rule}
+                      >{router.Rule || 'N/A'}</TableCell
+                    >
                     <TableCell>{router.Service || 'N/A'}</TableCell>
                     <TableCell>
                       <Badge variant={getStatusColor(router.Status)}>
@@ -327,7 +335,7 @@
               </TableRow>
             </TableHeader>
             <TableBody>
-              {#each traefikHealth.EntrypointList as entrypoint}
+              {#each traefikHealth.EntrypointList as entrypoint (entrypoint.Name)}
                 <TableRow>
                   <TableCell>{entrypoint.Name}</TableCell>
                   <TableCell>{entrypoint.Address || 'N/A'}</TableCell>
@@ -385,7 +393,7 @@
               </TableRow>
             </TableHeader>
             <TableBody>
-              {#each traefikHealth.MiddlewareList as middleware}
+              {#each traefikHealth.MiddlewareList as middleware (middleware.Name)}
                 <TableRow>
                   <TableCell>{middleware.Name}</TableCell>
                   <TableCell>{middleware.Type || 'N/A'}</TableCell>
@@ -414,11 +422,15 @@
           <TableBody>
             <TableRow>
               <TableCell>Total Requests</TableCell>
-              <TableCell class="text-right">{traefikHealth.Metrics?.TotalRequests?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{traefikHealth.Metrics?.TotalRequests?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Requests/sec</TableCell>
-              <TableCell class="text-right">{traefikHealth.Metrics?.RequestsPerSecond?.toFixed(2) || 0}</TableCell>
+              <TableCell class="text-right"
+                >{traefikHealth.Metrics?.RequestsPerSecond?.toFixed(2) || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>Average Response Time</TableCell>
@@ -430,17 +442,22 @@
             </TableRow>
             <TableRow>
               <TableCell>2xx Responses</TableCell>
-              <TableCell class="text-right">{traefikHealth.Metrics?.Status2xx?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{traefikHealth.Metrics?.Status2xx?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>3xx Responses</TableCell>
-              <TableCell class="text-right">{traefikHealth.Metrics?.Status3xx?.toLocaleString() || 0}</TableCell>
+              <TableCell class="text-right"
+                >{traefikHealth.Metrics?.Status3xx?.toLocaleString() || 0}</TableCell
+              >
             </TableRow>
             <TableRow>
               <TableCell>4xx Responses</TableCell>
               <TableCell class="text-right">
                 {#if (traefikHealth.Metrics?.Status4xx || 0) > 0}
-                  <Badge variant="warning">{traefikHealth.Metrics.Status4xx.toLocaleString()}</Badge>
+                  <Badge variant="outline">{traefikHealth.Metrics.Status4xx.toLocaleString()}</Badge
+                  >
                 {:else}
                   0
                 {/if}
@@ -450,7 +467,9 @@
               <TableCell>5xx Responses</TableCell>
               <TableCell class="text-right">
                 {#if (traefikHealth.Metrics?.Status5xx || 0) > 0}
-                  <Badge variant="destructive">{traefikHealth.Metrics.Status5xx.toLocaleString()}</Badge>
+                  <Badge variant="destructive"
+                    >{traefikHealth.Metrics.Status5xx.toLocaleString()}</Badge
+                  >
                 {:else}
                   0
                 {/if}
@@ -483,7 +502,7 @@
               <TableCell>Expiring Soon</TableCell>
               <TableCell class="text-right">
                 {#if (traefikHealth.Certificates?.ExpiringSoon || 0) > 0}
-                  <Badge variant="warning">{traefikHealth.Certificates.ExpiringSoon}</Badge>
+                  <Badge variant="outline">{traefikHealth.Certificates.ExpiringSoon}</Badge>
                 {:else}
                   0
                 {/if}
@@ -501,7 +520,9 @@
             </TableRow>
             <TableRow>
               <TableCell>Let's Encrypt</TableCell>
-              <TableCell class="text-right">{traefikHealth.Certificates?.LetsEncrypt || 0}</TableCell>
+              <TableCell class="text-right"
+                >{traefikHealth.Certificates?.LetsEncrypt || 0}</TableCell
+              >
             </TableRow>
           </TableBody>
         </Table>
@@ -519,7 +540,7 @@
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {#each traefikHealth.CertificateList as cert}
+                {#each traefikHealth.CertificateList as cert (cert.Domain)}
                   <TableRow>
                     <TableCell>{cert.Domain}</TableCell>
                     <TableCell>
