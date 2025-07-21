@@ -109,7 +109,8 @@
     { href: '/', icon: LayoutDashboard, label: 'Dashboard' },
     { href: '/hosts', icon: Server, label: 'Hosts' },
     { href: '/users', icon: Users, label: 'Users' },
-    { href: '/inventories', icon: Package, label: 'Inventories' },
+    { href: '/domains', icon: Package, label: 'Domains' },
+    //{ href: '/inventories', icon: Package, label: 'Inventories' },
     { href: '/groups', icon: Group, label: 'Groups' },
     { href: '/logs', icon: FileText, label: 'Logs' }
   ];

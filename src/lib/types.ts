@@ -26,6 +26,16 @@ export type Inventory = {
   created_at: string;
 };
 
+export type Domain = {
+  id: string;
+  name: string;
+  description?: string;
+  active: boolean;
+  settings?: object;
+  created_at: string;
+  updated_at: string;
+};
+
 export type Host = {
   name: string;
   address: string;
