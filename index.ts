@@ -28,7 +28,7 @@ function getMimeType(path: string): string {
 Bun.serve({
   hostname,
   port,
-  idleTimeout: 120000, // 2 minutes
+  idleTimeout: 120, // 2 minutes
   async fetch(req: Request): Promise<Response> {
     const url = new URL(req.url);
     let pathname = url.pathname;
