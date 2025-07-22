@@ -1,6 +1,13 @@
 <script lang="ts">
   import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
-  import { Table, TableBody, TableCell, TableRow } from '$lib/components/ui/table';
+  import {
+    Table,
+    TableBody,
+    TableCell,
+    TableRow,
+    TableHeader,
+    TableHead
+  } from '$lib/components/ui/table';
   import { Progress } from '$lib/components/ui/progress';
   import { Badge } from '$lib/components/ui/badge';
 
@@ -26,6 +33,14 @@
     }
   }
 
+  type PritunlHealthUser = {
+    ConnectedClients?: { IPAddress: string }[];
+    IsHealthy: boolean;
+    Name: string;
+    Organization: string;
+    Status: 'online' | 'offline';
+  };
+
   // Helper function to get usage color based on percentage
   function getUsageColor(percentage: number) {
     if (percentage >= 90) return 'destructive';
@@ -47,25 +62,29 @@
             <TableCell>Service</TableCell>
             <TableCell class="text-right">
               <Badge variant={getStatusColor(pritunlHealth.Service?.Status)}>
-                {pritunlHealth.Service?.Status || 'Unknown'}
+                {pritunlHealth?.IsHealthy ? 'running' : 'stopped'}
               </Badge>
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>Version</TableCell>
-            <TableCell class="text-right">{pritunlHealth.Service?.Version || 'N/A'}</TableCell>
+            <TableCell class="text-right">{pritunlHealth?.Version || 'N/A'}</TableCell>
           </TableRow>
-          <TableRow>
+          <!-- <TableRow>
             <TableCell>Uptime</TableCell>
             <TableCell class="text-right">{pritunlHealth.Service?.Uptime || 'N/A'}</TableCell>
-          </TableRow>
+          </TableRow> -->
           <TableRow>
             <TableCell>Last Checked</TableCell>
             <TableCell class="text-right">
-              {pritunlHealth.Service?.LastChecked
-                ? new Date(pritunlHealth.Service.LastChecked).toLocaleString()
+              {pritunlHealth?.LastChecked
+                ? new Date(pritunlHealth.LastChecked).toLocaleString()
                 : 'N/A'}
             </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Organizations</TableCell>
+            <TableCell class="text-right">{pritunlHealth?.Organizations.length || 0}</TableCell>
           </TableRow>
         </TableBody>
       </Table>
@@ -82,23 +101,29 @@
         <TableBody>
           <TableRow>
             <TableCell>Total Servers</TableCell>
-            <TableCell class="text-right">{pritunlHealth.Servers?.Total || 0}</TableCell>
+            <TableCell class="text-right">{pritunlHealth.Servers?.length || 0}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell>Online Servers</TableCell>
             <TableCell class="text-right">
-              <Badge variant="default">{pritunlHealth.Servers?.Online || 0}</Badge>
+              <Badge variant="default"
+                >{pritunlHealth.Servers?.filter(
+                  (server: { IsHealty: boolean; Name: string; Status: 'online' | 'offline' }) =>
+                    server.Status === 'online'
+                ).length || 0}</Badge
+              >
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>Offline Servers</TableCell>
             <TableCell class="text-right">
-              <Badge variant="destructive">{pritunlHealth.Servers?.Offline || 0}</Badge>
+              <Badge variant="destructive"
+                >{pritunlHealth.Servers?.filter(
+                  (server: { IsHealty: boolean; Name: string; Status: 'online' | 'offline' }) =>
+                    server.Status === 'offline'
+                ).length || 0}</Badge
+              >
             </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell>Organizations</TableCell>
-            <TableCell class="text-right">{pritunlHealth.Servers?.Organizations || 0}</TableCell>
           </TableRow>
         </TableBody>
       </Table>
@@ -113,24 +138,35 @@
     <CardContent>
       <Table>
         <TableBody>
-          <TableRow>
+          <!-- <TableRow>
             <TableCell>Active Connections</TableCell>
             <TableCell class="text-right">
-              <Badge variant="default">{pritunlHealth.Users?.ActiveConnections || 0}</Badge>
+              <Badge variant="default"
+                >{pritunlHealth.Users?.filter(
+                  (user: PritunlHealthUser) =>
+                    user.Status === 'online' &&
+                    user.ConnectedClients &&
+                    user.ConnectedClients.length > 0
+                ).length || 0}</Badge
+              >
             </TableCell>
-          </TableRow>
+          </TableRow> -->
           <TableRow>
             <TableCell>Total Users</TableCell>
-            <TableCell class="text-right">{pritunlHealth.Users?.TotalUsers || 0}</TableCell>
+            <TableCell class="text-right">{pritunlHealth.Users?.length || 0}</TableCell>
           </TableRow>
           <TableRow>
             <TableCell>Online Users</TableCell>
-            <TableCell class="text-right">{pritunlHealth.Users?.OnlineUsers || 0}</TableCell>
+            <TableCell class="text-right"
+              >{pritunlHealth.Users?.filter((user: PritunlHealthUser) => user.Status === 'online')
+                .length || 0}</TableCell
+            >
           </TableRow>
           <TableRow>
-            <TableCell>Max Connections</TableCell>
+            <TableCell>Offline Users</TableCell>
             <TableCell class="text-right"
-              >{pritunlHealth.Users?.MaxConnections || 'Unlimited'}</TableCell
+              >{pritunlHealth.Users?.filter((user: PritunlHealthUser) => user.Status === 'offline')
+                .length || 0}</TableCell
             >
           </TableRow>
         </TableBody>
@@ -139,7 +175,7 @@
   </Card>
 
   <!-- Network Statistics Card -->
-  <Card>
+  <!-- <Card>
     <CardHeader class="space-y-1">
       <CardTitle class="text-2xl font-bold">Network Statistics</CardTitle>
     </CardHeader>
@@ -166,10 +202,10 @@
         </TableBody>
       </Table>
     </CardContent>
-  </Card>
+  </Card> -->
 
   <!-- Database Status Card -->
-  <Card>
+  <!-- <Card>
     <CardHeader class="space-y-1">
       <CardTitle class="text-2xl font-bold">Database Status</CardTitle>
     </CardHeader>
@@ -203,10 +239,10 @@
         </TableBody>
       </Table>
     </CardContent>
-  </Card>
+  </Card> -->
 
   <!-- Certificate Status Card -->
-  {#if pritunlHealth.Certificates}
+  <!-- {#if pritunlHealth.Certificates}
     <Card>
       <CardHeader class="space-y-1">
         <CardTitle class="text-2xl font-bold">Certificate Status</CardTitle>
@@ -248,17 +284,16 @@
         </Table>
       </CardContent>
     </Card>
-  {/if}
+  {/if} -->
 
   <!-- System Resources Card -->
-  {#if pritunlHealth.Resources}
+  <!-- {#if pritunlHealth.Resources}
     <Card>
       <CardHeader class="space-y-1">
         <CardTitle class="text-2xl font-bold">System Resources</CardTitle>
       </CardHeader>
       <CardContent>
         <div class="mt-4 space-y-4">
-          <!-- CPU Usage -->
           <div class="space-y-2">
             <div class="flex items-center justify-between text-sm">
               <span>CPU Usage</span>
@@ -269,7 +304,6 @@
             <Progress value={pritunlHealth.Resources.CPU?.Usage} class="h-2" />
           </div>
 
-          <!-- Memory Usage -->
           <div class="space-y-2">
             <div class="flex items-center justify-between text-sm">
               <span>Memory Usage</span>
@@ -299,5 +333,35 @@
         </div>
       </CardContent>
     </Card>
-  {/if}
+  {/if} -->
 </div>
+
+<Card class="mt-4">
+  <CardHeader>
+    <CardTitle class="text-2xl font-bold">Connected Users</CardTitle>
+  </CardHeader>
+  <CardContent>
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Name</TableHead>
+          <TableHead>Organization</TableHead>
+          <TableHead>IPs</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {#each pritunlHealth.Users.filter((user: PritunlHealthUser) => user.Status === 'online') as user (user.Name)}
+          <TableRow>
+            <TableCell>{user.Name}</TableCell>
+            <TableCell>{user.Organization}</TableCell>
+            <TableCell
+              >{[
+                ...new Set(user.ConnectedClients.map((obj: { IPAddress: string }) => obj.IPAddress))
+              ].join(', ')}</TableCell
+            >
+          </TableRow>
+        {/each}
+      </TableBody>
+    </Table>
+  </CardContent>
+</Card>
