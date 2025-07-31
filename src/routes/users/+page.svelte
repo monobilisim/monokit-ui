@@ -12,20 +12,22 @@
   import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
   import * as Select from '$lib/components/ui/select';
-  import { handleFormResponse } from '$lib/stores/alerts';
+  import { handleFormResponse, alerts } from '$lib/stores/alerts';
   import { invalidateAll } from '$app/navigation';
-  import type { UserData } from '$lib/types';
+  import type { UserData, AlertMessage } from '$lib/types';
   import UsersIcon from '@lucide/svelte/icons/users';
   import Trash2Icon from '@lucide/svelte/icons/trash-2';
   import PlusIcon from '@lucide/svelte/icons/plus';
   import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
   import AlertTriangleIcon from '@lucide/svelte/icons/alert-triangle';
+
   import type { InventoryData } from '$lib/types';
 
   type UsersPageData = {
     users: UserData[] | undefined;
-    inventories: InventoryData | undefined;
-    error?: string;
+    inventories: InventoryData[] | undefined;
+    domains: any[] | undefined;
+    alerts?: AlertMessage[] | undefined;
   };
 
   type FormResult = {
@@ -36,6 +38,7 @@
 
   let { data, form }: { data: UsersPageData; form: FormResult } = $props();
 
+  const domains = data.domains;
   let selectedUsers = $state<string[]>([]);
   let isDeleteModalOpen = $state(false);
   let confirmationChecked = $state(false);
@@ -51,7 +54,6 @@
     inventory: ''
   });
   let selectedInventory = $state<string | null>(null);
-  // @ts-expect-error i have no clue why it gives an error there, but it works without any issues
   const inventories: InventoryData[] = data.inventories || [];
 
   $effect(() => {
@@ -61,6 +63,21 @@
   $effect(() => {
     if (!isDeleteModalOpen) {
       confirmationChecked = false;
+    }
+  });
+
+  $effect(() => {
+    console.log(domains);
+  });
+
+  $effect(() => {
+    if (data.alerts && data.alerts.length > 0) {
+      data.alerts.forEach((alert) => {
+        alerts.add({
+          type: alert.type,
+          message: alert.message
+        });
+      });
     }
   });
 
@@ -139,14 +156,6 @@
 </script>
 
 <div class="w-full space-y-4 p-4">
-  {#if data.error}
-    <Alert.Root variant="destructive" class="mb-6">
-      <AlertTriangleIcon class="h-4 w-4" />
-      <Alert.Title>Error</Alert.Title>
-      <Alert.Description>{data.error}</Alert.Description>
-    </Alert.Root>
-  {/if}
-
   {#if !data.users || data.users.length === 0}
     <Card.Root>
       <Card.Content class="flex flex-col items-center justify-center py-16">
@@ -210,7 +219,7 @@
                 <Table.Head>Email</Table.Head>
                 <Table.Head>Role</Table.Head>
                 <Table.Head>Groups</Table.Head>
-                <Table.Head>Inventories</Table.Head>
+                <!--<Table.Head>Inventories</Table.Head>-->
               </Table.Row>
             </Table.Header>
             <Table.Body>
@@ -248,7 +257,7 @@
                       </div>
                     {/if}
                   </Table.Cell>
-                  <Table.Cell>
+                  <!--<Table.Cell>
                     {#if parseCommaSeparated(user.inventories).length === 0}
                       <span class="text-muted-foreground">None</span>
                     {:else}
@@ -258,7 +267,7 @@
                         {/each}
                       </div>
                     {/if}
-                  </Table.Cell>
+                  </Table.Cell>-->
                 </Table.Row>
               {/each}
             </Table.Body>

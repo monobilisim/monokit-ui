@@ -49,9 +49,9 @@
           {#if userInfo.groups !== 'nil'}
             <Badge variant="secondary">Groups: {userInfo.groups}</Badge>
           {/if}
-          {#if userInfo.inventories}
+          <!-- {#if userInfo.inventories}
             <Badge variant="secondary">Inventories: {userInfo.inventories}</Badge>
-          {/if}
+          {/if} -->
         </div>
       </CardContent>
     </Card>

@@ -1,62 +1,89 @@
 const MONOKIT_URL = Bun.env.MONOKIT_URL;
-import { fail, type Actions } from '@sveltejs/kit';
+import { fail, redirect, type Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import type { UserData, InventoryData } from '$lib/types';
+import type { UserData, AlertMessage } from '$lib/types';
 
 export const load: PageServerLoad = async ({ fetch, cookies }) => {
   const authToken = cookies.get('Authorization');
 
   if (!authToken) {
-    return {
-      users: [] as UserData[],
-      error: 'Not authenticated'
-    };
+    throw redirect(302, '/login');
   }
 
+  const alerts: AlertMessage[] = [];
+
   try {
+    // Fetch users
     const res = await fetch(`${MONOKIT_URL}/api/v1/admin/users`, {
       headers: {
         Authorization: authToken
       }
     });
 
+    let users: UserData[] = [];
     if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      return {
-        users: [] as UserData[],
-        error: data.error || 'Failed to fetch users'
-      };
+      const errorData = await res.json().catch(() => ({}));
+      alerts.push({
+        type: 'error',
+        message: errorData.error || 'Failed to fetch users from server'
+      });
+    } else {
+      users = await res.json();
     }
 
-    const users: UserData[] = await res.json();
-
-    const inventoriesResponse = await fetch(`${MONOKIT_URL}/api/v1/inventory`, {
+    // Fetch domains
+    const domainsResponse = await fetch(`${MONOKIT_URL}/api/v1/admin/domains`, {
       headers: {
         Authorization: authToken
       }
     });
 
-    if (!inventoriesResponse.ok) {
-      const data = await inventoriesResponse.json().catch(() => ({}));
-      return {
-        users: [] as UserData[],
-        inventories: [],
-        error: data.error || 'Failed to fetch inventories'
-      };
+    let domains = [];
+    if (!domainsResponse.ok) {
+      const errorData = await domainsResponse.json().catch(() => ({}));
+      alerts.push({
+        type: 'error',
+        message: errorData.error || 'Failed to fetch domains'
+      });
+    } else {
+      domains = await domainsResponse.json();
     }
 
-    const inventories: InventoryData[] = await inventoriesResponse.json();
+    // Fetch inventories
+    // const inventoriesResponse = await fetch(`${MONOKIT_URL}/api/v1/admin/inventories`, {
+    //   headers: {
+    //     Authorization: authToken
+    //   }
+    // });
+
+    // let inventories = [];
+    // if (!inventoriesResponse.ok) {
+    //   const errorData = await inventoriesResponse.json().catch(() => ({}));
+    //   alerts.push({
+    //     type: 'warn',
+    //     message: errorData.error || 'Failed to fetch inventories'
+    //   });
+    // } else {
+    //   inventories = await inventoriesResponse.json();
+    // }
 
     return {
       users,
-      inventories,
-      error: undefined
+      domains,
+      // inventories,
+      alerts: alerts.length > 0 ? alerts : undefined
     };
   } catch {
+    alerts.push({
+      type: 'error',
+      message: 'Network error: Failed to connect to server'
+    });
+
     return {
       users: [] as UserData[],
-      inventories: [],
-      error: 'Failed to fetch users'
+      domains: [],
+      // inventories: [],
+      alerts
     };
   }
 };
