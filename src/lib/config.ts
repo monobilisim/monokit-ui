@@ -10,25 +10,29 @@ type Config = {
   LOCAL_AUTH?: boolean;
 };
 
-if (!fs.existsSync('/etc/mono/panel.yaml')) {
-  console.error('Configuration file /etc/mono/panel.yaml does not exist.');
-  process.exit(1);
-}
-
 let config: Config;
 
-try {
-  const configYaml = <Config>yaml.load(fs.readFileSync('/etc/mono/panel.yaml', 'utf8'));
-  config = {
-    PORT: configYaml.PORT,
-    MONOKIT_URL: configYaml.MONOKIT_URL,
-    AWX_SETUP_TEMPLATE_ID: configYaml.AWX_SETUP_TEMPLATE_ID,
-    AWX_PING_TEMPLATE_ID: configYaml.AWX_PING_TEMPLATE_ID,
-    ORIGINS: configYaml.ORIGINS
-  };
-} catch (e) {
-  console.error('Failed to read or parse configuration file:', e);
-  process.exit(1);
+if (!Bun.env.BUILD_STEP) {
+  if (!fs.existsSync('/etc/mono/panel.yaml')) {
+    console.error('Configuration file /etc/mono/panel.yaml does not exist.');
+    process.exit(1);
+  }
+
+  try {
+    const configYaml = <Config>yaml.load(fs.readFileSync('/etc/mono/panel.yaml', 'utf8'));
+    config = {
+      PORT: configYaml.PORT,
+      MONOKIT_URL: configYaml.MONOKIT_URL,
+      AWX_SETUP_TEMPLATE_ID: configYaml.AWX_SETUP_TEMPLATE_ID,
+      AWX_PING_TEMPLATE_ID: configYaml.AWX_PING_TEMPLATE_ID,
+      ORIGINS: configYaml.ORIGINS
+    };
+  } catch (e) {
+    console.error('Failed to read or parse configuration file:', e);
+    process.exit(1);
+  }
+} else {
+  config = {} as Config;
 }
 
 export default config;

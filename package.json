@@ -16,7 +16,7 @@
     "test": "bun --bun vitest --run --browser.headless=true",
     "prepare-assets": "bun --bun run embed-imports.js",
     "install-chrome": "bun --bun run playwright install chromium",
-    "create-binary": "bun run build && bun run prepare-assets && bun build --compile --minify --sourcemap index.ts embedded-imports.js --outfile build/monokit-ui"
+    "create-binary": "BUILD_STEP=1 bun run build && bun run prepare-assets && bun build --compile --minify --sourcemap index.ts embedded-imports.js --outfile build/monokit-ui"
   },
   "devDependencies": {
     "@eslint/compat": "^1.3.2",
