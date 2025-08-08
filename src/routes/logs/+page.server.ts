@@ -1,4 +1,5 @@
-const MONOKIT_URL = Bun.env.MONOKIT_URL;
+import Config from '$lib/config';
+const MONOKIT_URL = Config.MONOKIT_URL;
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail } from '@sveltejs/kit';
 import type { LogChartData, LogSearchParams, LogSearchResponse, LogsPageData } from '$lib/types';

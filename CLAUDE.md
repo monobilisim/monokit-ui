@@ -1,5 +1,6 @@
 Every API that will connect to a monokit server must use +page.server.ts for it.
-Monokit base URL is "const MONOKIT_URL = Bun.env.MONOKIT_URL"
+Config importer is located at $lib/config.ts, you can use it to get the configuration values.
+Monokit base URL is "const MONOKIT_URL = Config.MONOKIT_URL"
 Always use templating for fetch urls like `${MONOKIT_URL}/api/v1/endpoint`
 Authentication is done using the Authorization header with the token use it like
 

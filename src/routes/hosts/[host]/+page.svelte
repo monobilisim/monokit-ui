@@ -15,7 +15,10 @@
   } from '$lib/components/ui/dialog';
   import * as Select from '$lib/components/ui/select';
   import { Badge } from '$lib/components/ui/badge';
-  import { ArrowLeft, Trash2, PlusCircle, Info } from 'lucide-svelte';
+  import ArrowLeft from '@lucide/svelte/icons/arrow-left';
+  import Trash2 from '@lucide/svelte/icons/trash-2';
+  import PlusCircle from '@lucide/svelte/icons/plus-circle';
+  import Info from '@lucide/svelte/icons/info';
   import OsHealth from './health-components/osHealth.svelte';
   import PostalHealth from './health-components/postalHealth.svelte';
   import PritunlHealth from './health-components/pritunlHealth.svelte';

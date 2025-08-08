@@ -2,16 +2,14 @@
   import '../app.css';
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
-  import {
-    LayoutDashboard,
-    Server,
-    Users,
-    Package,
-    Group,
-    FileText,
-    Moon,
-    Sun
-  } from 'lucide-svelte';
+  import LayoutDashboard from '@lucide/svelte/icons/layout-dashboard';
+  import Server from '@lucide/svelte/icons/server';
+  import Users from '@lucide/svelte/icons/users';
+  import Package from '@lucide/svelte/icons/package';
+  import Group from '@lucide/svelte/icons/group';
+  import FileText from '@lucide/svelte/icons/file-text';
+  import Moon from '@lucide/svelte/icons/moon';
+  import Sun from '@lucide/svelte/icons/sun';
   import type { Snippet } from 'svelte';
   import type { LayoutData } from './$types';
   import type { UserData, AlertMessage } from '$lib/types';

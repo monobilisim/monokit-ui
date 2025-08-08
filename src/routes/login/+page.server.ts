@@ -9,8 +9,8 @@ export const load: PageServerLoad = async ({ cookies }): Promise<void> => {
     redirect(301, '/');
   }
 };
-
-const MONOKIT_URL = Bun.env.MONOKIT_URL;
+import Config from '$lib/config';
+const MONOKIT_URL = Config.MONOKIT_URL;
 
 export const actions: Actions = {
   login: async ({ request, cookies, fetch }) => {

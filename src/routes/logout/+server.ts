@@ -1,5 +1,6 @@
 import { json, type RequestHandler } from '@sveltejs/kit';
-const MONOKIT_URL = Bun.env.MONOKIT_URL;
+import Config from '$lib/config';
+const MONOKIT_URL = Config.MONOKIT_URL;
 
 export const GET: RequestHandler = async ({ cookies, fetch }) => {
   const authToken = cookies.get('Authorization');

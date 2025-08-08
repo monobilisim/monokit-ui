@@ -1,6 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { fail } from '@sveltejs/kit';
-const MONOKIT_URL = Bun.env.MONOKIT_URL;
+import Config from '$lib/config';
+const MONOKIT_URL = Config.MONOKIT_URL;
 
 export const load: PageServerLoad = async ({ fetch, cookies, params }) => {
   const auth = cookies.get('Authorization');

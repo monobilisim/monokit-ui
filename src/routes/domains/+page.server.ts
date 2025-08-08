@@ -1,4 +1,5 @@
-const MONOKIT_URL = Bun.env.MONOKIT_URL;
+import Config from '$lib/config';
+const MONOKIT_URL = Config.MONOKIT_URL;
 import type { PageServerLoad, Actions } from './$types';
 import { error, fail } from '@sveltejs/kit';
 
@@ -46,27 +47,8 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
 
     const data = await response.json();
 
-    let domainsData: DomainResponse[] = [];
-    if (Array.isArray(data)) {
-      domainsData = data;
-    } else if (typeof data === 'object' && Array.isArray(data.data)) {
-      domainsData = data.data;
-    } else {
-      throw error(500, 'Invalid data format from server');
-    }
-
-    const normalizedDomains: NormalizedDomain[] = domainsData.map((domain) => ({
-      id: domain.id,
-      name: domain.name || 'Unnamed Domain',
-      description: domain.description || '',
-      active: domain.active,
-      settings: domain.settings,
-      created_at: domain.created_at ? new Date(domain.created_at).toLocaleString() : 'N/A',
-      updated_at: domain.updated_at ? new Date(domain.updated_at).toLocaleString() : 'N/A'
-    }));
-
     return {
-      domains: normalizedDomains
+      domains: data
     };
   } catch (err: unknown) {
     console.error('Failed to fetch domains:', err);

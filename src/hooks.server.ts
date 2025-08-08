@@ -1,7 +1,8 @@
 import type { Handle } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
+import Config from '$lib/config';
 
-const MONOKIT_URL = Bun.env.MONOKIT_URL;
+const MONOKIT_URL = Config.MONOKIT_URL;
 
 const PUBLIC_ROUTES = [
   '/login',
@@ -11,7 +12,7 @@ const PUBLIC_ROUTES = [
   `${MONOKIT_URL}/api/v1/auth/sso/login?redirect_uri=${encodeURIComponent(`${MONOKIT_URL}/api/v1/auth/sso/callback`)}`
 ];
 
-const ALLOWED_ORIGINS = JSON.parse(Bun.env.ORIGINS);
+const ALLOWED_ORIGINS = JSON.parse(Config.ORIGINS);
 
 export const handle: Handle = async ({ event, resolve }) => {
   const token = event.cookies.get('Authorization');

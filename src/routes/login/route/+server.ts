@@ -1,5 +1,6 @@
 import { redirect } from '@sveltejs/kit';
-const MONOKIT_URL = Bun.env.MONOKIT_URL;
+import Config from '$lib/config';
+const MONOKIT_URL = Config.MONOKIT_URL;
 
 export const GET = async () => {
   const redirectUri = `${MONOKIT_URL}/api/v1/auth/sso/callback`;

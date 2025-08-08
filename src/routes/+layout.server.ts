@@ -1,7 +1,9 @@
 import type { LayoutServerLoad } from './$types';
 import type { UserData, AlertMessage } from '$lib/types';
 import { redirect } from '@sveltejs/kit';
-const MONOKIT_URL = Bun.env.MONOKIT_URL;
+import Config from '$lib/config';
+
+const MONOKIT_URL = Config.MONOKIT_URL;
 
 export const load: LayoutServerLoad = async ({ cookies }) => {
   const authToken = cookies.get('Authorization');

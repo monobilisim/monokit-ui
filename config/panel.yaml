@@ -1,0 +1,6 @@
+# /etc/mono/panel.yaml
+MONOKIT_URL: https://panel.example.com
+AWX_SETUP_TEMPLATE_ID: # Optional template id for fast setup for adding new Hosts
+AWX_PING_TEMPLATE_ID:
+PORT:
+ORIGINS: '["http://localhost:5173", "http://localhost:3000", "https://panel.example.com", "http://127.0.0.1"]' # http origins

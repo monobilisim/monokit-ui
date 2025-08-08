@@ -14,7 +14,7 @@
   import { Checkbox } from '$lib/components/ui/checkbox';
   import { Badge } from '$lib/components/ui/badge';
   import { Skeleton } from '$lib/components/ui/skeleton';
-  import { Trash2 } from 'lucide-svelte';
+  import Trash2 from '@lucide/svelte/icons/trash-2';
 
   let {
     data,

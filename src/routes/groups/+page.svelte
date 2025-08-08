@@ -8,7 +8,10 @@
   import { Label } from '$lib/components/ui/label/index';
   import { Checkbox } from '$lib/components/ui/checkbox/index';
   import { Badge } from '$lib/components/ui/badge/index';
-  import { Plus, Trash2, Users, Loader2 } from 'lucide-svelte';
+  import Plus from '@lucide/svelte/icons/plus';
+  import Trash2 from '@lucide/svelte/icons/trash-2';
+  import Users from '@lucide/svelte/icons/users';
+  import Loader2 from '@lucide/svelte/icons/loader-2';
   import type { PageData } from './$types';
   import { enhance } from '$app/forms';
   import { applyAction } from '$app/forms';

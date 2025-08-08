@@ -15,7 +15,7 @@
     DialogTrigger
   } from '$lib/components/ui/dialog';
   import { Checkbox } from '$lib/components/ui/checkbox';
-  import { PlusIcon } from 'lucide-svelte';
+  import PlusIcon from '@lucide/svelte/icons/plus';
   import { handleFormResponse } from '$lib/stores/alerts';
   import AwxAddModal from './components/awxAddModal.svelte';
 

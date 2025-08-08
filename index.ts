@@ -1,9 +1,10 @@
 import { embeddedFileMap } from './embedded-imports.js';
 import { handler_default, build_options, env } from './build/handler.js';
+import Config from './src/lib/config';
 
 const { httpserver } = handler_default(build_options.assets ?? true);
-const hostname = Bun.env.HOST || '0.0.0.0';
-const port = Bun.env.PORT || 3000;
+const hostname = '0.0.0.0';
+const port = Config.PORT;
 const dev = env('SERVERDEV', build_options.development ?? false);
 
 function getMimeType(path: string): string {

@@ -25,7 +25,9 @@
     AccordionTrigger
   } from '$lib/components/ui/accordion';
   import { alerts, handleFormResponse } from '$lib/stores/alerts';
-  import { PlusCircleIcon, HelpCircleIcon, Loader2 } from 'lucide-svelte';
+  import PlusCircleIcon from '@lucide/svelte/icons/plus-circle';
+  import HelpCircleIcon from '@lucide/svelte/icons/help-circle';
+  import Loader2 from '@lucide/svelte/icons/loader-2';
   import type { FormResponse } from '$lib/types';
 
   let {

@@ -1,8 +1,8 @@
 import type { PageServerLoad } from './$types';
 import type { UserPageData } from '$lib/types';
 import { fail } from '@sveltejs/kit';
-
-const MONOKIT_URL = Bun.env.MONOKIT_URL;
+import Config from '$lib/config';
+const MONOKIT_URL = Config.MONOKIT_URL;
 
 export const load: PageServerLoad = async ({ cookies, fetch, params }) => {
   const authToken = cookies.get('Authorization');

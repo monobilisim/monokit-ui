@@ -10,7 +10,10 @@
   import { Checkbox } from '$lib/components/ui/checkbox';
   import { Textarea } from '$lib/components/ui/textarea';
   import { Badge } from '$lib/components/ui/badge';
-  import { PlusIcon, Trash2Icon, EditIcon, Globe } from 'lucide-svelte';
+  import PlusIcon from '@lucide/svelte/icons/plus';
+  import Trash2Icon from '@lucide/svelte/icons/trash-2';
+  import EditIcon from '@lucide/svelte/icons/edit';
+  import Globe from '@lucide/svelte/icons/globe';
   import type { Domain } from '$lib/types';
   import { handleFormResponse } from '$lib/stores/alerts';
 
@@ -21,6 +24,8 @@
     data: { domains: Domain[] };
     form: { type?: 'success' | 'error'; message?: string; errors?: string[] } | null;
   } = $props();
+
+  $effect(() => console.log(data.domains));
 
   let selectedDomains = $state<string[]>([]);
   let showCreateModal = $state(false);
@@ -197,8 +202,8 @@
                 <Table.Head>Name</Table.Head>
                 <Table.Head>Description</Table.Head>
                 <Table.Head>Status</Table.Head>
-                <Table.Head>Created At</Table.Head>
-                <Table.Head>Updated At</Table.Head>
+                <!-- <Table.Head>Created At</Table.Head>
+                <Table.Head>Updated At</Table.Head> -->
                 <Table.Head class="w-24">Actions</Table.Head>
               </Table.Row>
             </Table.Header>
@@ -221,8 +226,8 @@
                       {domain.active ? 'Active' : 'Inactive'}
                     </Badge>
                   </Table.Cell>
-                  <Table.Cell>{domain.created_at}</Table.Cell>
-                  <Table.Cell>{domain.updated_at}</Table.Cell>
+                  <!-- <Table.Cell>{domain.created_at}</Table.Cell>
+                  <Table.Cell>{domain.updated_at}</Table.Cell> -->
                   <Table.Cell>
                     <Button
                       variant="ghost"

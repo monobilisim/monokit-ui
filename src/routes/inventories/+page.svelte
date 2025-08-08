@@ -8,7 +8,7 @@
   import { Input } from '$lib/components/ui/input';
   import { Label } from '$lib/components/ui/label';
   import { Checkbox } from '$lib/components/ui/checkbox';
-  import { PlusIcon, Trash2Icon, Database } from 'lucide-svelte';
+  import { PlusIcon, Trash2Icon, Database } from '@lucide/svelte';
   import type { Inventory } from '$lib/types';
   import { handleFormResponse } from '$lib/stores/alerts';
 
