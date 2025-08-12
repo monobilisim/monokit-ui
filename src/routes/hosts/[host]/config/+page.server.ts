@@ -1,4 +1,4 @@
-import type { PageServerLoad } from './$types';
+import type { PageServerLoad, Actions } from './$types';
 import { fail } from '@sveltejs/kit';
 import Config from '$lib/config';
 const MONOKIT_URL = Config.MONOKIT_URL;
@@ -31,4 +31,51 @@ export const load: PageServerLoad = async ({ params, fetch, cookies }) => {
   return {
     hostConfig
   };
+};
+
+export const actions: Actions = {
+  putConfig: async ({ request, params, fetch, cookies }) => {
+    const authToken = cookies.get('Authorization');
+
+    if (!authToken) {
+      return fail(401, { type: 'error', message: 'Unauthorized' });
+    }
+
+    const { host } = params;
+    const formData = await request.formData();
+
+    const configData: string = <string>formData.get('hostConfig');
+
+    console.log(host);
+
+    const apiCompatibleConfig: Record<string, string> = {};
+    JSON.parse(configData).forEach((item: { name: string; content: string }) => {
+      apiCompatibleConfig[item.name] = item.content;
+    });
+
+    const response = await fetch(`${MONOKIT_URL}/api/v1/hosts/${host}/config`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: authToken
+      },
+      body: JSON.stringify(apiCompatibleConfig)
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      console.error('Error updating host configuration:', data);
+      return fail(response.status, {
+        type: 'error',
+        message: data.message || 'Failed to update host configuration'
+      });
+    }
+    console.log(apiCompatibleConfig);
+    console.log('Host configuration updated successfully');
+
+    return {
+      type: 'success',
+      message: 'Host configuration updated successfully'
+    };
+  }
 };
