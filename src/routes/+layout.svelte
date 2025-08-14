@@ -68,6 +68,7 @@
 
   type ExtendedLayoutData = LayoutData & {
     alerts?: AlertMessage[];
+    appVersion: string;
   };
 
   let { children, data }: { children: Snippet<[]>; data: ExtendedLayoutData } = $props();
@@ -83,6 +84,8 @@
       });
     }
   });
+
+  const appVersion: string = data.appVersion;
 
   function getAlertVariant(type: AlertMessage['type']) {
     switch (type) {
@@ -149,7 +152,10 @@
             >
               <Package class="h-4 w-4" />
             </div>
-            <span class="font-semibold">Monokit</span>
+            <div class="flex w-full items-center justify-between">
+              <span class="font-semibold">Monokit</span>
+              <span class="text-sm">v{appVersion}</span>
+            </div>
           </div>
         </Sidebar.Header>
 

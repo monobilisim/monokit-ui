@@ -15,6 +15,8 @@ export const load: LayoutServerLoad = async ({ cookies }) => {
     >
   });
 
+  const appVersion = Bun.env.npm_package_version;
+
   if (res.ok) {
     const userData: UserData = await res.json();
 
@@ -28,6 +30,7 @@ export const load: LayoutServerLoad = async ({ cookies }) => {
 
     return {
       userData,
+      appVersion,
       alerts: []
     };
   }
@@ -44,6 +47,7 @@ export const load: LayoutServerLoad = async ({ cookies }) => {
     ];
     return {
       userData: null,
+      appVersion,
       alerts
     };
   }
@@ -53,12 +57,14 @@ export const load: LayoutServerLoad = async ({ cookies }) => {
   if (userData) {
     return {
       userData: JSON.parse(userData),
+      appVersion,
       alerts: []
     };
   } else {
     redirect(301, '/login');
     return {
       userData: null,
+      appVersion,
       alerts: []
     };
   }

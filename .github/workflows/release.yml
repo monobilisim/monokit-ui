@@ -24,9 +24,6 @@ jobs:
       - name: Install dependencies
         run: bun --bun i
 
-      - name: Make binary
-        run: bun run create-binary
-
       - name: Get latest tag
         id: get_tag
         run: |
@@ -70,6 +67,20 @@ jobs:
 
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
           echo "new_tag=$NEW_TAG" >> $GITHUB_OUTPUT
+
+      - name: Update package.json version
+        run: |
+          NEW_VERSION="${{ steps.next_version.outputs.new_version }}"
+          bun run --bun -e "
+          const fs = require('fs');
+          const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          packageJson.version = '$NEW_VERSION';
+          fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2) + '\n');
+          console.log('Updated package.json version to:', '$NEW_VERSION');
+          "
+
+      - name: Make binary
+        run: bun run create-binary
 
       - name: Create and push tag
         run: |
