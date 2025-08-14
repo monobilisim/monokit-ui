@@ -9,7 +9,7 @@
   import { yaml } from '@codemirror/lang-yaml';
   import { oneDark } from '@codemirror/theme-one-dark';
   import { linter, type Diagnostic } from '@codemirror/lint';
-  import jsyaml from 'js-yaml';
+  import * as jsyaml from 'js-yaml';
 
   type ExtendedPageData = PageData & {
     hostConfig?: Record<string, string>;

@@ -19,7 +19,14 @@ export default defineConfig({
   build: {
     rollupOptions: {
       onwarn(warning, warn) {
-        if (warning.code === 'UNUSED_EXTERNAL_IMPORT') {
+        const msg = warning.message;
+        const code = warning.code;
+
+        if (code === 'UNUSED_EXTERNAL_IMPORT') {
+          return;
+        }
+
+        if (msg.includes('this.resolve') && msg.includes('options')) {
           return;
         }
 
