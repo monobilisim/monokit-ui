@@ -71,13 +71,8 @@ jobs:
       - name: Update package.json version
         run: |
           NEW_VERSION="${{ steps.next_version.outputs.new_version }}"
-          bun run --bun -e "
-          const fs = require('fs');
-          const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-          packageJson.version = '$NEW_VERSION';
-          fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2) + '\n');
-          console.log('Updated package.json version to:', '$NEW_VERSION');
-          "
+          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"$NEW_VERSION\"/" package.json
+          echo "Updated package.json version to: $NEW_VERSION"
 
       - name: Make binary
         run: bun run create-binary
