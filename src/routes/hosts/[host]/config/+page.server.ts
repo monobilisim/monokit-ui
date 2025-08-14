@@ -42,14 +42,17 @@ export const actions: Actions = {
     }
 
     const { host } = params;
+
     const formData = await request.formData();
-
+    const changedFileName: string = <string>formData.get('changedFileName');
+    const changedFileContent: string = <string>formData.get('changedFileContent');
     const configData: string = <string>formData.get('hostConfig');
-
-    console.log(host);
 
     const apiCompatibleConfig: Record<string, string> = {};
     JSON.parse(configData).forEach((item: { name: string; content: string }) => {
+      if (item.name === changedFileName) {
+        item.content = changedFileContent;
+      }
       apiCompatibleConfig[item.name] = item.content;
     });
 
@@ -70,8 +73,6 @@ export const actions: Actions = {
         message: data.message || 'Failed to update host configuration'
       });
     }
-    console.log(apiCompatibleConfig);
-    console.log('Host configuration updated successfully');
 
     return {
       type: 'success',
