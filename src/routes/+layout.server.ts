@@ -15,7 +15,8 @@ export const load: LayoutServerLoad = async ({ cookies }) => {
     >
   });
 
-  const appVersion = Bun.env.npm_package_version;
+  // @ts-expect-error __APP_VERSION__ is defined in the build process
+  const appVersion = __APP_VERSION__;
 
   if (res.ok) {
     const userData: UserData = await res.json();
