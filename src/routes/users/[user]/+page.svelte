@@ -18,8 +18,12 @@
   import { Badge } from '$lib/components/ui/badge/index.js';
   import BadgeCheckIcon from '@lucide/svelte/icons/badge-check';
 
-  let inventories = user.inventories.split(',').map((i) => i.trim());
+  //let inventories = user.inventories.split(',').map((i) => i.trim());
   let groups = $state<string[]>([]);
+
+  $effect(() => {
+    console.log(data);
+  });
 
   if (user.groups !== 'nil' && user.groups !== '' && user.groups !== null) {
     groups = user.groups.split(',').map((i) => i.trim());
@@ -34,11 +38,11 @@
     <Card.Description></Card.Description>
     <Card.Content>
       id: {user.id}
-      <br />
+      <!--<br />
       inventories:
       {#each inventories as inv, i (i)}
         <Badge class="mr-2">{inv}</Badge>
-      {/each}
+      {/each}-->
       <br />
       groups:
       {#each groups as group, i (i)}
@@ -49,9 +53,9 @@
       <br />
       username: {user.username}
     </Card.Content>
-    <Card.Action>
+    <!--<Card.Action>
       <Button variant="outline">Edit</Button>
-    </Card.Action>
+      </Card.Action>-->
   </Card.Header>
   <Card.Content></Card.Content>
 </Card.Root>

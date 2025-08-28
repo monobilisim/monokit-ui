@@ -33,9 +33,10 @@ export const load: PageServerLoad = async ({ fetch, cookies }) => {
     }
 
     // Fetch domains
-    const domainsResponse = await fetch(`${MONOKIT_URL}/api/v1/admin/domains`, {
+    const domainsResponse = await fetch(`${MONOKIT_URL}/api/v1/domains`, {
       headers: {
-        Authorization: authToken
+        Authorization: authToken,
+        'Content-Type': 'application/json'
       }
     });
 
@@ -143,67 +144,67 @@ export const actions: Actions = {
         error: 'Failed to delete selected users'
       });
     }
-  },
-
-  createUser: async ({ request, cookies, fetch }) => {
-    const authToken = cookies.get('Authorization');
-
-    if (!authToken) {
-      return fail(401, {
-        type: 'error',
-        error: 'Not authenticated'
-      });
-    }
-
-    const data = await request.formData();
-    const username = data.get('username') as string;
-    const password = data.get('password') as string;
-    const email = data.get('email') as string;
-    const role = data.get('role') as string;
-    const groups = data.get('groups') as string;
-    const inventory = data.get('inventory') as string;
-
-    if (!username || !password || !email || !role) {
-      return fail(400, {
-        type: 'error',
-        error: 'Username, password, email, and role are required'
-      });
-    }
-
-    try {
-      const res = await fetch(`${MONOKIT_URL}/api/v1/admin/users`, {
-        method: 'POST',
-        headers: {
-          Authorization: authToken,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          username,
-          password,
-          email,
-          role,
-          groups: groups || '',
-          inventory: inventory || ''
-        })
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        return fail(res.status, {
-          type: 'error',
-          error: data.error || 'Failed to create user'
-        });
-      }
-
-      return {
-        type: 'success',
-        message: `Successfully created user "${username}"`
-      };
-    } catch {
-      return fail(500, {
-        type: 'error',
-        error: 'Failed to create user'
-      });
-    }
   }
+
+  // createUser: async ({ request, cookies, fetch }) => {
+  //   const authToken = cookies.get('Authorization');
+
+  //   if (!authToken) {
+  //     return fail(401, {
+  //       type: 'error',
+  //       error: 'Not authenticated'
+  //     });
+  //   }
+
+  //   const data = await request.formData();
+  //   const username = data.get('username') as string;
+  //   const password = data.get('password') as string;
+  //   const email = data.get('email') as string;
+  //   const role = data.get('role') as string;
+  //   const groups = data.get('groups') as string;
+  //   const inventory = data.get('inventory') as string;
+
+  //   if (!username || !password || !email || !role) {
+  //     return fail(400, {
+  //       type: 'error',
+  //       error: 'Username, password, email, and role are required'
+  //     });
+  //   }
+
+  //   try {
+  //     const res = await fetch(`${MONOKIT_URL}/api/v1/admin/users`, {
+  //       method: 'POST',
+  //       headers: {
+  //         Authorization: authToken,
+  //         'Content-Type': 'application/json'
+  //       },
+  //       body: JSON.stringify({
+  //         username,
+  //         password,
+  //         email,
+  //         role,
+  //         groups: groups || '',
+  //         inventory: inventory || ''
+  //       })
+  //     });
+
+  //     if (!res.ok) {
+  //       const data = await res.json().catch(() => ({}));
+  //       return fail(res.status, {
+  //         type: 'error',
+  //         error: data.error || 'Failed to create user'
+  //       });
+  //     }
+
+  //     return {
+  //       type: 'success',
+  //       message: `Successfully created user "${username}"`
+  //     };
+  //   } catch {
+  //     return fail(500, {
+  //       type: 'error',
+  //       error: 'Failed to create user'
+  //     });
+  //   }
+  // }
 };

@@ -1,5 +1,5 @@
 import fs from 'fs';
-import * as yaml from 'js-yaml';
+import { YAML } from 'bun';
 
 type Config = {
   MONOKIT_URL: string;
@@ -19,7 +19,7 @@ if (!Bun.env.BUILD_STEP) {
   }
 
   try {
-    const configYaml = <Config>yaml.load(fs.readFileSync('/etc/mono/panel.yaml', 'utf8'));
+    const configYaml = <Config>YAML.parse(fs.readFileSync('/etc/mono/panel.yaml', 'utf8'));
     config = {
       PORT: configYaml.PORT,
       MONOKIT_URL: configYaml.MONOKIT_URL,

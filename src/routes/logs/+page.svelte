@@ -2,6 +2,7 @@
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { enhance } from '$app/forms';
+  import { onMount } from 'svelte';
   import { alerts, handleFormResponse } from '$lib/stores/alerts';
   import type { LogsPageData, FormResponse, LogLevel, LogChartData } from '$lib/types';
 
@@ -145,7 +146,7 @@
       url.searchParams.set('page', '1');
     }
 
-    goto(url.toString(), { keepFocus: true });
+    goto(url.toString(), { keepFocus: true, noScroll: true });
   };
 
   const handleSearch = (event: Event) => {

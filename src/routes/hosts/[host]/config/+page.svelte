@@ -63,18 +63,18 @@
         editableConf.of(EditorView.editable.of(!params.readonly)),
         linter((view) => {
           const diagnostics: Diagnostic[] = [];
-          if (view.state.doc.toString().slice(-1) !== '\n') {
-            console.log(view.state.doc.toString().slice(-1));
-            diagnostics.push({
-              from: view.state.doc.length - 1,
-              to: view.state.doc.length,
-              severity: 'error',
-              message: 'File must end with a newline'
-            });
-          }
-
           try {
             jsyaml.load(view.state.doc.toString());
+
+            if (view.state.doc.toString().slice(-1) !== '\n') {
+              console.log(view.state.doc.toString().slice(-1));
+              diagnostics.push({
+                from: view.state.doc.length - 1,
+                to: view.state.doc.length,
+                severity: 'error',
+                message: 'File must end with a newline'
+              });
+            }
           } catch (e: unknown) {
             const match = e.message.match(/at line (\d+)/);
             if (match) {
@@ -84,14 +84,14 @@
                 from: line.from,
                 to: line.to,
                 severity: 'error',
-                message: e.message
+                message: e.message.split('|')[0]
               });
             } else {
               diagnostics.push({
                 from: 0,
                 to: view.state.doc.length,
                 severity: 'error',
-                message: e.message
+                message: e.message.split('|')[0]
               });
             }
           }
@@ -162,7 +162,11 @@
               <input type="hidden" name="changedFileName" value={row.name} />
               <input type="hidden" name="changedFileContent" value={row.content} />
               <input type="hidden" name="hostConfig" value={stringHostConfig} />
-              <Button type="submit" size="sm">Save</Button>
+              {#if indexes[index].diagnostics.length > 0}
+                <Button type="button" size="sm" disabled>Save</Button>
+              {:else}
+                <Button type="submit" size="sm">Save</Button>
+              {/if}
             </form>
           {:else}
             <Button onclick={() => (indexes[index].editEnabled = true)} size="sm" variant="outline">
