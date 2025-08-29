@@ -5,7 +5,7 @@ type Config = {
   MONOKIT_URL: string;
   AWX_SETUP_TEMPLATE_ID: number;
   AWX_PING_TEMPLATE_ID: number;
-  ORIGINS: string;
+  ORIGINS: string[];
   PORT: number;
   LOCAL_AUTH?: boolean;
 };
@@ -19,13 +19,15 @@ if (!Bun.env.BUILD_STEP) {
   }
 
   try {
-    const configYaml = <Config>YAML.parse(fs.readFileSync('/etc/mono/panel.yaml', 'utf8'));
+    const configYaml = <Record<string, string>>(
+      YAML.parse(fs.readFileSync('/etc/mono/panel.yaml', 'utf8'))
+    );
     config = {
-      PORT: configYaml.PORT,
+      PORT: Number(configYaml.PORT),
       MONOKIT_URL: configYaml.MONOKIT_URL,
-      AWX_SETUP_TEMPLATE_ID: configYaml.AWX_SETUP_TEMPLATE_ID,
-      AWX_PING_TEMPLATE_ID: configYaml.AWX_PING_TEMPLATE_ID,
-      ORIGINS: configYaml.ORIGINS
+      AWX_SETUP_TEMPLATE_ID: Number(configYaml.AWX_SETUP_TEMPLATE_ID),
+      AWX_PING_TEMPLATE_ID: Number(configYaml.AWX_PING_TEMPLATE_ID),
+      ORIGINS: JSON.parse(configYaml.ORIGINS)
     };
   } catch (e) {
     console.error('Failed to read or parse configuration file:', e);

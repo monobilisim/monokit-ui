@@ -12,10 +12,10 @@ const PUBLIC_ROUTES = [
   `${MONOKIT_URL}/api/v1/auth/sso/login?redirect_uri=${encodeURIComponent(`${MONOKIT_URL}/api/v1/auth/sso/callback`)}`
 ];
 
-const ALLOWED_ORIGINS = JSON.parse(Config.ORIGINS);
-
 export const handle: Handle = async ({ event, resolve }) => {
   const token = event.cookies.get('Authorization');
+
+  const ALLOWED_ORIGINS = Config.ORIGINS;
 
   if (!token && !PUBLIC_ROUTES.includes(event.url.pathname)) {
     throw redirect(303, '/login');

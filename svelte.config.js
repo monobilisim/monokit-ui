@@ -8,7 +8,7 @@ const config = {
   kit: {
     adapter: adapter(),
     csrf: {
-      checkOrigin: false // Custom CSRF check is inside hooks.server.ts
+      trustedOrigins: ['*'] //  Custom CSRF check is inside hooks.server.ts
     }
   }
 };
